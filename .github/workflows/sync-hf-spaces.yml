@@ -1,0 +1,159 @@
+# ----------------------------------------------------------------------------
+# Sync uc-* subfolders → Hugging Face Spaces solverforge-* (git subtree)
+#
+# Required secrets  : HF_TOKEN          (HF token with "write" role on your spaces)
+# Required variables: HF_ORGANIZATION   (your HF org or username, e.g., "myorg")
+#
+# Triggers:
+#   • push to main        → sync only modified uc-* folders
+#   • workflow_dispatch   → "all" or a specific folder (e.g. "uc-01")
+# ----------------------------------------------------------------------------
+name: Sync → Hugging Face Spaces
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "uc-*/**"
+
+  workflow_dispatch:
+    inputs:
+      target:
+        description: >
+          Folder to sync (e.g., "uc-01") or "all" to sync everything
+        required: true
+        default: "all"
+
+# Only one workflow at a time per branch to avoid push conflicts
+concurrency:
+  group: hf-sync-${{ github.ref }}
+  cancel-in-progress: false
+
+# ----------------------------------------------------------------------------
+# JOB 1 – Detect modified folders → matrix
+# ----------------------------------------------------------------------------
+jobs:
+  detect:
+    name: Detect changed folders
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.build-matrix.outputs.matrix }}
+      empty: ${{ steps.build-matrix.outputs.empty }}
+
+    steps:
+      - name: Checkout (full history required for git subtree)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build matrix
+        id: build-matrix
+        env:
+          BEFORE: ${{ github.event.before }}
+          SHA: ${{ github.sha }}
+          TARGET: ${{ github.event.inputs.target }}
+        run: |
+          set -euo pipefail
+
+          # -- workflow_dispatch case ------------------------------------------
+          if [ -n "${TARGET:-}" ]; then
+            if [ "$TARGET" = "all" ]; then
+              FOLDERS=$(find . -maxdepth 1 -type d -name 'uc-*' \
+                        | sed 's|^\./||' | sort)
+            else
+              if [ ! -d "$TARGET" ]; then
+                echo "::error::Folder '$TARGET' not found in the repo."
+                exit 1
+              fi
+              FOLDERS="$TARGET"
+            fi
+
+          # -- push case -------------------------------------------------------
+          else
+            if [ "$BEFORE" = "0000000000000000000000000000000000000000" ] \
+               || ! git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
+              echo "::notice::First push or missing history — syncing all folders."
+              FOLDERS=$(find . -maxdepth 1 -type d -name 'uc-*' \
+                        | sed 's|^\./||' | sort)
+            else
+              FOLDERS=$(git diff --name-only "$BEFORE" "$SHA" \
+                        | grep '^uc-' \
+                        | cut -d'/' -f1 \
+                        | sort -u)
+            fi
+          fi
+
+          # -- Build the JSON matrix -------------------------------------------
+          if [ -z "$FOLDERS" ]; then
+            echo "::notice::No uc-* folder modified, nothing to sync."
+            echo "matrix={\"folder\":[]}" >> "$GITHUB_OUTPUT"
+            echo "empty=true"            >> "$GITHUB_OUTPUT"
+          else
+            JSON=$(echo "$FOLDERS" | jq -R . | jq -sc '{"folder":.}')
+            echo "Detected folders: $FOLDERS"
+            echo "matrix=$JSON"  >> "$GITHUB_OUTPUT"
+            echo "empty=false"   >> "$GITHUB_OUTPUT"
+          fi
+
+  # ----------------------------------------------------------------------------
+  # JOB 2 – Synchronization (one runner per space, in parallel)
+  # ----------------------------------------------------------------------------
+  sync:
+    name: Sync ${{ matrix.folder }}
+    needs: detect
+    if: needs.detect.outputs.empty == 'false'
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix: ${{ fromJson(needs.detect.outputs.matrix) }}
+      fail-fast: false
+
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure git
+        run: |
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name  "github-actions[bot]"
+
+      - name: Verify folder exists
+        run: |
+          if [ ! -d "${{ matrix.folder }}" ]; then
+            echo "::error::Folder '${{ matrix.folder }}' missing from repo."
+            exit 1
+          fi
+
+      - name: git subtree split → temporary branch
+        id: split
+        run: |
+          FOLDER="${{ matrix.folder }}"
+          BRANCH="hf-push/${FOLDER}/${GITHUB_RUN_ID}"
+
+          echo "Extracting $FOLDER history..."
+          git subtree split --prefix="$FOLDER" -b "$BRANCH"
+
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+
+      - name: Push to Hugging Face Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_ORGANIZATION: ${{ vars.HF_ORGANIZATION }}
+        run: |
+          FOLDER="${{ matrix.folder }}"
+          BRANCH="${{ steps.split.outputs.branch }}"
+          SPACE_NAME=$(echo "$FOLDER" | sed 's/^uc/solverforge/')
+          SPACE="${HF_ORGANIZATION}/${SPACE_NAME}"
+          HF_REMOTE="https://user:${HF_TOKEN}@huggingface.co/spaces/${SPACE}"
+
+          echo "Pushing $FOLDER → hf.co/spaces/$SPACE (main branch)..."
+          git push "$HF_REMOTE" "${BRANCH}:main" --force
+          echo "::notice title=Sync OK::$FOLDER synced to hf.co/spaces/$SPACE"
+
+      - name: Cleanup temporary branch
+        if: always()
+        run: |
+          BRANCH="${{ steps.split.outputs.branch }}"
+          git branch -D "$BRANCH" 2>/dev/null || true
