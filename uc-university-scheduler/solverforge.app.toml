@@ -1,0 +1,119 @@
+[app]
+name = "university-scheduler"
+starter = "neutral-shell"
+cli_version = "2.0.4"
+
+[runtime]
+target = "solverforge 0.12.0"
+runtime_source = "crates.io: solverforge 0.12.0"
+ui_source = "crates.io: solverforge-ui 0.6.5"
+
+[demo]
+default_size = "LARGE"
+available_sizes = [
+    "LARGE",
+]
+
+[solution]
+name = "Plan"
+score = "HardMediumSoftScore"
+
+[[facts]]
+name = "timeslot"
+plural = "timeslots"
+kind = "problem_fact"
+
+[[facts]]
+name = "teacher"
+plural = "teachers"
+kind = "problem_fact"
+
+[[facts]]
+name = "group"
+plural = "groups"
+kind = "problem_fact"
+
+[[facts]]
+name = "room"
+plural = "rooms"
+kind = "problem_fact"
+
+[[entities]]
+name = "lesson"
+plural = "lessons"
+kind = "planning_entity"
+
+[[variables]]
+entity = "lesson"
+entity_plural = "lessons"
+field = "timeslot_idx"
+kind = "scalar"
+range = "timeslots"
+elements = ""
+allows_unassigned = false
+enabled = true
+
+[[variables]]
+entity = "lesson"
+entity_plural = "lessons"
+field = "room_idx"
+kind = "scalar"
+range = "rooms"
+elements = ""
+allows_unassigned = false
+enabled = true
+
+[[constraints]]
+name = "assign_timeslot"
+module = "assign_timeslot"
+enabled = true
+
+[[constraints]]
+name = "assign_room"
+module = "assign_room"
+enabled = true
+
+[[constraints]]
+name = "teacher_availability"
+module = "teacher_availability"
+enabled = true
+
+[[constraints]]
+name = "group_availability"
+module = "group_availability"
+enabled = true
+
+[[constraints]]
+name = "room_kind"
+module = "room_kind"
+enabled = true
+
+[[constraints]]
+name = "room_capacity"
+module = "room_capacity"
+enabled = true
+
+[[constraints]]
+name = "no_group_conflict"
+module = "no_group_conflict"
+enabled = true
+
+[[constraints]]
+name = "no_room_conflict"
+module = "no_room_conflict"
+enabled = true
+
+[[constraints]]
+name = "no_teacher_conflict"
+module = "no_teacher_conflict"
+enabled = true
+
+[[constraints]]
+name = "late_lesson"
+module = "late_lesson"
+enabled = true
+
+[[constraints]]
+name = "repeated_subject_day"
+module = "repeated_subject_day"
+enabled = true
