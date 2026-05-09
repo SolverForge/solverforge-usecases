@@ -1,0 +1,43 @@
+# SolverForge configuration for the hospital example.
+#
+# This app uses the 0.11-line scalar nearby-selection surface directly, while
+# staying narrow enough that local search can complete real steps on the
+# hospital dataset inside 30 seconds.
+
+random_seed = 1
+
+[termination]
+seconds_spent_limit = 30
+unimproved_seconds_spent_limit = 5
+
+[[phases]]
+type = "construction_heuristic"
+construction_heuristic_type = "cheapest_insertion"
+entity_class = "Shift"
+variable_name = "employee_idx"
+
+[[phases]]
+type = "local_search"
+
+[phases.acceptor]
+type = "late_acceptance"
+late_acceptance_size = 400
+
+[phases.forager]
+type = "accepted_count"
+limit = 4
+
+[phases.move_selector]
+type = "union_move_selector"
+
+[[phases.move_selector.selectors]]
+type = "nearby_change_move_selector"
+entity_class = "Shift"
+variable_name = "employee_idx"
+max_nearby = 10
+
+[[phases.move_selector.selectors]]
+type = "nearby_swap_move_selector"
+entity_class = "Shift"
+variable_name = "employee_idx"
+max_nearby = 10

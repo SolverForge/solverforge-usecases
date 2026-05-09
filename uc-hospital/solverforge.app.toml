@@ -1,0 +1,24 @@
+# Metadata consumed by SolverForge app tooling for this example repo.
+[app]
+# App identity and the CLI release line this example targets.
+name = "SolverForge Hospital"
+starter = "neutral-shell"
+cli_version = "2.0.4"
+
+[runtime]
+# Published crate releases used by this example.
+target = "SolverForge crates.io target"
+runtime_crate = "solverforge"
+runtime_version = "0.11.1"
+ui_crate = "solverforge-ui"
+ui_version = "0.6.5"
+
+[demo]
+# Public demo-data ids exposed by this app.
+default_size = "large"
+available_sizes = ["large"]
+
+[solution]
+# Planning-solution metadata surfaced to surrounding tooling.
+name = "Plan"
+score = "HardSoftDecimalScore"

@@ -1,0 +1,41 @@
+{
+  "entities": [
+    { "name": "shift", "plural": "shifts", "label": "Shifts" }
+  ],
+  "facts": [
+    { "name": "employee", "plural": "employees", "label": "Employees" }
+  ],
+  "constraints": [
+    { "name": "Assigned shift", "type": "hard" },
+    { "name": "Required skill", "type": "hard" },
+    { "name": "Overlapping shift", "type": "hard" },
+    { "name": "At least 10 hours between 2 shifts", "type": "hard" },
+    { "name": "One shift per day", "type": "hard" },
+    { "name": "Unavailable employee", "type": "hard" },
+    { "name": "Undesired day for employee", "type": "soft" },
+    { "name": "Desired day for employee", "type": "soft" },
+    { "name": "Balance employee assignments", "type": "soft" }
+  ],
+  "views": [
+    {
+      "id": "by-location",
+      "kind": "schedule-by-location",
+      "label": "By location",
+      "entity": "shift",
+      "entityPlural": "shifts",
+      "sourcePlural": "employees",
+      "variableField": "employeeIdx",
+      "allowsUnassigned": true
+    },
+    {
+      "id": "by-employee",
+      "kind": "schedule-by-employee",
+      "label": "By employee",
+      "entity": "shift",
+      "entityPlural": "shifts",
+      "sourcePlural": "employees",
+      "variableField": "employeeIdx",
+      "allowsUnassigned": true
+    }
+  ]
+}

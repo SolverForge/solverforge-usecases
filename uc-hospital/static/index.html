@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SolverForge Hospital — SolverForge</title>
+  <link rel="stylesheet" href="/sf/sf.css">
+  <link rel="stylesheet" href="/sf/vendor/fontawesome/css/fontawesome.min.css">
+  <link rel="stylesheet" href="/sf/vendor/fontawesome/css/solid.min.css">
+  <link rel="icon" href="/sf/img/ouroboros.svg" type="image/svg+xml">
+</head>
+<body>
+  <!-- The shared SolverForge UI shell mounts into this root element. -->
+  <div id="sf-app"></div>
+  <script src="/sf/sf.js"></script>
+  <script type="module">
+    import { bootApp } from '/app/main.mjs';
+
+    // The local app only needs one browser entry call after the shared UI loads.
+    bootApp();
+  </script>
+</body>
+</html>
