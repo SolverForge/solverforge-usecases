@@ -2,6 +2,12 @@
 
 All notable changes to this use case are documented in this file.
 
+## 2.0.0 (2026-05-14)
+
+### Maintenance
+
+* **release:** set the public app release line to 2.0.0 across Cargo metadata and release validation.
+
 ## 1.0.1 (2026-05-14)
 
 ### Features
