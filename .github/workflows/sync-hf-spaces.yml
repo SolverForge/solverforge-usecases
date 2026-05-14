@@ -1,56 +1,65 @@
 # ----------------------------------------------------------------------------
-# Sync SolverForge uc-* apps to Hugging Face Spaces solverforge-* (git subtree)
+# Publish SolverForge uc-* apps to Hugging Face Spaces solverforge-*.
 #
-# Required secrets  : HF_TOKEN          (HF token with "write" role on your spaces)
-# Required variables: HF_ORGANIZATION   (your HF org or username, e.g., "myorg")
+# Canonical release flow:
+#   1. Cut an app-scoped tag such as solverforge-hospital@1.0.2.
+#   2. This workflow validates the tag against uc-hospital/Cargo.toml,
+#      uc-hospital/Cargo.lock, and uc-hospital/CHANGELOG.md.
+#   3. The matching uc-* subtree is pushed to the matching Hugging Face Space.
 #
-# Triggers:
-#   * push to main        -> sync only modified uc-* folders
-#   * workflow_dispatch   -> "all" or a specific folder (e.g. "uc-hospital")
+# Required secrets  : HF_TOKEN          (HF token with write role on the spaces)
+# Required variables: HF_ORGANIZATION   (HF org or username, e.g. SolverForge)
 # ----------------------------------------------------------------------------
 name: Sync SolverForge Use Cases
 
 on:
   push:
-    branches: [main]
-    paths:
-      - "uc-*/**"
+    tags:
+      - "solverforge-deliveries@*"
+      - "solverforge-fsr@*"
+      - "solverforge-hospital@*"
+      - "solverforge-lessons@*"
 
   workflow_dispatch:
     inputs:
       target:
         description: >
-          Folder to sync (e.g., "uc-hospital") or "all" to sync everything
+          Folder to sync (e.g., "uc-hospital") or "all" to sync everything.
+          Manual syncs are for recovery; app tags are the release path.
         required: true
         default: "all"
 
-# Only one workflow at a time per branch to avoid push conflicts
 concurrency:
   group: hf-sync-${{ github.ref }}
   cancel-in-progress: false
 
-# ----------------------------------------------------------------------------
-# JOB 1 - Detect modified folders -> matrix
-# ----------------------------------------------------------------------------
 jobs:
   detect:
-    name: Detect changed folders
+    name: Resolve release target
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.build-matrix.outputs.matrix }}
       empty: ${{ steps.build-matrix.outputs.empty }}
+      release_tag: ${{ steps.release-tag.outputs.tag_name }}
+      release_version: ${{ steps.release-tag.outputs.version }}
+      release_folder: ${{ steps.release-tag.outputs.folder }}
 
     steps:
-      - name: Checkout (full history required for git subtree)
+      - name: Checkout full history
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      - name: Validate app release tag
+        id: release-tag
+        if: github.event_name == 'push'
+        run: node scripts/verify-usecase-release-tag.cjs "${GITHUB_REF_NAME}"
+
       - name: Build matrix
         id: build-matrix
         env:
-          BEFORE: ${{ github.event.before }}
-          SHA: ${{ github.sha }}
+          EVENT_NAME: ${{ github.event_name }}
+          RELEASE_FOLDER: ${{ steps.release-tag.outputs.folder }}
           TARGET: ${{ github.event.inputs.target }}
         run: |
           set -euo pipefail
@@ -68,8 +77,6 @@ jobs:
               [ -n "$folder" ] || continue
               if printf '%s\n' "$OPEN_SOURCE_FOLDERS" | grep -Fxq "$folder"; then
                 printf '%s\n' "$folder"
-              elif [ ! -d "$folder" ]; then
-                echo "::notice::Ignoring deleted non-open-source use-case folder '$folder'."
               else
                 echo "::error::Folder '$folder' is not an open-source SolverForge use case."
                 exit 1
@@ -77,47 +84,26 @@ jobs:
             done
           }
 
-          # -- workflow_dispatch case ------------------------------------------
-          if [ -n "${TARGET:-}" ]; then
-            if [ "$TARGET" = "all" ]; then
-              FOLDERS="$OPEN_SOURCE_FOLDERS"
-            else
-              if [ ! -d "$TARGET" ]; then
-                echo "::error::Folder '$TARGET' not found in the repo."
-                exit 1
-              fi
-              FOLDERS=$(printf '%s\n' "$TARGET" | filter_open_source)
-            fi
-
-          # -- push case -------------------------------------------------------
+          if [ "$EVENT_NAME" = "push" ]; then
+            FOLDERS=$(printf '%s\n' "$RELEASE_FOLDER" | filter_open_source)
+          elif [ "${TARGET:-all}" = "all" ]; then
+            FOLDERS="$OPEN_SOURCE_FOLDERS"
           else
-            if [ "$BEFORE" = "0000000000000000000000000000000000000000" ] \
-               || ! git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
-              echo "::notice::First push or missing history - syncing all folders."
-              FOLDERS="$OPEN_SOURCE_FOLDERS"
-            else
-              CHANGED_FOLDERS=$(git diff --name-only "$BEFORE" "$SHA" \
-                                | awk -F/ '/^uc-/ { print $1 }' \
-                                | sort -u)
-              FOLDERS=$(printf '%s\n' "$CHANGED_FOLDERS" | filter_open_source)
-            fi
+            [ -d "$TARGET" ] || { echo "::error::Folder '$TARGET' not found."; exit 1; }
+            FOLDERS=$(printf '%s\n' "$TARGET" | filter_open_source)
           fi
 
-          # -- Build the JSON matrix -------------------------------------------
           if [ -z "$FOLDERS" ]; then
-            echo "::notice::No uc-* folder modified, nothing to sync."
+            echo "::notice::No uc-* folder selected, nothing to sync."
             echo "matrix={\"folder\":[]}" >> "$GITHUB_OUTPUT"
-            echo "empty=true"            >> "$GITHUB_OUTPUT"
+            echo "empty=true" >> "$GITHUB_OUTPUT"
           else
             JSON=$(echo "$FOLDERS" | jq -R . | jq -sc '{"folder":.}')
             echo "Detected folders: $FOLDERS"
-            echo "matrix=$JSON"  >> "$GITHUB_OUTPUT"
-            echo "empty=false"   >> "$GITHUB_OUTPUT"
+            echo "matrix=$JSON" >> "$GITHUB_OUTPUT"
+            echo "empty=false" >> "$GITHUB_OUTPUT"
           fi
 
-  # ----------------------------------------------------------------------------
-  # JOB 2 - Synchronization (one runner per space, in parallel)
-  # ----------------------------------------------------------------------------
   sync:
     name: Sync ${{ matrix.folder }}
     needs: detect
@@ -129,7 +115,7 @@ jobs:
       fail-fast: false
 
     steps:
-      - name: Checkout (full history)
+      - name: Checkout full history
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -137,14 +123,27 @@ jobs:
       - name: Configure git
         run: |
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config user.name  "github-actions[bot]"
+          git config user.name "github-actions[bot]"
 
-      - name: Verify folder exists
-        run: |
-          if [ ! -d "${{ matrix.folder }}" ]; then
-            echo "::error::Folder '${{ matrix.folder }}' missing from repo."
-            exit 1
-          fi
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Node dependencies
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install browser test dependencies
+        run: make install-e2e
+
+      - name: Validate release tag
+        if: github.event_name == 'push'
+        run: make release-ci APP="${{ matrix.folder }}" RELEASE_VERSION="${{ needs.detect.outputs.release_version }}"
+
+      - name: Validate manual sync target
+        if: github.event_name != 'push'
+        run: make release-ci APP="${{ matrix.folder }}"
 
       - name: git subtree split to temporary branch
         id: split
@@ -171,6 +170,23 @@ jobs:
           echo "Pushing $FOLDER to hf.co/spaces/$SPACE (main branch)..."
           git push "$HF_REMOTE" "${BRANCH}:main" --force
           echo "::notice title=Sync OK::$FOLDER synced to hf.co/spaces/$SPACE"
+
+      - name: Push release tag to Hugging Face Space
+        if: github.event_name == 'push'
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_ORGANIZATION: ${{ vars.HF_ORGANIZATION }}
+          RELEASE_TAG: ${{ needs.detect.outputs.release_tag }}
+        run: |
+          FOLDER="${{ matrix.folder }}"
+          BRANCH="${{ steps.split.outputs.branch }}"
+          SPACE_NAME=$(echo "$FOLDER" | sed 's/^uc/solverforge/')
+          SPACE="${HF_ORGANIZATION}/${SPACE_NAME}"
+          HF_REMOTE="https://user:${HF_TOKEN}@huggingface.co/spaces/${SPACE}"
+
+          git tag -f "$RELEASE_TAG" "$BRANCH"
+          git push "$HF_REMOTE" "refs/tags/${RELEASE_TAG}:refs/tags/${RELEASE_TAG}" --force
+          echo "::notice title=Tag Sync OK::$RELEASE_TAG synced to hf.co/spaces/$SPACE"
 
       - name: Cleanup temporary branch
         if: always()
