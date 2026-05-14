@@ -1,14 +1,14 @@
 # ----------------------------------------------------------------------------
-# Sync uc-* subfolders → Hugging Face Spaces solverforge-* (git subtree)
+# Sync SolverForge uc-* apps to Hugging Face Spaces solverforge-* (git subtree)
 #
 # Required secrets  : HF_TOKEN          (HF token with "write" role on your spaces)
 # Required variables: HF_ORGANIZATION   (your HF org or username, e.g., "myorg")
 #
 # Triggers:
-#   • push to main        → sync only modified uc-* folders
-#   • workflow_dispatch   → "all" or a specific folder (e.g. "uc-01")
+#   * push to main        -> sync only modified uc-* folders
+#   * workflow_dispatch   -> "all" or a specific folder (e.g. "uc-hospital")
 # ----------------------------------------------------------------------------
-name: Sync → Hugging Face Spaces
+name: Sync SolverForge Use Cases
 
 on:
   push:
@@ -20,7 +20,7 @@ on:
     inputs:
       target:
         description: >
-          Folder to sync (e.g., "uc-01") or "all" to sync everything
+          Folder to sync (e.g., "uc-hospital") or "all" to sync everything
         required: true
         default: "all"
 
@@ -30,7 +30,7 @@ concurrency:
   cancel-in-progress: false
 
 # ----------------------------------------------------------------------------
-# JOB 1 – Detect modified folders → matrix
+# JOB 1 - Detect modified folders -> matrix
 # ----------------------------------------------------------------------------
 jobs:
   detect:
@@ -55,31 +55,51 @@ jobs:
         run: |
           set -euo pipefail
 
+          OPEN_SOURCE_FOLDERS=$(cat <<'FOLDERS'
+          uc-deliveries
+          uc-fsr
+          uc-hospital
+          uc-lessons
+          FOLDERS
+          )
+
+          filter_open_source() {
+            while IFS= read -r folder; do
+              [ -n "$folder" ] || continue
+              if printf '%s\n' "$OPEN_SOURCE_FOLDERS" | grep -Fxq "$folder"; then
+                printf '%s\n' "$folder"
+              elif [ ! -d "$folder" ]; then
+                echo "::notice::Ignoring deleted non-open-source use-case folder '$folder'."
+              else
+                echo "::error::Folder '$folder' is not an open-source SolverForge use case."
+                exit 1
+              fi
+            done
+          }
+
           # -- workflow_dispatch case ------------------------------------------
           if [ -n "${TARGET:-}" ]; then
             if [ "$TARGET" = "all" ]; then
-              FOLDERS=$(find . -maxdepth 1 -type d -name 'uc-*' \
-                        | sed 's|^\./||' | sort)
+              FOLDERS="$OPEN_SOURCE_FOLDERS"
             else
               if [ ! -d "$TARGET" ]; then
                 echo "::error::Folder '$TARGET' not found in the repo."
                 exit 1
               fi
-              FOLDERS="$TARGET"
+              FOLDERS=$(printf '%s\n' "$TARGET" | filter_open_source)
             fi
 
           # -- push case -------------------------------------------------------
           else
             if [ "$BEFORE" = "0000000000000000000000000000000000000000" ] \
                || ! git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
-              echo "::notice::First push or missing history — syncing all folders."
-              FOLDERS=$(find . -maxdepth 1 -type d -name 'uc-*' \
-                        | sed 's|^\./||' | sort)
+              echo "::notice::First push or missing history - syncing all folders."
+              FOLDERS="$OPEN_SOURCE_FOLDERS"
             else
-              FOLDERS=$(git diff --name-only "$BEFORE" "$SHA" \
-                        | grep '^uc-' \
-                        | cut -d'/' -f1 \
-                        | sort -u)
+              CHANGED_FOLDERS=$(git diff --name-only "$BEFORE" "$SHA" \
+                                | awk -F/ '/^uc-/ { print $1 }' \
+                                | sort -u)
+              FOLDERS=$(printf '%s\n' "$CHANGED_FOLDERS" | filter_open_source)
             fi
           fi
 
@@ -96,7 +116,7 @@ jobs:
           fi
 
   # ----------------------------------------------------------------------------
-  # JOB 2 – Synchronization (one runner per space, in parallel)
+  # JOB 2 - Synchronization (one runner per space, in parallel)
   # ----------------------------------------------------------------------------
   sync:
     name: Sync ${{ matrix.folder }}
@@ -126,7 +146,7 @@ jobs:
             exit 1
           fi
 
-      - name: git subtree split → temporary branch
+      - name: git subtree split to temporary branch
         id: split
         run: |
           FOLDER="${{ matrix.folder }}"
@@ -148,7 +168,7 @@ jobs:
           SPACE="${HF_ORGANIZATION}/${SPACE_NAME}"
           HF_REMOTE="https://user:${HF_TOKEN}@huggingface.co/spaces/${SPACE}"
 
-          echo "Pushing $FOLDER → hf.co/spaces/$SPACE (main branch)..."
+          echo "Pushing $FOLDER to hf.co/spaces/$SPACE (main branch)..."
           git push "$HF_REMOTE" "${BRANCH}:main" --force
           echo "::notice title=Sync OK::$FOLDER synced to hf.co/spaces/$SPACE"
 
