@@ -1,0 +1,98 @@
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+  background: var(--sf-color-background);
+  color: var(--sf-color-text);
+  color-scheme: light;
+}
+
+.solverforge-lessons-app {
+  min-height: 100vh;
+  background: var(--sf-color-background);
+  color: var(--sf-color-text);
+}
+
+.solverforge-lessons-app .sf-content {
+  padding: var(--sf-space-4) var(--sf-space-6);
+  background: var(--sf-color-background);
+  color: var(--sf-color-text);
+}
+
+.solverforge-lessons-app .sf-content > p {
+  margin: 0 0 var(--sf-space-4);
+  color: var(--sf-color-text-secondary);
+}
+
+.solverforge-lessons-app .sf-table-container,
+.solverforge-lessons-app .sf-table,
+.solverforge-lessons-app .sf-table tbody,
+.solverforge-lessons-app .sf-table td {
+  background: var(--sf-color-surface);
+  color: var(--sf-color-text);
+}
+
+.solverforge-lessons-app .sf-table th {
+  color: var(--sf-gray-700);
+}
+
+.solverforge-lessons-app .sf-rail-timeline-toolbar {
+  padding: 14px 18px;
+}
+
+.solverforge-lessons-app .sf-rail-timeline-lane-label {
+  gap: 6px;
+  justify-content: center;
+  padding: 10px 14px;
+}
+
+.solverforge-lessons-app .sf-rail-timeline-lane-mode {
+  display: none;
+}
+
+.solverforge-lessons-app .sf-rail-timeline-lane-heading {
+  align-items: center;
+}
+
+.solverforge-lessons-app .sf-rail-timeline-lane-title {
+  font-size: 12px;
+}
+
+.solverforge-lessons-app .sf-rail-timeline-lane-badges {
+  gap: 4px;
+}
+
+.solverforge-lessons-app .sf-rail-timeline-lane-badge {
+  font-size: 8px;
+  padding: 2px 6px;
+}
+
+.solverforge-lessons-app .sf-rail-timeline-row--detailed .sf-rail-timeline-item--detail {
+  box-shadow:
+    0 12px 20px rgba(15, 23, 42, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.58);
+  height: 42px !important;
+  min-width: 86px;
+}
+
+.solverforge-lessons-app .sf-rail-timeline .sf-block-label {
+  font-size: 12px;
+  font-weight: var(--sf-font-bold);
+  line-height: 1.15;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.solverforge-lessons-app .sf-rail-timeline .sf-block-meta {
+  font-size: 10px;
+  line-height: 1.2;
+  opacity: 0.9;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.solverforge-lessons-app .sf-rail-timeline-tooltip {
+  max-width: 340px;
+}
