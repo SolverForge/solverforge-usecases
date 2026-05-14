@@ -1,0 +1,5 @@
+/target
+.osm_cache/
+**/*.rs.bk
+test-results/
+playwright-report/

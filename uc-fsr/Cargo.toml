@@ -1,0 +1,30 @@
+[package]
+name = "solverforge-fsr"
+version = "1.0.1"
+edition = "2021"
+rust-version = "1.95"
+description = "Constraint optimizer built with SolverForge"
+
+[[bin]]
+name = "solverforge_fsr"
+path = "src/main.rs"
+
+[dependencies]
+solverforge = { version = "0.13.0", features = ["serde", "console", "verbose-logging"] }
+solverforge-core = { version = "0.13.0" }
+solverforge-ui = { version = "0.6.5" }
+solverforge-maps = { version = "2.1.4" }
+# Web server
+axum = "0.8.9"
+tokio = { version = "1.52.3", features = ["full"] }
+tokio-stream = { version = "0.1.18", features = ["sync"] }
+tower-http = { version = "0.6.10", features = ["fs", "cors"] }
+tower = "0.5.3"
+
+# Serialization
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.149"
+
+# Utilities
+uuid = { version = "1.23.1", features = ["v4", "serde"] }
+parking_lot = "0.12.5"

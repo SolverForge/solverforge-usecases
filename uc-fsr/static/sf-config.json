@@ -1,0 +1,40 @@
+{
+  "title": "SolverForge FSR",
+  "subtitle": "Bergamo technician routes, road travel, time windows, skills, and parts",
+  "constraints": [
+    "assigned_visits",
+    "reachable_legs",
+    "required_skills",
+    "required_parts",
+    "time_windows",
+    "shift_capacity",
+    "minimize_travel",
+    "balance_workload",
+    "territory_affinity",
+    "priority_slack"
+  ],
+  "entities": [
+    {
+      "name": "technician_route",
+      "label": "TechnicianRoute",
+      "plural": "technician_routes"
+    }
+  ],
+  "facts": [
+    {
+      "name": "location",
+      "label": "Location",
+      "plural": "locations"
+    },
+    {
+      "name": "service_visit",
+      "label": "ServiceVisit",
+      "plural": "service_visits"
+    },
+    {
+      "name": "travel_leg",
+      "label": "TravelLeg",
+      "plural": "travel_legs"
+    }
+  ]
+}

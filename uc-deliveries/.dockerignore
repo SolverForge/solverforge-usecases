@@ -1,0 +1,6 @@
+target/
+.git/
+.osm_cache/
+test-results/
+playwright-report/
+*.rs.bk

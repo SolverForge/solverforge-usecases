@@ -1,0 +1,8 @@
+/target
+.osm_cache/
+**/*.rs.bk
+test-results/
+playwright-report/
+/app-session-*.js
+/comment-preload.js
+/main-*.js

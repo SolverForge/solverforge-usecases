@@ -1,0 +1,100 @@
+[app]
+name = "solverforge-fsr"
+starter = "neutral-shell"
+cli_version = "2.0.4"
+
+[runtime]
+target = "solverforge 0.13.0"
+runtime_source = "crates.io: solverforge 0.13.0"
+ui_source = "crates.io: solverforge-ui 0.6.5"
+maps_source = "crates.io: solverforge-maps 2.1.4"
+
+[demo]
+default_size = "standard"
+available_sizes = [
+    "standard",
+]
+
+[solution]
+name = "FieldServicePlan"
+score = "HardSoftScore"
+
+[[facts]]
+name = "location"
+plural = "locations"
+kind = "problem_fact"
+
+[[facts]]
+name = "service_visit"
+plural = "service_visits"
+kind = "problem_fact"
+
+[[facts]]
+name = "travel_leg"
+plural = "travel_legs"
+kind = "problem_fact"
+
+[[entities]]
+name = "technician_route"
+plural = "technician_routes"
+kind = "planning_entity"
+
+[[variables]]
+entity = "technician_route"
+entity_plural = "technician_routes"
+field = "visits"
+kind = "list"
+range = ""
+elements = "service_visits"
+allows_unassigned = false
+enabled = true
+
+[[constraints]]
+name = "assigned_visits"
+module = "assigned_visits"
+enabled = true
+
+[[constraints]]
+name = "balance_workload"
+module = "balance_workload"
+enabled = true
+
+[[constraints]]
+name = "minimize_travel"
+module = "minimize_travel"
+enabled = true
+
+[[constraints]]
+name = "priority_slack"
+module = "priority_slack"
+enabled = true
+
+[[constraints]]
+name = "reachable_legs"
+module = "reachable_legs"
+enabled = true
+
+[[constraints]]
+name = "required_parts"
+module = "required_parts"
+enabled = true
+
+[[constraints]]
+name = "required_skills"
+module = "required_skills"
+enabled = true
+
+[[constraints]]
+name = "shift_capacity"
+module = "shift_capacity"
+enabled = true
+
+[[constraints]]
+name = "territory_affinity"
+module = "territory_affinity"
+enabled = true
+
+[[constraints]]
+name = "time_windows"
+module = "time_windows"
+enabled = true

@@ -1,0 +1,48 @@
+[[phases]]
+type = "construction_heuristic"
+construction_heuristic_type = "list_round_robin"
+
+[[phases]]
+type = "local_search"
+
+[phases.acceptor]
+type = "hill_climbing"
+
+[phases.forager]
+type = "first_best_score_improving"
+
+[phases.move_selector]
+type = "union_move_selector"
+selection_order = "round_robin"
+
+[[phases.move_selector.selectors]]
+type = "list_change_move_selector"
+entity_class = "TechnicianRoute"
+variable_name = "visits"
+
+[[phases.move_selector.selectors]]
+type = "list_swap_move_selector"
+entity_class = "TechnicianRoute"
+variable_name = "visits"
+
+[[phases.move_selector.selectors]]
+type = "sublist_change_move_selector"
+min_sublist_size = 1
+max_sublist_size = 3
+entity_class = "TechnicianRoute"
+variable_name = "visits"
+
+[[phases.move_selector.selectors]]
+type = "sublist_swap_move_selector"
+min_sublist_size = 1
+max_sublist_size = 3
+entity_class = "TechnicianRoute"
+variable_name = "visits"
+
+[[phases.move_selector.selectors]]
+type = "list_reverse_move_selector"
+entity_class = "TechnicianRoute"
+variable_name = "visits"
+
+[termination]
+seconds_spent_limit = 60

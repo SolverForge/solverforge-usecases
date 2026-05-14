@@ -1,0 +1,62 @@
+[app]
+name = "solverforge-deliveries"
+starter = "neutral-shell"
+cli_version = "2.0.4"
+
+[runtime]
+target = "solverforge 0.13.0"
+runtime_source = "crates.io: solverforge 0.13.0"
+ui_source = "crates.io: solverforge-ui 0.6.5"
+maps_source = "crates.io: solverforge-maps 2.1.4"
+
+[demo]
+default_size = "PHILADELPHIA"
+available_sizes = [
+    "PHILADELPHIA",
+    "HARTFORD",
+    "FIRENZE",
+]
+
+[solution]
+name = "Plan"
+score = "HardSoftScore"
+
+[[facts]]
+name = "delivery"
+plural = "deliveries"
+kind = "problem_fact"
+
+[[entities]]
+name = "vehicle"
+plural = "vehicles"
+kind = "planning_entity"
+
+[[variables]]
+entity = "vehicle"
+entity_plural = "vehicles"
+field = "delivery_order"
+kind = "list"
+range = ""
+elements = "deliveries"
+allows_unassigned = false
+enabled = true
+
+[[constraints]]
+name = "all_deliveries_assigned"
+module = "all_deliveries_assigned"
+enabled = true
+
+[[constraints]]
+name = "delivery_time_windows"
+module = "delivery_time_windows"
+enabled = true
+
+[[constraints]]
+name = "total_travel_time"
+module = "total_travel_time"
+enabled = true
+
+[[constraints]]
+name = "vehicle_capacity"
+module = "vehicle_capacity"
+enabled = true

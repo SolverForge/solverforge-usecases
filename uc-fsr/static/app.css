@@ -1,0 +1,263 @@
+/* Bergamo FSR app shell and map layout */
+
+:root {
+  color-scheme: light;
+  --fsr-bg: #f6f8fb;
+  --fsr-surface: #ffffff;
+  --fsr-surface-muted: #f8fafc;
+  --fsr-text: #0f172a;
+  --fsr-text-muted: #475569;
+  --fsr-border: #d8e0ea;
+  --fsr-map-rail: #e7edf4;
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+  background: var(--fsr-bg);
+  color: var(--fsr-text);
+}
+
+body {
+  color-scheme: light;
+}
+
+#sf-app.fsr-app {
+  min-height: 100vh;
+  max-width: 100vw;
+  overflow-x: hidden;
+  background: var(--fsr-bg);
+  color: var(--fsr-text);
+  color-scheme: light;
+}
+
+.fsr-app,
+.fsr-app * {
+  box-sizing: border-box;
+}
+
+.fsr-app .sf-content {
+  width: 100%;
+  padding: 14px 24px;
+}
+
+.fsr-app .sf-section {
+  background: var(--fsr-surface);
+  border: 1px solid var(--fsr-border);
+  color: var(--fsr-text);
+}
+
+.fsr-app .sf-statusbar,
+.fsr-app .sf-footer {
+  background: var(--fsr-surface-muted);
+}
+
+.fsr-app .sf-table-container,
+.fsr-app .sf-table,
+.fsr-app .sf-modal,
+.fsr-app select,
+.fsr-app input,
+.fsr-app textarea,
+.fsr-app button {
+  color-scheme: light;
+}
+
+.fsr-app .sf-table-container,
+.fsr-app .sf-table {
+  background: var(--fsr-surface);
+}
+
+.fsr-app .sf-table th {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.fsr-app .sf-table td {
+  background: var(--fsr-surface);
+  color: var(--fsr-text);
+}
+
+.fsr-summary {
+  padding-bottom: 10px;
+}
+
+.fsr-map-shell {
+  display: grid;
+  grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
+  gap: 16px;
+  align-items: stretch;
+  min-height: clamp(520px, 67vh, 760px);
+}
+
+.fsr-map {
+  flex: 1;
+  min-height: clamp(520px, 67vh, 760px);
+  overflow: hidden;
+  border-radius: 8px;
+  background: #dbe7d3;
+}
+
+.fsr-map-card,
+.fsr-routes-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.fsr-map-card h3,
+.fsr-routes-card h3 {
+  margin: 0 0 10px;
+}
+
+.fsr-route-list {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  max-height: clamp(520px, 67vh, 760px);
+  overflow: auto;
+}
+
+.fsr-route-row,
+.fsr-route-empty {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.fsr-route-row {
+  cursor: pointer;
+}
+
+.fsr-route-row.is-focused {
+  border-color: rgba(16, 185, 129, 0.58);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.13);
+}
+
+.fsr-route-row:focus-visible {
+  outline: 3px solid rgba(16, 185, 129, 0.35);
+  outline-offset: 2px;
+}
+
+.fsr-route-row__top,
+.fsr-route-row__meta,
+.fsr-route-row__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.fsr-route-row__top {
+  justify-content: space-between;
+}
+
+.fsr-route-row__meta {
+  color: var(--fsr-text-muted);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.fsr-route-tag {
+  border-radius: 999px;
+  background: #ecfdf5;
+  color: #047857;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 8px;
+  white-space: nowrap;
+}
+
+.fsr-route-row .sf-btn--ghost {
+  background: #f8fafc;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  color: var(--fsr-text);
+}
+
+.fsr-route-row .sf-btn--ghost:hover {
+  background: #eef2f7;
+}
+
+.fsr-route-empty {
+  color: var(--fsr-text);
+}
+
+.fsr-map .leaflet-container,
+.fsr-map .leaflet-pane,
+.fsr-map .leaflet-tile-pane {
+  background: #dbe7d3;
+}
+
+@media (max-width: 980px) {
+  .fsr-app .sf-content {
+    padding-inline: 14px;
+  }
+
+  .fsr-map-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .fsr-route-list {
+    max-height: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .fsr-app .sf-header {
+    height: auto;
+    min-height: var(--sf-header-height);
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    padding: 10px 14px;
+  }
+
+  .fsr-app .sf-header-brand {
+    flex: 1 1 calc(100% - 70px);
+    min-width: 0;
+  }
+
+  .fsr-app .sf-header-title,
+  .fsr-app .sf-header-subtitle {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .fsr-app .sf-header-nav {
+    order: 3;
+    flex: 1 1 100%;
+    margin-left: 0;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+
+  .fsr-app .sf-header-actions {
+    order: 4;
+    margin-left: 0;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+
+  .fsr-app .sf-statusbar {
+    overflow-x: auto;
+    padding-inline: 14px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: light;
+  }
+
+  html,
+  body,
+  #sf-app.fsr-app {
+    background: var(--fsr-bg);
+    color: var(--fsr-text);
+  }
+}

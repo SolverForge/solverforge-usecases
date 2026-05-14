@@ -1,0 +1,61 @@
+use super::bergamo_catalog::{
+    VisitProfile, PART_RELAYS, PART_SENSORS, PART_VALVES, SKILL_ELECTRICAL, SKILL_ELEVATOR,
+    SKILL_HVAC, SKILL_PLUMBING,
+};
+
+pub(super) const VISIT_PROFILES: &[VisitProfile] = &[
+    VisitProfile {
+        name: "Boiler restart",
+        duration_minutes: 35,
+        earliest_minute: 8 * 60,
+        latest_minute: 18 * 60,
+        required_skill_mask: SKILL_HVAC,
+        required_parts_mask: PART_SENSORS,
+        priority: 4,
+    },
+    VisitProfile {
+        name: "Refrigeration diagnosis",
+        duration_minutes: 45,
+        earliest_minute: 9 * 60,
+        latest_minute: 18 * 60,
+        required_skill_mask: SKILL_HVAC | SKILL_ELECTRICAL,
+        required_parts_mask: PART_RELAYS,
+        priority: 5,
+    },
+    VisitProfile {
+        name: "Electrical board check",
+        duration_minutes: 30,
+        earliest_minute: 8 * 60 + 30,
+        latest_minute: 18 * 60,
+        required_skill_mask: SKILL_ELECTRICAL,
+        required_parts_mask: PART_RELAYS,
+        priority: 3,
+    },
+    VisitProfile {
+        name: "Pump service",
+        duration_minutes: 50,
+        earliest_minute: 10 * 60,
+        latest_minute: 18 * 60,
+        required_skill_mask: SKILL_PLUMBING,
+        required_parts_mask: PART_VALVES,
+        priority: 3,
+    },
+    VisitProfile {
+        name: "Lift safety inspection",
+        duration_minutes: 60,
+        earliest_minute: 11 * 60,
+        latest_minute: 18 * 60,
+        required_skill_mask: SKILL_ELEVATOR | SKILL_ELECTRICAL,
+        required_parts_mask: PART_SENSORS,
+        priority: 4,
+    },
+    VisitProfile {
+        name: "Controls alarm reset",
+        duration_minutes: 25,
+        earliest_minute: 13 * 60,
+        latest_minute: 18 * 60,
+        required_skill_mask: SKILL_ELECTRICAL,
+        required_parts_mask: PART_SENSORS,
+        priority: 2,
+    },
+];

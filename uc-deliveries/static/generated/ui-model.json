@@ -1,0 +1,25 @@
+{
+  "constraints": [
+    "all_deliveries_assigned",
+    "vehicle_capacity",
+    "delivery_time_windows",
+    "total_travel_time"
+  ],
+  "views": [
+    {
+      "id": "overview",
+      "label": "Overview",
+      "kind": "custom"
+    },
+    {
+      "id": "vehicleTimeline",
+      "label": "By Vehicle",
+      "kind": "list"
+    },
+    {
+      "id": "deliveryTimeline",
+      "label": "By Delivery",
+      "kind": "list"
+    }
+  ]
+}

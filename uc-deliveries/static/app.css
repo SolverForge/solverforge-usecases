@@ -1,0 +1,196 @@
+.deliveries-shell {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.deliveries-grid {
+  align-items: stretch;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
+  min-height: max(680px, calc(100vh - 250px));
+}
+
+.deliveries-stack {
+  display: grid;
+  gap: 1rem;
+}
+
+.deliveries-card {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(16, 185, 129, 0.14);
+  border-radius: 1rem;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+  padding: 1rem 1rem 1.1rem;
+}
+
+.deliveries-card h3,
+.deliveries-card h4 {
+  margin: 0 0 0.5rem;
+}
+
+.deliveries-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: end;
+}
+
+.deliveries-field {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 140px;
+}
+
+.deliveries-field label {
+  color: var(--sf-gray-700);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.deliveries-field input,
+.deliveries-field select {
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  border-radius: 0.75rem;
+  min-height: 2.75rem;
+  padding: 0 0.75rem;
+}
+
+.deliveries-kpis {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.deliveries-kpi {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(255, 255, 255, 0.92));
+  border-radius: 0.85rem;
+  padding: 0.85rem 0.95rem;
+}
+
+.deliveries-kpi__label {
+  color: var(--sf-gray-600);
+  font-size: 0.8rem;
+  margin-bottom: 0.2rem;
+}
+
+.deliveries-kpi__value {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.deliveries-map {
+  border-radius: 1rem;
+  flex: 1;
+  min-height: max(620px, calc(100vh - 320px));
+  overflow: hidden;
+}
+
+.deliveries-map-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.deliveries-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.deliveries-list__row {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 0.85rem;
+  cursor: pointer;
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.85rem 0.95rem;
+}
+
+.deliveries-list__row.is-focused {
+  border-color: rgba(16, 185, 129, 0.55);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
+}
+
+.deliveries-list__row:focus-visible {
+  outline: 3px solid rgba(16, 185, 129, 0.35);
+  outline-offset: 2px;
+}
+
+.deliveries-list__top,
+.deliveries-list__meta,
+.deliveries-list__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.deliveries-list__meta {
+  color: var(--sf-gray-600);
+  font-size: 0.875rem;
+  justify-content: flex-start;
+}
+
+.deliveries-tag {
+  background: rgba(15, 23, 42, 0.06);
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 600;
+  gap: 0.35rem;
+  padding: 0.2rem 0.55rem;
+}
+
+.deliveries-panel {
+  display: none;
+}
+
+.deliveries-panel.is-active {
+  display: block;
+}
+
+.deliveries-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.deliveries-table th,
+.deliveries-table td {
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  padding: 0.6rem 0.35rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.deliveries-table th {
+  color: var(--sf-gray-600);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+}
+
+.deliveries-actions-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.deliveries-modal-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.deliveries-empty {
+  color: var(--sf-gray-600);
+  padding: 1rem 0;
+}
+
+@media (max-width: 980px) {
+  .deliveries-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .deliveries-map {
+    min-height: 440px;
+  }
+}

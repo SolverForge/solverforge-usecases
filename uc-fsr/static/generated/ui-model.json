@@ -1,0 +1,50 @@
+{
+  "constraints": [
+    "assigned_visits",
+    "balance_workload",
+    "minimize_travel",
+    "priority_slack",
+    "reachable_legs",
+    "required_parts",
+    "required_skills",
+    "shift_capacity",
+    "territory_affinity",
+    "time_windows"
+  ],
+  "entities": [
+    {
+      "label": "Technician Route",
+      "name": "technician_route",
+      "plural": "technician_routes"
+    }
+  ],
+  "facts": [
+    {
+      "label": "Location",
+      "name": "location",
+      "plural": "locations"
+    },
+    {
+      "label": "Service Visit",
+      "name": "service_visit",
+      "plural": "service_visits"
+    },
+    {
+      "label": "Travel Leg",
+      "name": "travel_leg",
+      "plural": "travel_legs"
+    }
+  ],
+  "views": [
+    {
+      "allowsUnassigned": false,
+      "entity": "technician_route",
+      "entityPlural": "technician_routes",
+      "id": "technician_route-visits",
+      "kind": "list",
+      "label": "Technician Route · visits",
+      "sourcePlural": "service_visits",
+      "variableField": "visits"
+    }
+  ]
+}
