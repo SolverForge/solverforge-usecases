@@ -125,6 +125,12 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
 
+      - name: Install Git LFS
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git-lfs
+          git lfs version
+
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
@@ -145,14 +151,35 @@ jobs:
         if: github.event_name != 'push'
         run: make release-ci APP="${{ matrix.folder }}"
 
-      - name: git subtree split to temporary branch
+      - name: Build Hugging Face sync branch
         id: split
         run: |
+          set -euo pipefail
+
           FOLDER="${{ matrix.folder }}"
           BRANCH="hf-push/${FOLDER}/${GITHUB_RUN_ID}"
+          EXPORT_DIR="$(mktemp -d)"
 
-          echo "Extracting $FOLDER history..."
-          git subtree split --prefix="$FOLDER" -b "$BRANCH"
+          echo "Preparing $FOLDER as the Hugging Face Space root..."
+          rsync -a --delete \
+            --exclude='.git' \
+            --exclude='target' \
+            --exclude='test-results' \
+            --exclude='playwright-report' \
+            --exclude='.osm_cache' \
+            "$FOLDER"/ "$EXPORT_DIR"/
+
+          git switch --orphan "$BRANCH"
+          git rm -rf . >/dev/null 2>&1 || true
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+
+          rsync -a "$EXPORT_DIR"/ .
+          rm -rf "$EXPORT_DIR"
+
+          git lfs install --local
+          git lfs track "docs/screenshot.png"
+          git add .gitattributes .
+          git commit -m "chore: sync ${FOLDER} Space"
 
           echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
 
@@ -192,4 +219,5 @@ jobs:
         if: always()
         run: |
           BRANCH="${{ steps.split.outputs.branch }}"
+          git switch --detach "$GITHUB_SHA" >/dev/null 2>&1 || true
           git branch -D "$BRANCH" 2>/dev/null || true
