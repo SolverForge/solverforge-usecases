@@ -10,8 +10,8 @@ name = "solverforge_fsr"
 path = "src/main.rs"
 
 [dependencies]
-solverforge = { version = "0.13.0", features = ["serde", "console", "verbose-logging"] }
-solverforge-core = { version = "0.13.0" }
+solverforge = { version = "0.13.1", features = ["serde", "console", "verbose-logging"] }
+solverforge-core = { version = "0.13.1" }
 solverforge-ui = { version = "0.6.5" }
 solverforge-maps = { version = "2.1.4" }
 # Web server

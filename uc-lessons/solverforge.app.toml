@@ -4,8 +4,8 @@ starter = "neutral-shell"
 cli_version = "2.0.4"
 
 [runtime]
-target = "solverforge 0.13.0"
-runtime_source = "crates.io: solverforge 0.13.0"
+target = "solverforge 0.13.1"
+runtime_source = "crates.io: solverforge 0.13.1"
 ui_source = "crates.io: solverforge-ui 0.6.5"
 
 [demo]

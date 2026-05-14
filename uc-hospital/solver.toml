@@ -1,8 +1,8 @@
 # SolverForge configuration for the hospital example.
 #
-# This app uses the 0.11-line scalar nearby-selection surface directly, while
-# staying narrow enough that local search can complete real steps on the
-# hospital dataset inside 30 seconds.
+# This app uses scalar nearby selection directly. The care-hub meters in
+# `src/domain/plan.rs` keep local search focused enough to make real progress
+# on the hospital dataset inside the configured time limit.
 
 random_seed = 1
 
