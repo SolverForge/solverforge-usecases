@@ -20,6 +20,8 @@ The docs in this repo are meant to work together rather than compete:
 - `Makefile`
   The shared developer command surface, including the local Space validation
   pipeline.
+- `docs/screenshot.png`
+  Current browser screenshot embedded by the README.
 
 ## What This Repo Is Teaching
 
@@ -119,7 +121,7 @@ UI helper.
 ```text
 .
 ├── Cargo.toml
-│   Rust crate metadata and crates.io dependencies.
+│   Rust crate metadata and registry dependency requests.
 ├── solver.toml
 │   Embedded solver policy. This is the runtime source of truth for search.
 ├── solverforge.app.toml
@@ -136,6 +138,8 @@ UI helper.
 │   This architectural walkthrough.
 ├── AGENTS.md
 │   Repo-specific contributor and documentation rules.
+├── docs/screenshot.png
+│   Current browser screenshot used by the README.
 ├── src/
 │   ├── lib.rs
 │   │   Crate root and public module surface.

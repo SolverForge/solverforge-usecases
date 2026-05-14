@@ -1,6 +1,5 @@
 use crate::domain::{Employee, Plan, PlanConstraintStreams, Shift};
 use solverforge::prelude::*;
-use solverforge::stream::{source, ChangeSource};
 use solverforge::IncrementalConstraint;
 
 const SCORE_SCALE: i64 = 100_000;
@@ -12,7 +11,7 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardSoftDecimalScore> {
         .shifts()
         .filter(|shift: &Shift| shift.employee_idx.is_some())
         .join((
-            source(Plan::employees_slice, ChangeSource::Static),
+            ConstraintFactory::<Plan, HardSoftDecimalScore>::new().employees(),
             joiner::equal_bi(
                 |shift: &Shift| shift.employee_idx,
                 |employee: &Employee| Some(employee.index),
@@ -31,7 +30,7 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardSoftDecimalScore> {
                 overlap_start < overlap_end
             })
         })
-        .penalize_hard_with(|shift: &Shift, employee: &Employee| {
+        .penalize(hard_weight(|shift: &Shift, employee: &Employee| {
             let overlap_minutes: i64 = employee
                 .unavailable_days
                 .iter()
@@ -54,6 +53,6 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardSoftDecimalScore> {
             HardSoftDecimalScore::of_hard_scaled(
                 overlap_minutes * STRUCTURAL_MINUTE_HARD_UNITS * SCORE_SCALE,
             )
-        })
+        }))
         .named("Unavailable employee")
 }

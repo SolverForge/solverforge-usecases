@@ -7,7 +7,7 @@ description = "SolverForge hospital scheduling example"
 publish = false
 
 [dependencies]
-solverforge = { version = "0.11.1", features = [
+solverforge = { version = "0.13.0", features = [
   "serde",
   "console",
   "verbose-logging",
@@ -16,9 +16,9 @@ solverforge-ui = "0.6.5"
 rand = "0.10.1"
 
 axum = "0.8.9"
-tokio = { version = "1.52.1", features = ["full"] }
+tokio = { version = "1.52.3", features = ["full"] }
 tokio-stream = { version = "0.1.18", features = ["sync"] }
-tower-http = { version = "0.6.8", features = ["fs", "cors"] }
+tower-http = { version = "0.6.10", features = ["fs", "cors"] }
 tower = "0.5.3"
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.149"

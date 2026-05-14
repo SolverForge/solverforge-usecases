@@ -161,12 +161,6 @@ impl Plan {
     pub fn employee_count(&self) -> usize {
         self.employees.len()
     }
-
-    /// Named slice accessor used by joins and generated transport code.
-    #[inline]
-    pub fn employees_slice(&self) -> &[Employee] {
-        self.employees.as_slice()
-    }
 }
 
 // Scalar candidate hooks return borrowed index slices so move generation can

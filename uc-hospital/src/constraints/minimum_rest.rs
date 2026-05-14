@@ -27,12 +27,12 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardSoftDecimalScore> {
             let gap_minutes = (later.start - earlier.end).num_minutes();
             (0..600).contains(&gap_minutes)
         })
-        .penalize_hard_with(|a: &Shift, b: &Shift| {
+        .penalize(hard_weight(|a: &Shift, b: &Shift| {
             let (earlier, later) = if a.end <= b.start { (a, b) } else { (b, a) };
             let gap_minutes = (later.start - earlier.end).num_minutes();
             HardSoftDecimalScore::of_hard_scaled(
                 (600 - gap_minutes) * STRUCTURAL_MINUTE_HARD_UNITS * SCORE_SCALE,
             )
-        })
+        }))
         .named("At least 10 hours between 2 shifts")
 }

@@ -12,6 +12,8 @@ short_description: SolverForge hospital scheduling example
 
 # SolverForge Hospital
 
+![SolverForge Hospital screenshot](docs/screenshot.png)
+
 `solverforge-hospital` is a beginner-friendly example of a real SolverForge app.
 It answers one concrete question:
 
@@ -111,8 +113,11 @@ If you want to learn the codebase, this order is the shortest path:
 
 This repo depends on the published SolverForge runtime and UI crates:
 
-- `solverforge = 0.11.1`
+- `solverforge = 0.13.0`
 - `solverforge-ui = 0.6.5`
+
+The app package version is `1.0.2`, and the runtime score type is
+`HardSoftDecimalScore`.
 
 Run the app:
 
@@ -227,4 +232,4 @@ make space-build
 make space-run
 ```
 
-The Docker build uses the same published crates as local development.
+The Docker build uses the same registry dependency line as local development.

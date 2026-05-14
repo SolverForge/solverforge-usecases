@@ -1,4 +1,4 @@
-use crate::domain::{Plan, PlanConstraintStreams, ShiftUnassignedFilter};
+use crate::domain::{Plan, PlanConstraintStreams};
 use solverforge::prelude::*;
 use solverforge::IncrementalConstraint;
 

@@ -5,6 +5,10 @@
 # Hugging Face Space deployment. `ci-local` therefore simulates the checks we
 # expect before updating a Space, rather than mirroring a GitHub Actions file.
 
+SHELL := /bin/sh
+.SHELLFLAGS := -eu -c
+unexport BASH_FUNC_mc%%
+
 # ============== Colors & Symbols ==============
 GREEN := \033[92m
 EMERALD := \033[38;2;16;185;129m
@@ -29,8 +33,7 @@ PORT ?= 7860
 DOCKER_IMAGE ?= $(APP_NAME)
 DOCKER_CONTEXT ?= .
 DOCKERFILE_PATH := Dockerfile
-PLAYWRIGHT ?= ../solverforge-ui/node_modules/.bin/playwright
-PLAYWRIGHT_NODE_PATH ?= ../solverforge-ui/node_modules
+PLAYWRIGHT ?= ../node_modules/.bin/playwright
 
 # ============== Phony Targets ==============
 .PHONY: banner help doctor build build-release run run-release test test-rust \
@@ -148,7 +151,7 @@ test-frontend: test-frontend-syntax
 
 test-e2e: build-release require-node
 	@printf "$(PROGRESS) Running Playwright browser tests...\n"
-	@NODE_PATH=$(PLAYWRIGHT_NODE_PATH) $(PLAYWRIGHT) test --config tests/e2e/playwright.config.js && \
+	@$(PLAYWRIGHT) test --config tests/e2e/playwright.config.js && \
 		printf "$(GREEN)$(CHECK) Playwright browser tests passed$(RESET)\n" || \
 		(printf "$(RED)$(CROSS) Playwright browser tests failed$(RESET)\n" && exit 1)
 

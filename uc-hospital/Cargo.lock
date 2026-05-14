@@ -116,9 +116,9 @@ checksum = "1e748733b7cbc798e1434b6ac524f0c1ff2ab456fe201501e6497c8417a4fc33"
 
 [[package]]
 name = "cc"
-version = "1.2.61"
+version = "1.2.62"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d16d90359e986641506914ba71350897565610e87ce0ad9e6f28569db3dd5c6d"
+checksum = "a1dce859f0832a7d088c4f1119888ab94ef4b5d6795d1ce05afb7fe159d79f98"
 dependencies = [
  "find-msvc-tools",
  "shlex",
@@ -302,9 +302,9 @@ dependencies = [
 
 [[package]]
 name = "hashbrown"
-version = "0.17.0"
+version = "0.17.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4f467dd6dccf739c208452f8014c75c18bb8301b050ad1cfb27153803edb0f51"
+checksum = "ed5909b6e89a2db4456e54cd5f673791d7eca6732202bbf2a9cc504fe2f9b84a"
 
 [[package]]
 name = "heck"
@@ -454,7 +454,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d466e9454f08e4a911e14806c24e16fba1b4c121d1ea474396f396069cf949d9"
 dependencies = [
  "equivalent",
- "hashbrown 0.17.0",
+ "hashbrown 0.17.1",
  "serde",
  "serde_core",
 ]
@@ -467,10 +467,12 @@ checksum = "8f42a60cbdf9a97f5d2305f08a87dc4e09308d1276d28c869c684d7777685682"
 
 [[package]]
 name = "js-sys"
-version = "0.3.95"
+version = "0.3.98"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2964e92d1d9dc3364cae4d718d93f227e3abb088e747d92e0395bfdedf1c12ca"
+checksum = "67df7112613f8bfd9150013a0314e196f4800d3201ae742489d999db2f979f08"
 dependencies = [
+ "cfg-if",
+ "futures-util",
  "once_cell",
  "wasm-bindgen",
 ]
@@ -908,9 +910,9 @@ dependencies = [
 
 [[package]]
 name = "solverforge"
-version = "0.11.1"
+version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f6d275ab6321fced4d4dfce9984efd24bc384119d486ab68d4a1602a6c096647"
+checksum = "f7f9a9d3b60896be9926b8aa526d5efdae51febd44afcb032af847fa90899d55"
 dependencies = [
  "solverforge-config",
  "solverforge-console",
@@ -924,9 +926,9 @@ dependencies = [
 
 [[package]]
 name = "solverforge-config"
-version = "0.11.1"
+version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6deeada379370e64198b864a8334bf3d780cce260fb490da839ff1f9f98192fa"
+checksum = "f6c0713067c0122324c85853e4e06010952f7a023b3d2c106e5c45dccbc79949"
 dependencies = [
  "serde",
  "serde_yaml",
@@ -937,9 +939,9 @@ dependencies = [
 
 [[package]]
 name = "solverforge-console"
-version = "0.11.1"
+version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "572acc44ca4fc379cf009bc99f5fffda8720c457dfd6ff4a14486946bb4f85cc"
+checksum = "33bcf5279894e1f5a0553e92efd1d6abc81b7dcccfa3be9762eac62acd202aae"
 dependencies = [
  "num-format",
  "owo-colors",
@@ -949,9 +951,9 @@ dependencies = [
 
 [[package]]
 name = "solverforge-core"
-version = "0.11.1"
+version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1a158fa507c3c47a09bab48a8605b16bb082ac8b56067eb78ac59849e8098be3"
+checksum = "4f9800e7aa35141c95177ecd97ff8533dad84591659bf144d667c1a1d8b1d689"
 dependencies = [
  "serde",
  "thiserror",
@@ -959,9 +961,9 @@ dependencies = [
 
 [[package]]
 name = "solverforge-cvrp"
-version = "0.11.1"
+version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "769dd17eb3695dd1d8c532795c293ff5488370b3418271727d1cdc05707b6978"
+checksum = "27a10067c1c4911a5e5d7e18439fd8724ad84f2d0be883300e377f4c5ebdd6b8"
 dependencies = [
  "solverforge-solver",
 ]
@@ -986,9 +988,9 @@ dependencies = [
 
 [[package]]
 name = "solverforge-macros"
-version = "0.11.1"
+version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5b6a1ea5a613eaa550c32abce2d1740f4b5ad58d1fc3a7e8b7dc1c22633bbcc1"
+checksum = "b77988d5a3d69d9c1e445a92585d690d38e0a6868b0d331e84965eee2fac04b1"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -997,9 +999,9 @@ dependencies = [
 
 [[package]]
 name = "solverforge-scoring"
-version = "0.11.1"
+version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "020a26f954c1d843502920c3ef5c92dea98d087a1b3e228fde15ba11940d1140"
+checksum = "299e80b98d080cd05172dac0aed3f0331ea052a8962fbdb51c5e48126d52779f"
 dependencies = [
  "solverforge-core",
  "thiserror",
@@ -1007,9 +1009,9 @@ dependencies = [
 
 [[package]]
 name = "solverforge-solver"
-version = "0.11.1"
+version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9e44c36698c32be1a12eeac8ab40ac600149c698281ee0dc59ee6029d0ab5521"
+checksum = "0057b671869eeae6fad58307001ec05660ce5c52a736c999bbfde3f63df3369f"
 dependencies = [
  "rand",
  "rand_chacha",
@@ -1082,9 +1084,9 @@ dependencies = [
 
 [[package]]
 name = "tokio"
-version = "1.52.1"
+version = "1.52.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b67dee974fe86fd92cc45b7a95fdd2f99a36a6d7b0d431a231178d3d670bbcc6"
+checksum = "8fc7f01b389ac15039e4dc9531aa973a135d7a4135281b12d7c1bc79fd57fffe"
 dependencies = [
  "bytes",
  "libc",
@@ -1190,9 +1192,9 @@ dependencies = [
 
 [[package]]
 name = "tower-http"
-version = "0.6.8"
+version = "0.6.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d4e6559d53cc268e5031cd8429d05415bc4cb4aefc4aa5d6cc35fbf5b924a1f8"
+checksum = "68d6fdd9f81c2819c9a8b0e0cd91660e7746a8e6ea2ba7c6b2b057985f6bcb51"
 dependencies = [
  "bitflags",
  "bytes",
@@ -1211,7 +1213,6 @@ dependencies = [
  "tokio-util",
  "tower-layer",
  "tower-service",
- "tracing",
 ]
 
 [[package]]
@@ -1344,9 +1345,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen"
-version = "0.2.118"
+version = "0.2.121"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0bf938a0bacb0469e83c1e148908bd7d5a6010354cf4fb73279b7447422e3a89"
+checksum = "49ace1d07c165b0864824eee619580c4689389afa9dc9ed3a4c75040d82e6790"
 dependencies = [
  "cfg-if",
  "once_cell",
@@ -1357,9 +1358,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-macro"
-version = "0.2.118"
+version = "0.2.121"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eeff24f84126c0ec2db7a449f0c2ec963c6a49efe0698c4242929da037ca28ed"
+checksum = "8e68e6f4afd367a562002c05637acb8578ff2dea1943df76afb9e83d177c8578"
 dependencies = [
  "quote",
  "wasm-bindgen-macro-support",
@@ -1367,9 +1368,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-macro-support"
-version = "0.2.118"
+version = "0.2.121"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9d08065faf983b2b80a79fd87d8254c409281cf7de75fc4b773019824196c904"
+checksum = "d95a9ec35c64b2a7cb35d3fead40c4238d0940c86d107136999567a4703259f2"
 dependencies = [
  "bumpalo",
  "proc-macro2",
@@ -1380,9 +1381,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-shared"
-version = "0.2.118"
+version = "0.2.121"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5fd04d9e306f1907bd13c6361b5c6bfc7b3b3c095ed3f8a9246390f8dbdee129"
+checksum = "c4e0100b01e9f0d03189a92b96772a1fb998639d981193d7dbab487302513441"
 dependencies = [
  "unicode-ident",
 ]

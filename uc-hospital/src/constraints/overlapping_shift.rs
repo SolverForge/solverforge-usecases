@@ -12,7 +12,7 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardSoftDecimalScore> {
         .filter(|shift: &Shift| shift.employee_idx.is_some())
         .join(joiner::equal(|shift: &Shift| shift.employee_idx))
         .filter(|a: &Shift, b: &Shift| a.index < b.index && a.start < b.end && b.start < a.end)
-        .penalize_hard_with(|a: &Shift, b: &Shift| {
+        .penalize(hard_weight(|a: &Shift, b: &Shift| {
             let overlap_start = a.start.max(b.start);
             let overlap_end = a.end.min(b.end);
             let overlap_minutes = if overlap_start < overlap_end {
@@ -23,6 +23,6 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardSoftDecimalScore> {
             HardSoftDecimalScore::of_hard_scaled(
                 overlap_minutes * STRUCTURAL_MINUTE_HARD_UNITS * SCORE_SCALE,
             )
-        })
+        }))
         .named("Overlapping shift")
 }

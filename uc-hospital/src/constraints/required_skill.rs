@@ -1,6 +1,5 @@
 use crate::domain::{Employee, Plan, PlanConstraintStreams, Shift};
 use solverforge::prelude::*;
-use solverforge::stream::{source, ChangeSource};
 use solverforge::IncrementalConstraint;
 
 const SCORE_SCALE: i64 = 100_000;
@@ -11,7 +10,7 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardSoftDecimalScore> {
         .shifts()
         .filter(|shift: &Shift| shift.employee_idx.is_some())
         .join((
-            source(Plan::employees_slice, ChangeSource::Static),
+            ConstraintFactory::<Plan, HardSoftDecimalScore>::new().employees(),
             joiner::equal_bi(
                 |shift: &Shift| shift.employee_idx,
                 |employee: &Employee| Some(employee.index),
