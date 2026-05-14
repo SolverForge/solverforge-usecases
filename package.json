@@ -1,7 +1,12 @@
 {
   "name": "solverforge-usecases",
   "private": true,
+  "scripts": {
+    "release:usecase": "node scripts/release-usecase.cjs",
+    "verify:release-tag": "node scripts/verify-usecase-release-tag.cjs"
+  },
   "devDependencies": {
+    "commit-and-tag-version": "^12.7.3",
     "playwright": "^1.60.0"
   }
 }

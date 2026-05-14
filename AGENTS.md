@@ -33,12 +33,18 @@ Every included use case must have the same lean documentation shape:
   REST API, and solver policy.
 - `AGENTS.md` for Codex-facing maintenance and validation rules.
 - `WIREFRAME.md` for the as-built architecture and runtime/data flow.
+- `CHANGELOG.md` for app-scoped release history.
 - `docs/screenshot.png` for the current browser surface.
 
 Keep these files present-tense and source-backed. When code changes routes,
 demo IDs, solver policy, dependency versions, app labels, or visible UI
 structure, update the matching README, AGENTS, WIREFRAME, app metadata,
 `static/sf-config.json`, and screenshot in the same patch.
+
+Use app-prefixed release tags in this bundle. Bare `vX.Y.Z` tags are ambiguous;
+the release tag for a use case is `solverforge-<app>@<version>`, matching the
+version in that app's `Cargo.toml`, that app's `Cargo.lock`, and a heading in
+that app's `CHANGELOG.md`.
 
 Comments should assume a reader who is new to Rust and new to planning
 optimization. Explain domain meaning, solver roles, invariants, and runtime
@@ -59,6 +65,9 @@ when present:
 - `make test` for ordinary source or frontend changes.
 - `make ci-local` before deployment, Docker, dependency, or Space-surface
   changes.
+- `make release-usecase-dry-run APP=uc-hospital` before cutting an app release.
+- `make release-usecase APP=uc-hospital RELEASE_AS=patch` to generate the app
+  changelog/version/lockfile/tag release from the bundle root.
 
 For root workflow or README-only edits, validate the YAML syntax and inspect the
 changed paths with `git diff --stat`.

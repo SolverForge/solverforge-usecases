@@ -27,13 +27,17 @@ OPEN_SOURCE_APPS := uc-deliveries uc-fsr uc-hospital uc-lessons
 APPS ?= $(OPEN_SOURCE_APPS)
 APP ?= uc-lessons
 PORT ?= 7860
+RELEASE_AS ?=
+RELEASE_VERSION ?=
+TAG ?=
 
 # ============== Phony Targets ==============
 .PHONY: banner help list doctor require-node require-docker install-e2e browser-setup \
         verify-metadata verify-imports import-usecases build build-release run run-release \
         test test-all test-rust test-frontend-syntax test-e2e test-one lint fmt fmt-check \
         clippy check ci-local space-ci space-build space-run docker-build docker-run \
-        pre-release version clean app-target
+        pre-release release-usecase release-usecase-dry-run release-ci verify-release-tag \
+        version clean app-target
 
 # ============== Default Target ==============
 .DEFAULT_GOAL := help
@@ -210,11 +214,41 @@ pre-release: banner
 	@$(MAKE) docker-build --no-print-directory
 	@printf "\n$(GREEN)$(BOLD)$(CHECK) Ready for use-case publication$(RESET)\n\n"
 
+# ============== App Release Flow ==============
+release-usecase: banner require-node
+	@test -d "$(APP)" || (printf "$(RED)$(CROSS) Unknown APP=$(APP)$(RESET)\n" && exit 1)
+	@args="--app $(APP)"; \
+	if [ -n "$(RELEASE_AS)" ]; then args="$$args --release-as $(RELEASE_AS)"; fi; \
+	printf "$(PROGRESS) Cutting app-scoped release for $(APP)...\n"; \
+	npm run release:usecase -- $$args
+
+release-usecase-dry-run: banner require-node
+	@test -d "$(APP)" || (printf "$(RED)$(CROSS) Unknown APP=$(APP)$(RESET)\n" && exit 1)
+	@args="--app $(APP) --dry-run"; \
+	if [ -n "$(RELEASE_AS)" ]; then args="$$args --release-as $(RELEASE_AS)"; fi; \
+	printf "$(PROGRESS) Previewing app-scoped release for $(APP)...\n"; \
+	npm run release:usecase -- $$args
+
+verify-release-tag: require-node
+	@test -n "$(TAG)" || (printf "$(RED)$(CROSS) TAG=solverforge-app@x.y.z is required$(RESET)\n" && exit 1)
+	@npm run verify:release-tag -- "$(TAG)"
+
+release-ci: require-node
+	@test -d "$(APP)" || (printf "$(RED)$(CROSS) Unknown APP=$(APP)$(RESET)\n" && exit 1)
+	@if [ -n "$(RELEASE_VERSION)" ]; then \
+		package=$$(printf '%s\n' "$(APP)" | sed 's/^uc-/solverforge-/'); \
+		npm run verify:release-tag -- "$${package}@$(RELEASE_VERSION)"; \
+	else \
+		printf "$(YELLOW)! RELEASE_VERSION not set; skipping tag/Cargo/changelog consistency check$(RESET)\n"; \
+	fi
+	@$(MAKE) -C "$(APP)" release-ci --no-print-directory
+
 # ============== Metadata & Cleanup ==============
 version: banner
 	@printf "$(CYAN)Bundle version:$(RESET) $(YELLOW)$(BOLD)$(VERSION)$(RESET)\n"
 	@printf "$(CYAN)Rust version required:$(RESET) $(YELLOW)$(BOLD)$(RUST_VERSION)$(RESET)\n"
 	@printf "$(CYAN)Official apps:$(RESET) $(YELLOW)$(BOLD)$(OPEN_SOURCE_APPS)$(RESET)\n"
+	@printf "$(CYAN)Release tag format:$(RESET) $(YELLOW)$(BOLD)solverforge-<app>@<version>$(RESET)\n"
 
 clean: banner
 	@$(MAKE) app-target TARGET=clean --no-print-directory
@@ -262,6 +296,11 @@ help: banner
 	@printf "  $(GREEN)make docker-build$(RESET)          - Build all app Docker images\n"
 	@printf "  $(GREEN)make docker-run APP=uc-hospital$(RESET) - Run one app Docker image locally\n"
 	@printf "  $(GREEN)make pre-release$(RESET)           - Run CI simulation and build all Space images\n"
+	@printf "\n$(CYAN)$(BOLD)Use-Case Releases:$(RESET)\n"
+	@printf "  $(GREEN)make release-usecase-dry-run APP=uc-hospital$(RESET) - Preview app changelog/version/tag release\n"
+	@printf "  $(GREEN)make release-usecase APP=uc-hospital RELEASE_AS=patch$(RESET) - Cut app changelog/version/tag release\n"
+	@printf "  $(GREEN)make verify-release-tag TAG=solverforge-hospital@1.0.2$(RESET) - Validate tag against Cargo.toml and CHANGELOG.md\n"
+	@printf "  $(GREEN)make release-ci APP=uc-hospital RELEASE_VERSION=1.0.2$(RESET) - Run tag-aware app CI gate\n"
 	@printf "\n$(CYAN)$(BOLD)Other:$(RESET)\n"
 	@printf "  $(GREEN)make install-e2e$(RESET)           - Install root Playwright dependencies\n"
 	@printf "  $(GREEN)make version$(RESET)               - Show bundle metadata\n"

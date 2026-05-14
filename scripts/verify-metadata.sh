@@ -21,6 +21,7 @@ expected_spaces=(
 required_files=(
   README.md
   AGENTS.md
+  CHANGELOG.md
   WIREFRAME.md
   Cargo.toml
   Dockerfile
@@ -62,6 +63,22 @@ for index in "${!open_source_dirs[@]}"; do
     exit 1
   }
 done
+
+if rg -n 'solverforge-(deliveries|fsr|hospital|lessons)@[0-9]+\.[0-9]+\.[0-9]+' README.md >/tmp/solverforge-usecases-versioned-tags.txt; then
+  cat /tmp/solverforge-usecases-versioned-tags.txt >&2
+  rm -f /tmp/solverforge-usecases-versioned-tags.txt
+  printf 'root README release-tag examples must use @<version>, not current app versions\n' >&2
+  exit 1
+fi
+rm -f /tmp/solverforge-usecases-versioned-tags.txt
+
+if rg -n 'Package:.*solverforge-(deliveries|fsr|hospital|lessons).*`[0-9]+\.[0-9]+\.[0-9]+`' uc-*/README.md >/tmp/solverforge-usecases-package-versions.txt; then
+  cat /tmp/solverforge-usecases-package-versions.txt >&2
+  rm -f /tmp/solverforge-usecases-package-versions.txt
+  printf 'app README package lines must point to Cargo.toml instead of duplicating current app versions\n' >&2
+  exit 1
+fi
+rm -f /tmp/solverforge-usecases-package-versions.txt
 
 upper_agent="$(printf '\x43\x4c\x41\x55\x44\x45')"
 title_agent="$(printf '\x43\x6c\x61\x75\x64\x65')"

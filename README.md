@@ -28,6 +28,9 @@ Each use case keeps the same small documentation surface:
   Codex-facing contribution, validation, and comment/doc alignment rules.
 - `WIREFRAME.md`
   As-built architecture, runtime flow, and file-map walkthrough.
+- `CHANGELOG.md`
+  App-scoped release history generated from conventional commits that touched
+  that use case.
 - `docs/screenshot.png`
   One current browser screenshot for the app.
 
@@ -63,8 +66,9 @@ make test
 make ci-local
 ```
 
-The root `npm install` provides the Playwright test runner for the bundle. Each
-app still serves browser assets from its declared `solverforge-ui` Cargo crate.
+The root `npm install` provides the Playwright test runner and app-scoped
+release tooling for the bundle. Each app still serves browser assets from its
+declared `solverforge-ui` Cargo crate.
 Prefer the app's `Makefile` when present; otherwise use the app README and
 standard Cargo commands.
 
@@ -75,11 +79,38 @@ bash scripts/verify-metadata.sh
 bash scripts/verify-imports.sh
 ```
 
+## App Releases
+
+Each use case has its own package version in `uc-*/Cargo.toml`, its own
+`CHANGELOG.md`, and its own app-prefixed tag stream. Do not use bare
+`v<version>` tags in this bundle because they are ambiguous.
+
+```text
+solverforge-deliveries@<version>
+solverforge-fsr@<version>
+solverforge-hospital@<version>
+solverforge-lessons@<version>
+```
+
+Preview or cut an app release from the bundle root:
+
+```sh
+make release-usecase-dry-run APP=uc-hospital
+make release-usecase APP=uc-hospital RELEASE_AS=patch
+```
+
+The release wrapper uses `commit-and-tag-version` with an app path filter,
+the app changelog, the app `Cargo.toml`, the app `Cargo.lock`, and an
+app-prefixed tag. The split app Makefiles stay in place because each `uc-*`
+directory becomes the root of a standalone Hugging Face Space after subtree
+splitting.
+
 ## Hugging Face Sync
 
-`.github/workflows/sync-hf-spaces.yml` publishes changed `uc-*` folders to
-Hugging Face Spaces. The local `uc-` prefix is transformed into the public
-`solverforge-` prefix:
+`.github/workflows/sync-hf-spaces.yml` publishes release-tagged `uc-*` folders
+to Hugging Face Spaces. Manual workflow dispatch remains available for
+recovery, but app tags are the canonical release path. The local `uc-` prefix is
+transformed into the public `solverforge-` prefix:
 
 ```text
 uc-deliveries -> <HF_ORGANIZATION>/solverforge-deliveries

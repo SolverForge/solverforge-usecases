@@ -1,4 +1,4 @@
-# SolverForge FSR Makefile v1.0.1
+# SolverForge FSR Makefile
 # Rust + frontend syntax + Space-oriented local build system.
 
 SHELL := /bin/sh
@@ -21,6 +21,7 @@ PROGRESS := ..
 APP_NAME := solverforge_fsr
 PACKAGE_NAME := solverforge-fsr
 VERSION := $(shell sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -n1)
+RELEASE_TAG := $(PACKAGE_NAME)@$(VERSION)
 RUST_VERSION := 1.95+
 PORT ?= 7860
 DOCKER_IMAGE ?= $(PACKAGE_NAME)
@@ -31,7 +32,7 @@ PLAYWRIGHT ?= ../node_modules/.bin/playwright
 .PHONY: help doctor build build-release run run-release test test-rust \
         test-frontend-syntax test-e2e lint fmt fmt-check clippy check ci-local \
         space-ci space-build space-run docker-build docker-run pre-release \
-        version clean watch require-node require-docker
+        release-ci release-info version clean watch require-node require-docker
 
 .DEFAULT_GOAL := help
 
@@ -149,8 +150,17 @@ ci-local:
 pre-release: ci-local
 	@printf "$(GREEN)$(BOLD)$(CHECK) Ready for Hugging Face Space update$(RESET)\n\n"
 
+release-ci: ci-local
+	@printf "$(GREEN)$(BOLD)$(CHECK) Release CI passed for $(RELEASE_TAG)$(RESET)\n\n"
+
+release-info:
+	@printf "$(CYAN)Package:$(RESET) $(YELLOW)$(BOLD)$(PACKAGE_NAME)$(RESET)\n"
+	@printf "$(CYAN)Version:$(RESET) $(YELLOW)$(BOLD)$(VERSION)$(RESET)\n"
+	@printf "$(CYAN)Release tag:$(RESET) $(YELLOW)$(BOLD)$(RELEASE_TAG)$(RESET)\n"
+
 version:
 	@printf "$(CYAN)Current version:$(RESET) $(YELLOW)$(BOLD)$(VERSION)$(RESET)\n"
+	@printf "$(CYAN)Release tag:$(RESET) $(YELLOW)$(BOLD)$(RELEASE_TAG)$(RESET)\n"
 	@printf "$(CYAN)Default port:$(RESET) $(YELLOW)$(BOLD)$(PORT)$(RESET)\n"
 
 clean:
@@ -175,6 +185,7 @@ help:
 	@/bin/echo -e "  $(GREEN)make test-e2e$(RESET)       - Run Playwright browser tests"
 	@/bin/echo -e "  $(GREEN)make lint$(RESET)           - Run fmt-check, clippy, and frontend syntax checks"
 	@/bin/echo -e "  $(GREEN)make ci-local$(RESET)       - Run local Space validation pipeline"
+	@/bin/echo -e "  $(GREEN)make release-ci$(RESET)     - Run the tag-publish CI gate for this app"
 	@/bin/echo -e "  $(GREEN)make pre-release$(RESET)    - Run all local Space readiness checks"
 	@/bin/echo -e ""
 	@/bin/echo -e "$(CYAN)$(BOLD)Space & Docker:$(RESET)"
@@ -186,9 +197,11 @@ help:
 	@/bin/echo -e "$(CYAN)$(BOLD)Other:$(RESET)"
 	@/bin/echo -e "  $(GREEN)make doctor$(RESET)         - Check local cargo/rustc/node readiness"
 	@/bin/echo -e "  $(GREEN)make fmt$(RESET)            - Format Rust code"
+	@/bin/echo -e "  $(GREEN)make release-info$(RESET)   - Show package version and app-scoped release tag"
 	@/bin/echo -e "  $(GREEN)make version$(RESET)        - Show version and default port"
 	@/bin/echo -e "  $(GREEN)make clean$(RESET)          - Clean build artifacts"
 	@/bin/echo -e "  $(GREEN)make watch$(RESET)          - Watch source files and rerun the app"
 	@/bin/echo -e ""
 	@/bin/echo -e "$(GRAY)Rust version required: $(RUST_VERSION)$(RESET)"
 	@/bin/echo -e "$(GRAY)Current version: v$(VERSION)$(RESET)"
+	@/bin/echo -e "$(GRAY)Release tag: $(RELEASE_TAG)$(RESET)"

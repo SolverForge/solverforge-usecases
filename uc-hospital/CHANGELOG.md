@@ -1,6 +1,13 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
+All notable changes to this use case are documented in this file.
+
+## 1.0.2 (2026-05-14)
+
+### Maintenance
+
+* **release:** align the bundled app with SolverForge 0.13.1 and solverforge-ui 0.6.5.
+* **docs:** standardize the use-case README and add beginner-facing SolverForge maintenance notes.
 
 ## 1.0.1 (2026-04-26)
 

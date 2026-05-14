@@ -1,4 +1,4 @@
-# SolverForge Lessons Makefile v0.1.0
+# SolverForge Lessons Makefile
 # Rust + frontend + Space-oriented local build system.
 
 SHELL := /bin/sh
@@ -24,6 +24,7 @@ PROGRESS := ..
 APP_NAME := solverforge-lessons
 PACKAGE_NAME := solverforge-lessons
 VERSION := $(shell sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -n1)
+RELEASE_TAG := $(PACKAGE_NAME)@$(VERSION)
 RUST_VERSION := 1.95+
 PORT ?= 7860
 E2E_PORT ?= 7960
@@ -35,7 +36,7 @@ DOCKERFILE_PATH := Dockerfile
 .PHONY: banner help doctor build build-release run run-release test test-rust \
         test-frontend-syntax test-frontend test-e2e test-slow test-one lint fmt \
         fmt-check clippy check ci-local space-ci space-build space-run docker-build \
-        docker-run pre-release version clean watch require-node require-docker
+        docker-run pre-release release-ci release-info version clean watch require-node require-docker
 
 .DEFAULT_GOAL := help
 
@@ -220,9 +221,18 @@ pre-release: banner
 	@$(MAKE) test-slow --no-print-directory
 	@printf "$(GREEN)$(BOLD)$(CHECK) Ready for publication or Space update$(RESET)\n\n"
 
+release-ci: ci-local
+	@printf "$(GREEN)$(BOLD)$(CHECK) Release CI passed for $(RELEASE_TAG)$(RESET)\n\n"
+
+release-info:
+	@printf "$(CYAN)Package:$(RESET) $(YELLOW)$(BOLD)$(PACKAGE_NAME)$(RESET)\n"
+	@printf "$(CYAN)Version:$(RESET) $(YELLOW)$(BOLD)$(VERSION)$(RESET)\n"
+	@printf "$(CYAN)Release tag:$(RESET) $(YELLOW)$(BOLD)$(RELEASE_TAG)$(RESET)\n"
+
 # ============== Metadata & Cleanup ==============
 version:
 	@printf "$(CYAN)Current version:$(RESET) $(YELLOW)$(BOLD)$(VERSION)$(RESET)\n"
+	@printf "$(CYAN)Release tag:$(RESET) $(YELLOW)$(BOLD)$(RELEASE_TAG)$(RESET)\n"
 	@printf "$(CYAN)Default port:$(RESET) $(YELLOW)$(BOLD)$(PORT)$(RESET)\n"
 	@printf "$(CYAN)Browser smoke port:$(RESET) $(YELLOW)$(BOLD)$(E2E_PORT)$(RESET)\n"
 
@@ -256,6 +266,7 @@ help: banner
 	@printf "  $(GREEN)make lint$(RESET)           - Run fmt-check, clippy, and frontend syntax checks\n"
 	@printf "  $(GREEN)make check$(RESET)          - Run lint plus standard tests\n"
 	@printf "  $(GREEN)make ci-local$(RESET)       - Run local Space validation pipeline\n"
+	@printf "  $(GREEN)make release-ci$(RESET)     - Run the tag-publish CI gate for this app\n"
 	@printf "  $(GREEN)make pre-release$(RESET)    - Run ci-local plus slow acceptance solve\n"
 	@printf "\n$(CYAN)$(BOLD)Space & Docker:$(RESET)\n"
 	@printf "  $(GREEN)make space-build$(RESET)    - Build the Docker image used for Space deployment\n"
@@ -264,9 +275,11 @@ help: banner
 	@printf "  $(GREEN)make docker-run$(RESET)     - Run the Docker image directly\n"
 	@printf "\n$(CYAN)$(BOLD)Other:$(RESET)\n"
 	@printf "  $(GREEN)make fmt$(RESET)            - Format Rust code\n"
+	@printf "  $(GREEN)make release-info$(RESET)   - Show package version and app-scoped release tag\n"
 	@printf "  $(GREEN)make version$(RESET)        - Show version and default ports\n"
 	@printf "  $(GREEN)make clean$(RESET)          - Clean build artifacts\n"
 	@printf "  $(GREEN)make watch$(RESET)          - Watch source files and rerun the app\n"
 	@printf "  $(GREEN)make help$(RESET)           - Show this help message\n"
 	@printf "\n$(GRAY)Rust version required: $(RUST_VERSION)$(RESET)\n"
 	@printf "$(GRAY)Current version: v$(VERSION)$(RESET)\n"
+	@printf "$(GRAY)Release tag: $(RELEASE_TAG)$(RESET)\n"

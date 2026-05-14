@@ -27,7 +27,9 @@ PROGRESS := →
 
 # ============== Project Metadata ==============
 APP_NAME := solverforge-hospital
+PACKAGE_NAME := solverforge-hospital
 VERSION := $(shell sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -n1)
+RELEASE_TAG := $(PACKAGE_NAME)@$(VERSION)
 RUST_VERSION := 1.95+
 PORT ?= 7860
 DOCKER_IMAGE ?= $(APP_NAME)
@@ -39,7 +41,7 @@ PLAYWRIGHT ?= ../node_modules/.bin/playwright
 .PHONY: banner help doctor build build-release run run-release test test-rust \
         test-frontend-syntax test-frontend test-e2e test-slow test-one lint fmt fmt-check \
         clippy check ci-local space-ci space-build space-run docker-build \
-        docker-run pre-release version clean watch require-node require-docker \
+        docker-run pre-release release-ci release-info version clean watch require-node require-docker \
 
 # ============== Default Target ==============
 .DEFAULT_GOAL := help
@@ -242,10 +244,19 @@ pre-release: banner
 	@$(MAKE) test-slow --no-print-directory
 	@printf "$(GREEN)$(BOLD)$(CHECK) Ready for a Space update$(RESET)\n\n"
 
+release-ci: ci-local
+	@printf "$(GREEN)$(BOLD)$(CHECK) Release CI passed for $(RELEASE_TAG)$(RESET)\n\n"
+
+release-info:
+	@printf "$(CYAN)Package:$(RESET) $(YELLOW)$(BOLD)$(PACKAGE_NAME)$(RESET)\n"
+	@printf "$(CYAN)Version:$(RESET) $(YELLOW)$(BOLD)$(VERSION)$(RESET)\n"
+	@printf "$(CYAN)Release tag:$(RESET) $(YELLOW)$(BOLD)$(RELEASE_TAG)$(RESET)\n"
+
 # ============== Metadata & Cleanup ==============
 
 version:
 	@printf "$(CYAN)Current version:$(RESET) $(YELLOW)$(BOLD)$(VERSION)$(RESET)\n"
+	@printf "$(CYAN)Release tag:$(RESET) $(YELLOW)$(BOLD)$(RELEASE_TAG)$(RESET)\n"
 	@printf "$(CYAN)Default port:$(RESET) $(YELLOW)$(BOLD)$(PORT)$(RESET)\n"
 
 clean:
@@ -280,6 +291,7 @@ help: banner
 	@/bin/echo -e "  $(GREEN)make test-one TEST=name$(RESET) - Run a specific Rust test with output"
 	@/bin/echo -e "  $(GREEN)make lint$(RESET)           - Run fmt-check, clippy, and frontend syntax checks"
 	@/bin/echo -e "  $(GREEN)make check$(RESET)          - Run lint plus the standard test surface"
+	@/bin/echo -e "  $(GREEN)make release-ci$(RESET)     - Run the tag-publish CI gate for this app"
 	@/bin/echo -e ""
 	@/bin/echo -e "$(CYAN)$(BOLD)Space & Docker:$(RESET)"
 	@/bin/echo -e "  $(GREEN)make space-build$(RESET)    - Build the Docker image used for Space-style deployment"
@@ -289,6 +301,7 @@ help: banner
 	@/bin/echo -e ""
 	@/bin/echo -e "$(CYAN)$(BOLD)Other:$(RESET)"
 	@/bin/echo -e "  $(GREEN)make fmt$(RESET)            - Format Rust code"
+	@/bin/echo -e "  $(GREEN)make release-info$(RESET)   - Show package version and app-scoped release tag"
 	@/bin/echo -e "  $(GREEN)make version$(RESET)        - Show version and default port"
 	@/bin/echo -e "  $(GREEN)make clean$(RESET)          - Clean build artifacts"
 	@/bin/echo -e "  $(GREEN)make watch$(RESET)          - Watch source files and rerun the app"
@@ -296,5 +309,6 @@ help: banner
 	@/bin/echo -e ""
 	@/bin/echo -e "$(GRAY)Rust version required: $(RUST_VERSION)$(RESET)"
 	@/bin/echo -e "$(GRAY)Current version: v$(VERSION)$(RESET)"
+	@/bin/echo -e "$(GRAY)Release tag: $(RELEASE_TAG)$(RESET)"
 	@/bin/echo -e "$(GRAY)Default port: $(PORT)$(RESET)"
 	@/bin/echo -e ""
