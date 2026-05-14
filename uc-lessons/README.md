@@ -22,6 +22,11 @@ It answers one concrete question:
 "Given lessons, teachers, student groups, rooms, and weekly timeslots, which
 timeslot and room should each lesson receive?"
 
+## Acknowledgement
+
+Thanks to `@benabel` (Prof. Benjamin Abel), whose referral is also credited in
+the core SolverForge README.
+
 ## Quick Start
 
 ```sh
