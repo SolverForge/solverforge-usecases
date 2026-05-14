@@ -1,8 +1,9 @@
 #![cfg_attr(rustfmt, rustfmt_skip)]
-/* Constraint definitions.
-
-Add constraint modules with `solverforge generate constraint ...`.
-The neutral shell starts with an empty constraint set. */
+//! Constraint assembly for lesson timetabling.
+//!
+//! Each child module owns one named timetable rule. `create_constraints()`
+//! lists them in the order beginners should read the score analysis: assignment
+//! completeness first, hard feasibility next, soft timetable quality last.
 
 use crate::domain::Plan;
 use solverforge::prelude::*;
@@ -26,6 +27,7 @@ mod teacher_availability;
 mod assemble {
     use super::*;
 
+    /// Collects the full scoring model used by `Plan`.
     pub fn create_constraints() -> impl ConstraintSet<Plan, HardMediumSoftScore> {
         // @solverforge:begin constraint-calls
         (

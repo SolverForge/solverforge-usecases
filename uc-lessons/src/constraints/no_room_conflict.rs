@@ -17,6 +17,9 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardMediumSoftScore> {
 
     ConstraintFactory::<Plan, HardMediumSoftScore>::new()
         .for_each(Plan::lessons())
+        // First attach the assigned timeslot to each lesson. Unassigned
+        // lessons do not join here, so this rule does not duplicate the medium
+        // assignment penalty.
         .join((
             ConstraintFactory::<Plan, HardMediumSoftScore>::new().for_each(Plan::timeslots()),
             equal_bi(
@@ -24,6 +27,8 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardMediumSoftScore> {
                 |timeslot: &Timeslot| Some(timeslot.index),
             ),
         ))
+        // Reduce each joined row to the fields needed to detect a room
+        // collision. This keeps the later pairwise join small and readable.
         .project(|lesson: &Lesson, timeslot: &Timeslot| AssignedLessonSlot {
             lesson_index: lesson.index,
             room_idx: lesson.room_idx.unwrap_or(usize::MAX),
@@ -32,6 +37,10 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardMediumSoftScore> {
             end_time: timeslot.end_time,
         })
         .join(equal(|row: &AssignedLessonSlot| row.room_idx))
+        // `lesson_index < b.lesson_index` avoids scoring the same conflicting
+        // pair twice. The strict time comparisons implement ordinary interval
+        // overlap, so a lesson ending at 10:00 does not conflict with one
+        // starting at 10:00.
         .filter(|a: &AssignedLessonSlot, b: &AssignedLessonSlot| {
             a.lesson_index < b.lesson_index
                 && a.day_of_week == b.day_of_week

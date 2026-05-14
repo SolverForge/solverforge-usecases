@@ -1,3 +1,9 @@
+//! Route metric calculation shared by delivery constraints and previews.
+//!
+//! SolverForge mutates delivery order lists. This module walks those lists in
+//! route order and turns them into arrival times, capacity usage, lateness, and
+//! travel totals that multiple constraints can score consistently.
+
 use solverforge_maps::UNREACHABLE;
 
 use crate::domain::{Plan, Vehicle};
@@ -28,6 +34,8 @@ pub(super) fn metrics_for_vehicle(plan: &Plan, vehicle: &Vehicle) -> VehicleRout
         metrics.total_distance_meters += travel_meters;
         metrics.unreachable_legs += usize::from(unreachable);
 
+        // Time windows are modeled around the moment service finishes. Waiting
+        // is allowed, but leaving after `max_end_time` contributes lateness.
         let arrival_time = current_time.saturating_add(travel_seconds);
         let service_start_time = arrival_time.max(delivery.min_start_time);
         let wait_seconds = service_start_time.saturating_sub(arrival_time);

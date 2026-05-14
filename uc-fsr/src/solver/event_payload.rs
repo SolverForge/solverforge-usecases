@@ -1,3 +1,9 @@
+//! JSON event payloads sent over the FSR SSE stream.
+//!
+//! SolverForge emits strongly typed lifecycle events. This module converts them
+//! to the stable camelCase JSON shape consumed by the browser status bar and
+//! route renderer.
+
 use serde::Serialize;
 use std::time::Duration;
 

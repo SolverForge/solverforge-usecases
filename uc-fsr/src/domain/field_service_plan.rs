@@ -1,3 +1,9 @@
+//! Planning solution for the field-service routing problem.
+//!
+//! `FieldServicePlan` is both the input to SolverForge and the domain value
+//! converted to JSON snapshots after solving. Facts stay read-only; technician
+//! routes carry the mutable visit list.
+
 use serde::{Deserialize, Serialize};
 use solverforge::prelude::*;
 
@@ -19,12 +25,17 @@ use super::TravelLeg;
 #[derive(Serialize, Deserialize)]
 pub struct FieldServicePlan {
     // @solverforge:begin solution-collections
+    /// All depots and customer sites, addressed by vector index from visits and
+    /// route endpoints.
     #[problem_fact_collection]
     pub locations: Vec<Location>,
+    /// Customer jobs that must be inserted into technician routes.
     #[problem_fact_collection]
     pub service_visits: Vec<ServiceVisit>,
+    /// Directed travel matrix used by constraints and route geometry.
     #[problem_fact_collection]
     pub travel_legs: Vec<TravelLeg>,
+    /// Route entities whose `visits` lists are changed by the solver.
     #[planning_entity_collection]
     pub technician_routes: Vec<TechnicianRoute>,
     // @solverforge:end solution-collections

@@ -1,20 +1,21 @@
+//! Planning solution for the lesson timetabling problem.
+//!
+//! `Plan` is both the input to SolverForge and the domain value converted to
+//! JSON snapshots after solving. Facts stay read-only; lessons carry the
+//! mutable timeslot and room choices.
+
 use serde::{Deserialize, Serialize};
 use solverforge::prelude::*;
 
-// @solverforge:neutral-solution
 // @solverforge:begin solution-imports
 use super::Group;
 use super::Lesson;
+use super::Room;
 use super::Teacher;
 use super::Timeslot;
-use super::Room;
 // @solverforge:end solution-imports
 
-/// The root planning solution.
-///
-/// Fresh projects start as a neutral shell. Add fact collections, planning
-/// entity collections, and variable fields through the CLI as your domain
-/// takes shape.
+/// Full planning solution passed to the SolverForge runtime and HTTP API.
 #[planning_solution(
     constraints = "crate::constraints::create_constraints",
     solver_toml = "../../solver.toml"
@@ -22,14 +23,19 @@ use super::Room;
 #[derive(Serialize, Deserialize)]
 pub struct Plan {
     // @solverforge:begin solution-collections
+    /// Weekly slots a lesson can occupy.
     #[problem_fact_collection]
     pub timeslots: Vec<Timeslot>,
+    /// Teachers and their availability calendars.
     #[problem_fact_collection]
     pub teachers: Vec<Teacher>,
+    /// Student cohorts that need complete timetables.
     #[problem_fact_collection]
     pub groups: Vec<Group>,
+    /// Lesson entities whose timeslot and room variables are changed by search.
     #[planning_entity_collection]
     pub lessons: Vec<Lesson>,
+    /// Candidate teaching spaces.
     #[problem_fact_collection]
     pub rooms: Vec<Room>,
     // @solverforge:end solution-collections
@@ -38,6 +44,7 @@ pub struct Plan {
 }
 
 impl Plan {
+    /// Builds a normalized timetable plan from facts and lesson entities.
     #[rustfmt::skip]
     pub fn new(
         // @solverforge:begin solution-constructor-params
@@ -48,7 +55,7 @@ impl Plan {
         rooms: Vec<Room>,
         // @solverforge:end solution-constructor-params
     ) -> Self {
-        let mut shedule: Plan = Self{
+        let mut schedule: Plan = Self{
             // @solverforge:begin solution-constructor-init
             timeslots,
             teachers,
@@ -58,8 +65,8 @@ impl Plan {
             // @solverforge:end solution-constructor-init
             score: None,
         };
-        shedule.rebuild_derived_fields();
-        shedule
+        schedule.rebuild_derived_fields();
+        schedule
     }
 
     /// Recomputes indexes for entity join keys.
@@ -85,8 +92,9 @@ impl Plan {
             room.index = index;
         }
 
-        // Validate planning variable assignments to ensure they remain within
-        // bounds after deserialization or data generation.
+        // Planning variables are optional indexes. When a stale browser payload
+        // sends an out-of-range index, clear it so SolverForge sees an
+        // unassigned variable instead of indexing past the candidate list.
         for (index, lesson) in self.lessons.iter_mut().enumerate() {
             lesson.index = index;
             lesson.timeslot_idx = lesson
@@ -120,25 +128,25 @@ impl Plan {
         self.rooms.get(idx)
     }
 
-    /// Named slice accessor used by joins and generated transport code.
+    /// Named slice accessor used by joins and SolverForge transport code.
     #[inline]
     pub fn timeslots_slice(&self) -> &[Timeslot] {
         self.timeslots.as_slice()
     }
 
-    /// Named slice accessor used by joins and generated transport code.
+    /// Named slice accessor used by joins and SolverForge transport code.
     #[inline]
     pub fn teachers_slice(&self) -> &[Teacher] {
         self.teachers.as_slice()
     }
 
-    /// Named slice accessor used by joins and generated transport code.
+    /// Named slice accessor used by joins and SolverForge transport code.
     #[inline]
     pub fn groups_slice(&self) -> &[Group] {
         self.groups.as_slice()
     }
 
-    /// Named slice accessor used by joins and generated transport code.
+    /// Named slice accessor used by joins and SolverForge transport code.
     #[inline]
     pub fn rooms_slice(&self) -> &[Room] {
         self.rooms.as_slice()

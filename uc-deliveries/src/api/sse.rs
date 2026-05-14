@@ -1,3 +1,9 @@
+//! Server-sent events for retained delivery solve jobs.
+//!
+//! A browser may connect after a job has already started. The stream therefore
+//! sends one bootstrap status first, then forwards live events from the
+//! retained job broadcaster.
+
 use axum::{
     body::Body,
     extract::{Path, State},
@@ -27,7 +33,10 @@ pub async fn events(
         Ok(json) => Some(Ok::<_, std::convert::Infallible>(
             format!("data: {}\n\n", json).into_bytes(),
         )),
-        Err(_) => None, // Lagged — skip missed messages
+        // Broadcast channels can report that a slow browser missed events. The
+        // next retained snapshot/status request is still authoritative, so the
+        // stream drops that gap instead of failing the connection.
+        Err(_) => None,
     });
 
     let stream = bootstrap.chain(live);

@@ -1,8 +1,8 @@
-/* solverforge-fsr — Axum server and static browser shell.
-
-The binary serves the SolverForge UI assets, this app's static files, and the
-retained-job API from one process so the Hugging Face Docker Space only needs a
-single `PORT` binding. */
+//! Axum entrypoint for the field-service routing app.
+//!
+//! The binary serves stock SolverForge UI assets, this app's static files, and
+//! the retained-job API from one process so the Docker Space only needs one
+//! `PORT` binding.
 
 use solverforge_fsr::api;
 
@@ -13,6 +13,8 @@ use tower_http::services::ServeDir;
 
 #[tokio::main]
 async fn main() {
+    // Use the stock SolverForge console logger so solve progress appears in
+    // local runs and Space container logs.
     solverforge::console::init();
 
     let state = Arc::new(api::AppState::new());
@@ -27,6 +29,8 @@ async fn main() {
         .fallback_service(ServeDir::new("static"))
         .layer(cors);
 
+    // Hugging Face Spaces inject `PORT`; 7860 remains the local default used in
+    // docs, tests, and the Makefile.
     let port = std::env::var("PORT")
         .ok()
         .and_then(|value| value.parse::<u16>().ok())

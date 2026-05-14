@@ -1,3 +1,10 @@
+//! Shared route measurements used by field-service constraints.
+//!
+//! SolverForge calls each constraint separately, but the business concepts
+//! overlap: travel, time windows, skills, parts, overtime, and priority slack
+//! all require walking the same ordered visit list. This module centralizes that
+//! walk so the individual constraint files stay easy to read.
+
 use crate::domain::{FieldServicePlan, ServiceVisit, TechnicianRoute, TravelLeg};
 use solverforge::prelude::*;
 

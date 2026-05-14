@@ -1,3 +1,10 @@
+//! Browser-facing JSON types for the deliveries API.
+//!
+//! The domain model contains SolverForge annotations and route-preparation
+//! caches. DTOs keep the transport contract plain: strings for scores,
+//! camelCase field names, and only data the browser can render or request
+//! again.
+
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 use solverforge::{HardSoftScore, SolverSnapshot, SolverSnapshotAnalysis, SolverStatus};
@@ -11,6 +18,8 @@ pub use runtime::{lifecycle_state_label, terminal_reason_label, TelemetryDto};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PlanDto {
+    /// Flattened domain fields let the browser reuse SolverForge's generic
+    /// model metadata while this app adds delivery-specific route previews.
     #[serde(flatten)]
     pub fields: Map<String, Value>,
     #[serde(default)]
@@ -113,6 +122,7 @@ pub struct DeliveryInsertionResponseDto {
 }
 
 impl PlanDto {
+    /// Converts a domain plan into the browser JSON shape.
     pub fn from_plan(plan: &Plan) -> Self {
         let plan = plan.refreshed_for_transport();
         let score = plan.score.as_ref().map(ToString::to_string);
@@ -125,6 +135,7 @@ impl PlanDto {
         Self { fields, score }
     }
 
+    /// Rebuilds the SolverForge domain value from a browser request payload.
     pub fn to_domain(&self) -> Result<Plan, serde_json::Error> {
         let mut fields = self.fields.clone();
         fields.insert("score".to_string(), Value::Null);
@@ -195,6 +206,7 @@ impl JobRoutesDto {
 }
 
 impl DeliveryInsertionCandidateDto {
+    /// Adds score strings to an insertion candidate returned by route metrics.
     pub fn from_candidate(candidate: DeliveryInsertionCandidate) -> Self {
         Self {
             vehicle_id: candidate.vehicle_id,

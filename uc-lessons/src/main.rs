@@ -1,6 +1,8 @@
-/* solverforge-lessons — unified optimizer with SolverForge
-Run with: solverforge server
-Then open the printed local URL (default port 7860) */
+//! Axum entrypoint for the lesson-timetabling app.
+//!
+//! Run with `make run-release`, then open the printed local URL. The same
+//! binary is used by the Docker Space image, where `PORT` is provided by the
+//! platform.
 
 use solverforge_lessons::api;
 
@@ -11,6 +13,8 @@ use tower_http::services::ServeDir;
 
 #[tokio::main]
 async fn main() {
+    // Use the stock SolverForge console logger so solve progress appears in
+    // local runs and Space container logs.
     solverforge::console::init();
 
     let state = Arc::new(api::AppState::new());
@@ -25,6 +29,8 @@ async fn main() {
         .fallback_service(ServeDir::new("static"))
         .layer(cors);
 
+    // Hugging Face Spaces inject `PORT`; 7860 remains the local default used in
+    // docs, tests, and the Makefile.
     let port = std::env::var("PORT")
         .ok()
         .and_then(|value| value.parse::<u16>().ok())

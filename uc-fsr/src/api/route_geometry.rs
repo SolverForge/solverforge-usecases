@@ -1,3 +1,9 @@
+//! Browser route-geometry builder for FSR snapshots.
+//!
+//! Scoring uses cached `TravelLeg` facts so local search remains cheap. The
+//! browser asks for drawable road geometry only for retained snapshots, and this
+//! module converts those route legs into per-segment DTOs.
+
 use axum::http::StatusCode;
 
 use super::route_dto::{RouteGeometryStatus, RouteSegmentDto, TechnicianRouteGeometryDto};

@@ -1,3 +1,8 @@
+//! HTTP routes for the field-service routing app.
+//!
+//! Handlers intentionally stay narrow: parse the route/query, ask the data or
+//! retained solver service for the domain value, then return a DTO.
+
 use axum::{
     extract::{Path, Query, State},
     http::StatusCode,

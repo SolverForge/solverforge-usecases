@@ -1,11 +1,9 @@
-/* solverforge-lessons — neutral constraint optimizer built with SolverForge
-
-Structure:
-  domain/      — Plan (solution) plus CLI-generated entities and facts
-  constraints/ — Scoring rules
-  solver/      — Engine, service, termination config
-  api/         — HTTP API (axum)
-  data/        — Demo data / data loading */
+//! SolverForge lesson-timetabling application.
+//!
+//! The crate follows the same teaching shape as the other use cases: `domain`
+//! defines the planning model, `constraints` defines scoring, `data` builds the
+//! deterministic timetable instance, `solver` owns retained runtime jobs, and
+//! `api` exposes the browser-facing HTTP surface.
 
 pub mod api;
 pub mod constraints;

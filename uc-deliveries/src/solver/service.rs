@@ -1,3 +1,9 @@
+//! Retained-job orchestration for delivery solves.
+//!
+//! SolverForge owns search and scoring. This service owns app-level concerns:
+//! turning public string ids into runtime job ids, storing SSE broadcasters,
+//! and exposing pause/resume/cancel/delete operations to the HTTP layer.
+
 use parking_lot::RwLock;
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -14,7 +20,8 @@ mod runtime_payload;
 
 use runtime_payload::{bootstrap_event_type, event_payload, status_event_payload};
 
-// Static manager — must be 'static for retained job execution.
+// The retained runtime needs a manager with `'static` lifetime because jobs can
+// continue after the HTTP handler that started them has returned.
 static MANAGER: SolverManager<Plan> = SolverManager::new();
 
 struct JobState {
@@ -34,6 +41,7 @@ impl SolverService {
         }
     }
 
+    /// Starts a retained solve and registers the SSE broadcaster for that job.
     pub fn start_job(&self, plan: Plan) -> Result<String, SolverManagerError> {
         let (job_id, receiver) = MANAGER.solve(plan)?;
         let status = MANAGER.get_status(job_id)?;
@@ -60,6 +68,7 @@ impl SolverService {
         Ok(job_id.to_string())
     }
 
+    /// Subscribes a browser client to future live events for a retained job.
     pub fn subscribe(&self, id: &str) -> Option<broadcast::Receiver<String>> {
         let job_id = parse_job_id(id).ok()?;
         self.jobs
@@ -68,6 +77,7 @@ impl SolverService {
             .map(|state| state.sse_tx.subscribe())
     }
 
+    /// Returns the last event retained for a late SSE subscriber.
     pub fn sse_snapshot(&self, id: &str) -> Option<String> {
         let job_id = parse_job_id(id).ok()?;
         self.jobs
@@ -76,6 +86,7 @@ impl SolverService {
             .map(|state| state.last_event.clone())
     }
 
+    /// Builds the first SSE payload a client should receive after connecting.
     pub fn bootstrap_event(&self, id: &str) -> Result<String, SolverManagerError> {
         if let Some(snapshot) = self.sse_snapshot(id) {
             return Ok(snapshot);

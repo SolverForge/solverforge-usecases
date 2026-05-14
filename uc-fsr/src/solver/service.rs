@@ -1,3 +1,9 @@
+//! Retained-job orchestration for field-service solves.
+//!
+//! SolverForge owns search and scoring. This service owns app-level concerns:
+//! registering SSE broadcasters, translating public string ids to runtime job
+//! ids, and exposing pause/resume/cancel/delete to the API layer.
+
 use parking_lot::RwLock;
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -14,7 +20,8 @@ use super::event_payload::{
 };
 use crate::domain::FieldServicePlan;
 
-// Static manager — must be 'static for retained job execution.
+// The retained runtime needs a manager with `'static` lifetime because jobs can
+// continue after the HTTP handler that started them has returned.
 static MANAGER: SolverManager<FieldServicePlan> = SolverManager::new();
 
 struct JobState {
@@ -27,12 +34,14 @@ pub struct SolverService {
 }
 
 impl SolverService {
+    /// Creates an empty job registry. The underlying runtime itself is global.
     pub fn new() -> Self {
         Self {
             jobs: Arc::new(RwLock::new(HashMap::new())),
         }
     }
 
+    /// Starts a retained solve and registers the SSE broadcaster for that job.
     pub fn start_job(&self, plan: FieldServicePlan) -> Result<String, SolverManagerError> {
         let (job_id, receiver) = MANAGER.solve(plan)?;
         let (sse_tx, _) = broadcast::channel(64);
@@ -52,6 +61,7 @@ impl SolverService {
         Ok(job_id.to_string())
     }
 
+    /// Subscribes a browser client to future live events for a retained job.
     pub fn subscribe(&self, id: &str) -> Option<broadcast::Receiver<String>> {
         let job_id = parse_job_id(id).ok()?;
         self.jobs
@@ -60,6 +70,7 @@ impl SolverService {
             .map(|state| state.sse_tx.subscribe())
     }
 
+    /// Builds the first SSE payload a client should receive after connecting.
     pub fn bootstrap_event(&self, id: &str) -> Result<String, SolverManagerError> {
         let job_id = parse_job_id(id)?;
         let status = MANAGER.get_status(job_id)?;

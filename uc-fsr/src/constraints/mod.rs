@@ -1,8 +1,8 @@
-/* Score model for field-service routing.
-
-Each child module owns one business rule. The small wrappers in those modules
-delegate shared route walking to `route_metrics`, so beginner readers can learn
-the rule names here before opening the scoring math. */
+//! Constraint assembly for field-service routing.
+//!
+//! Each child module owns one business rule. The small wrappers delegate shared
+//! route walking to `route_metrics`, so beginner readers can learn the rule
+//! names here before opening the scoring math.
 
 use crate::domain::FieldServicePlan;
 use solverforge::prelude::*;
@@ -30,6 +30,7 @@ mod time_windows;
 mod assemble {
     use super::*;
 
+    /// Collects the full scoring model used by `FieldServicePlan`.
     pub fn create_constraints() -> impl ConstraintSet<FieldServicePlan, HardSoftScore> {
         // @solverforge:begin constraint-calls
         (

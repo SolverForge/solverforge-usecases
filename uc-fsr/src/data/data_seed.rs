@@ -1,3 +1,10 @@
+//! Deterministic Bergamo demo-data builder and routing preparation.
+//!
+//! The public app starts from ordinary domain facts: locations, service visits,
+//! technician routes, and travel legs. Road-network preparation enriches those
+//! facts before solving, but the solver still receives a normal
+//! `FieldServicePlan`.
+
 use std::fmt;
 use std::path::PathBuf;
 use std::str::FromStr;
@@ -55,6 +62,7 @@ pub fn default_demo_data() -> DemoData {
     DEFAULT_DEMO_DATA
 }
 
+/// Returns the complete list of public demo ids exposed through `/demo-data`.
 pub fn available_demo_data() -> &'static [DemoData] {
     AVAILABLE_DEMO_DATA
 }
@@ -98,6 +106,7 @@ impl FromStr for DemoData {
     }
 }
 
+/// Builds the requested demo plan and prepares road-network travel facts.
 pub async fn generate(demo: DemoData) -> Result<FieldServicePlan, DemoDataError> {
     // The initial demo response must be fast and deterministic, so it ships only
     // seed self-legs. Full road-network legs are prepared when a solve starts.
@@ -114,6 +123,7 @@ pub async fn generate(demo: DemoData) -> Result<FieldServicePlan, DemoDataError>
     ))
 }
 
+/// Replaces seed travel legs with road-network durations and distances.
 pub async fn prepare_routing(plan: &mut FieldServicePlan) -> Result<(), DemoDataError> {
     // This is the expensive OSM-backed step. It runs once per submitted plan so
     // every candidate route move is scored against a stable travel matrix.

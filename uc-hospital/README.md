@@ -14,112 +14,15 @@ short_description: SolverForge hospital scheduling example
 
 ![SolverForge Hospital screenshot](docs/screenshot.png)
 
-`solverforge-hospital` is a beginner-friendly example of a real SolverForge app.
+`solverforge-hospital` is a SolverForge employee-scheduling app with retained
+jobs, schedule analysis, and a browser timeline workspace.
+
 It answers one concrete question:
 
-"Given a hospital workforce and a month of shifts, which employee should cover each shift?"
-
-## Documentation Map
-
-Each top-level document has a different job:
-
-- `README.md`
-  Quick start, concepts, API surface, and the shortest learning path.
-- `WIREFRAME.md`
-  Architecture and request/data flow across backend, runtime, and frontend.
-- `docs/api-and-solver-policy.md`
-  REST routes, payload shape, lifecycle semantics, and solver policy notes.
-- `AGENTS.md`
-  Contribution rules, validation commands, and the documentation standard for future edits.
-- `Makefile`
-  The beginner-friendly command surface for local development, validation, and
-  Docker-based Hugging Face Space preparation.
-
-If you are new to SolverForge, read this repo as three layers:
-
-1. The planning-model manifest and model modules in `src/domain/`
-2. The score rules in `src/constraints/`
-3. The runtime and browser app in `src/api/`, `src/solver/`, and `static/app/`
-
-## What SolverForge Is Doing Here
-
-SolverForge is the optimization engine. In this app:
-
-- `Employee` is a problem fact: input data the solver does not move
-- `Shift` is the planning entity: the thing the solver assigns
-- `Shift.employee_idx` is the planning variable: the actual choice the solver makes
-- the constraints decide whether an assignment is legal and whether it is good
-- `solver.toml` tells the runtime how to search for a better assignment
-
-The app ships one serious demo instance rather than many toy presets:
-
-- fixed random seed
-- fixed 28-day schedule horizon
-- 50 employees
-- 688 shifts
-- 8-hour shifts
-- deterministic generator
-- retained-job runtime with pause, resume, cancel, snapshot, and analysis
-
-## Read The Code In This Order
-
-If you want to learn the codebase, this order is the shortest path:
-
-1. [src/domain/employee.rs](src/domain/employee.rs)
-   `Employee` is the input fact model.
-2. [src/domain/care_hub.rs](src/domain/care_hub.rs)
-   `CareHub` explains how the app models service-line proximity.
-3. [src/domain/mod.rs](src/domain/mod.rs)
-   This is the `planning_model!` manifest that lists and exports the model modules.
-4. [src/domain/plan.rs](src/domain/plan.rs)
-   `Shift`, `Plan`, nearby search meters, and transport normalization live here.
-5. [src/constraints/mod.rs](src/constraints/mod.rs)
-   This lists every scoring rule.
-6. [src/constraints/*.rs](src/constraints)
-   Each file explains one real scheduling rule.
-7. [src/data/data_seed/entrypoints.rs](src/data/data_seed/entrypoints.rs)
-   This shows the public demo-data surface.
-8. [src/data/data_seed/large.rs](src/data/data_seed/large.rs)
-   This assembles the published benchmark instance.
-9. [src/solver/service.rs](src/solver/service.rs)
-   This is the retained-job runtime facade.
-10. [src/api/routes.rs](src/api/routes.rs) and [src/api/sse.rs](src/api/sse.rs)
-   These expose the HTTP and live-event contracts.
-11. [static/app/main.mjs](static/app/main.mjs)
-   This is the browser boot sequence.
-12. [static/app/shell/](static/app/shell) and [static/app/schedule/](static/app/schedule)
-   These adapt stock `solverforge-ui` pieces to the hospital example.
-
-## Project Shape
-
-- `src/domain/`
-  `planning_model!` manifest, planning model, derived fields, nearby meters.
-- `src/constraints/`
-  Hard and soft scoring rules.
-- `src/data/`
-  Deterministic demo-data generator.
-- `src/solver/`
-  Retained-job orchestration over `SolverManager<Plan>`.
-- `src/api/`
-  REST routes, DTOs, and SSE endpoint.
-- `static/app/`
-  Browser code built as plain ES modules on top of `solverforge-ui`.
-- `tests/frontend/`
-  Browserless UI tests using the fake DOM in `tests/support/`.
-- `tests/e2e/`
-  Playwright smoke tests against the served browser app.
+"Given a hospital workforce and a month of shifts, which employee should cover
+each shift?"
 
 ## Quick Start
-
-This repo depends on the published SolverForge runtime and UI crates:
-
-- `solverforge = 0.13.0`
-- `solverforge-ui = 0.6.5`
-
-The app package version is `1.0.2`, and the runtime score type is
-`HardSoftDecimalScore`.
-
-Run the app:
 
 ```sh
 make run-release
@@ -127,45 +30,117 @@ make run-release
 
 Then open `http://localhost:7860`.
 
-If you want to inspect the command surface first:
+To inspect the supported command surface:
 
 ```sh
 make help
 ```
 
-## What You Will See
+## Documentation Map
 
-The browser UI does five things:
+- `README.md`
+  Quick start, model concepts, validation, REST API, and solver policy.
+- `WIREFRAME.md`
+  As-built architecture and runtime/data flow across backend, runtime, and UI.
+- `docs/api-and-solver-policy.md`
+  Detailed route, payload, lifecycle, telemetry, and solver-policy reference.
+- `AGENTS.md`
+  Codex-facing maintenance, validation, and documentation rules.
+- `Makefile`
+  Supported local commands for development, validation, Docker, and Space work.
+- `Dockerfile`
+  Docker Space image build using Rust 1.95 and the declared crates.io line.
 
-1. Loads `static/sf-config.json`
-2. Loads `static/generated/ui-model.json`
-3. Fetches the `LARGE` demo dataset from `/demo-data/LARGE`
-4. Renders two schedule views:
-   `By location` and `By employee`
-5. Starts a retained solving job when you click Solve
+## Current Dependency Shape
 
-The frontend is intentionally thin. It mostly uses stock `solverforge-ui` pieces:
+- Package: `solverforge-hospital`; version is declared in `Cargo.toml`
+- Release binary: `solverforge-hospital`
+- Rust: `1.95`
+- SolverForge runtime: `solverforge` `0.13.1`
+- Browser UI assets: `solverforge-ui` `0.6.5`
+- Scaffold metadata: `solverforge-cli` `2.0.4` in `solverforge.app.toml`
 
-- `SF.createBackend({ type: "axum" })`
-- `SF.createHeader()`
-- `SF.createStatusBar()`
-- `SF.createSolver()`
-- `SF.rail.createTimeline()`
+The app serves registry-backed Rust dependencies, local static browser modules,
+and Axum API routes from one process.
 
-The app also exposes a visible "REST API" guide inside the browser shell. See
-[`docs/api-and-solver-policy.md`](docs/api-and-solver-policy.md) for the route
-list, lifecycle semantics, payload shape, and solver policy notes that this
-guide is expected to match.
+## Model Concepts
 
-## Run Validation
+- `Employee` is a problem fact: input staff data the solver reads but does not
+  move.
+- `Shift` is the planning entity: each shift needs exactly one employee.
+- `Shift.employee_idx` is the scalar planning variable: the employee index
+  SolverForge changes during construction and local search.
+- `CareHub` is a derived domain grouping that makes nearby search prefer
+  employees close to the service line.
+- `Plan` is the planning solution with the current `HardSoftDecimalScore`.
 
-Standard local validation:
+The app ships one deterministic `LARGE` dataset with a 28-day horizon, 50
+employees, and 688 shifts.
+
+## Constraints
+
+Hard constraints:
+
+- Every shift is assigned.
+- The assigned employee has the required skill.
+- An employee is not assigned to overlapping shifts.
+- An employee has at least 10 hours between two shifts.
+- An employee works at most one shift per day.
+- Unavailable employees are not assigned.
+
+Soft constraints:
+
+- Undesired days are avoided.
+- Desired days are rewarded.
+- Assignments are balanced across employees.
+
+## REST API
+
+- `GET /health`
+- `GET /info`
+- `GET /demo-data`
+- `GET /demo-data/{id}`
+- `POST /jobs`
+- `GET /jobs/{id}`
+- `DELETE /jobs/{id}`
+- `GET /jobs/{id}/status`
+- `GET /jobs/{id}/snapshot`
+- `GET /jobs/{id}/analysis`
+- `POST /jobs/{id}/pause`
+- `POST /jobs/{id}/resume`
+- `POST /jobs/{id}/cancel`
+- `GET /jobs/{id}/events`
+
+`snapshot_revision={n}` is optional for snapshots and analysis. SSE clients
+receive a bootstrap event and then live retained-job events. The browser also
+exposes a visible REST API guide expected to match
+`docs/api-and-solver-policy.md`.
+
+## Solver Policy
+
+`solver.toml` is embedded by `Plan` and is the runtime source of truth.
+
+- `cheapest_insertion` assigns employee indexes during construction.
+- Local search uses nearby change and nearby swap moves over
+  `Shift.employee_idx`.
+- Nearby search reads the app's care-hub distance signals so moves stay focused
+  on plausible employee/shift pairs.
+- `late_acceptance` with an accepted-count forager keeps several candidate
+  moves alive per step.
+- Solving stops after 30 seconds total or after 5 seconds without improvement.
+
+The hidden witness roster in `src/data/data_seed/witness.rs` shapes a
+hard-feasible public instance, but the solver never receives the witness itself.
+
+## Validation
+
+Standard validation:
 
 ```sh
 make test
 ```
 
-Space-style local CI simulation:
+Full local validation:
 
 ```sh
 make ci-local
@@ -177,59 +152,61 @@ Slow acceptance solve:
 make test-slow
 ```
 
-`make test` includes Rust tests, browserless frontend tests, and Playwright
-browser tests. `make ci-local` is the main pre-push validation path for this
-repo. It also checks formatting, runs clippy, builds the release binary, and
-builds the Docker image that the Space-style deploy path expects.
+`make test` runs Rust tests, browserless frontend tests, and Playwright browser
+tests. `make ci-local` adds formatting, clippy, release build, and Docker image
+build. `make pre-release` runs `ci-local` plus the slow acceptance solve.
 
-## Demo Dataset Intent
+## Hugging Face Space Deployment
 
-The generator is not random filler data. It is designed to publish a problem
-that is:
+This repo is Docker-Space ready. The Space reads the README front matter,
+builds `Dockerfile`, and expects the app to bind `PORT=7860`.
 
-- hard-feasible
-- deterministic
-- narrow enough that candidate choice matters
-- rich enough that soft-score improvements still exist after construction
-
-The hidden witness roster in `src/data/data_seed/witness.rs` is especially
-important: it gives the generator an internal feasible assignment that is used
-to shape unavailability and preferences, but it is never shown to the solver.
-
-The `LARGE` dataset is built once and cached in memory because it is immutable
-and deterministic. Each request still receives an owned `Plan`, but the server
-does not regenerate the same public benchmark from scratch every time.
-
-## API And Solver Policy
-
-Detailed REST route, payload, lifecycle, telemetry, and solver-policy reference
-material lives in [`docs/api-and-solver-policy.md`](docs/api-and-solver-policy.md).
-The runtime source of truth remains [solver.toml](./solver.toml).
-
-## Constraints
-
-Hard constraints:
-
-- Assigned shift
-- Required skill
-- Overlapping shift
-- At least 10 hours between 2 shifts
-- One shift per day
-- Unavailable employee
-
-Soft constraints:
-
-- Undesired day for employee
-- Desired day for employee
-- Balance employee assignments
-
-## Docker
-
-Build from this repository root:
+Local Space-equivalent commands:
 
 ```sh
 make space-build
 make space-run
 ```
 
-The Docker build uses the same registry dependency line as local development.
+## Read The Code In This Order
+
+1. `src/domain/employee.rs`
+   The staff problem fact model.
+2. `src/domain/care_hub.rs`
+   Service-line grouping for nearby search.
+3. `src/domain/mod.rs`
+   The `planning_model!` manifest and public domain exports.
+4. `src/domain/plan.rs`
+   The `Shift` planning entity, `Plan` solution, derived fields, and nearby
+   meters.
+5. `src/constraints/mod.rs` and `src/constraints/*.rs`
+   The score model, one scheduling rule per file.
+6. `src/data/data_seed/entrypoints.rs`
+   Public demo-data IDs.
+7. `src/data/data_seed/large.rs` and `src/data/data_seed/witness.rs`
+   The published instance builder and hidden feasibility witness.
+8. `src/solver/service.rs`
+   Retained-job orchestration over `SolverManager<Plan>`.
+9. `src/api/routes.rs`, `src/api/dto.rs`, and `src/api/sse.rs`
+   HTTP routes, transport DTOs, and live-event streaming.
+10. `static/app/main.mjs`, `static/app/shell/`, and `static/app/schedule/`
+    Browser boot sequence, shell, and timeline views.
+
+## Project Shape
+
+- `src/domain/`
+  Planning model, domain types, derived fields, and nearby meters.
+- `src/constraints/`
+  Incremental SolverForge scoring rules.
+- `src/data/`
+  Deterministic hospital demo-data generator.
+- `src/solver/`
+  Retained-job facade and runtime event payload formatting.
+- `src/api/`
+  Axum routes, DTOs, and SSE endpoint.
+- `static/app/`
+  Browser modules built on stock `solverforge-ui` assets.
+- `tests/frontend/`
+  Browserless UI tests using the fake DOM in `tests/support/`.
+- `tests/e2e/`
+  Playwright browser tests for the served app.

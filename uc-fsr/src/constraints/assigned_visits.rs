@@ -1,3 +1,9 @@
+//! Assignment-coverage rule for field-service visits.
+//!
+//! List variables should contain each service visit exactly once. This rule
+//! catches three beginner-relevant failures: a missing visit, a duplicated visit,
+//! and a route list entry that points outside the visit collection.
+
 use crate::domain::FieldServicePlan;
 use solverforge::prelude::*;
 use solverforge::IncrementalConstraint;
@@ -84,6 +90,8 @@ impl IncrementalConstraint<FieldServicePlan, HardSoftScore> for AssignedVisitsCo
 }
 
 fn assignment_issues(plan: &FieldServicePlan) -> AssignmentIssues {
+    // `counts[i]` records how often service visit `i` appears across every
+    // technician route. A valid list-variable solution leaves every count at 1.
     let mut counts = vec![0usize; plan.service_visits.len()];
     let mut issues = AssignmentIssues::default();
 

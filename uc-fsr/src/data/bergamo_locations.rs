@@ -1,3 +1,8 @@
+//! Static Bergamo depots and customer sites used by the `STANDARD` dataset.
+//!
+//! These are input facts, not solver decisions. SolverForge later changes only
+//! the visit order inside technician routes.
+
 use super::bergamo_catalog::LocationSeed;
 
 pub(super) const DEPOTS: &[LocationSeed] = &[

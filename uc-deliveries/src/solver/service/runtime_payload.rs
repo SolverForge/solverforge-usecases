@@ -1,3 +1,9 @@
+//! JSON event payloads sent over the deliveries SSE stream.
+//!
+//! SolverForge emits strongly typed lifecycle events. This module converts them
+//! to the stable camelCase JSON shape consumed by the browser status bar,
+//! snapshot renderer, and route viewer.
+
 use serde::Serialize;
 use solverforge::{
     HardSoftScore, SolverEventMetadata, SolverLifecycleState, SolverStatus, SolverTelemetry,

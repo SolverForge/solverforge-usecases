@@ -1,3 +1,8 @@
+//! HTTP routes for the lesson-timetabling app.
+//!
+//! Handlers intentionally stay narrow: parse the route/query, ask the data or
+//! retained solver service for the domain value, then return a DTO.
+
 use axum::{
     extract::{Path, Query, State},
     http::StatusCode,
@@ -12,7 +17,7 @@ use super::sse;
 use crate::data::{generate, DemoData};
 use crate::solver::SolverService;
 
-/// Shared application state.
+/// Shared application state stored once inside Axum.
 pub struct AppState {
     pub solver: SolverService,
 }
@@ -31,7 +36,7 @@ impl Default for AppState {
     }
 }
 
-/// Creates the API router.
+/// Registers the public HTTP surface used by the browser and tests.
 pub fn router(state: Arc<AppState>) -> Router {
     Router::new()
         .route("/health", get(health))

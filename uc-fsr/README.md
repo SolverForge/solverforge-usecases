@@ -14,73 +14,14 @@ short_description: SolverForge field-service routing example
 
 ![SolverForge FSR screenshot](docs/screenshot.png)
 
-`solverforge-fsr` is a SolverForge field-service routing example with retained
-jobs, route geometry, technician schedules, and a browser map workspace.
+`solverforge-fsr` is a SolverForge field-service routing app with retained
+jobs, technician schedules, road-network geometry, and a browser map workspace.
 
 It answers one concrete question:
 
 "Given technicians, service visits, skills, parts, shifts, territories, and
 road-network travel, which technician should serve each visit and in what
 order?"
-
-## Documentation Map
-
-- `README.md`
-  Quick start, concepts, API surface, and the shortest learning path.
-- `WIREFRAME.md`
-  Architecture and request/data flow across backend, routing, runtime, and UI.
-- `AGENTS.md`
-  Repo-specific contribution, validation, and documentation rules.
-- `Makefile`
-  The supported local command surface for development, validation, and
-  Docker-based Hugging Face Space preparation.
-- `Dockerfile`
-  The Docker Space image build, using Rust 1.95 and the declared crates.io
-  dependency line.
-
-## Current Dependency Shape
-
-The app package version is `1.0.1`; the release binary is `solverforge_fsr`.
-
-This repo requires Rust `1.95` and declares crates.io dependencies. Direct
-dependency declarations currently request these versions:
-
-- `solverforge` `0.13.0`
-- `solverforge-core` `0.13.0`
-- `solverforge-ui` `0.6.5`
-- `solverforge-maps` `2.1.4`
-- `axum` `0.8.9`
-- `tokio` `1.52.3`
-- `tokio-stream` `0.1.18`
-- `tower-http` `0.6.10`
-- `tower` `0.5.3`
-- `serde` `1.0.228`
-- `serde_json` `1.0.149`
-- `uuid` `1.23.1`
-- `parking_lot` `0.12.5`
-
-The app metadata in `solverforge.app.toml` records `solverforge-cli` `2.0.4`
-as the current scaffold metadata line.
-
-## What SolverForge Is Doing Here
-
-- `Location` is a problem fact: a depot or customer coordinate.
-- `ServiceVisit` is a problem fact: a customer job the solver must place in a
-  technician route.
-- `TravelLeg` is a problem fact: precomputed duration, distance, and reachability
-  between two locations.
-- `TechnicianRoute` is the planning entity: each technician owns one mutable
-  route.
-- `TechnicianRoute.visits` is the list planning variable.
-- `FieldServicePlan` is the planning solution.
-- Constraints score assignment coverage, route reachability, skills, parts,
-  time windows, shift capacity, travel time, workload balance, territory
-  affinity, and priority slack.
-- `solver.toml` selects list construction and local-search moves over the visit
-  list variable.
-
-The app ships one deterministic `STANDARD` Bergamo dataset with two depots, six
-technicians, 24 customer locations, and 48 service visits.
 
 ## Quick Start
 
@@ -90,11 +31,108 @@ make run-release
 
 Then open `http://localhost:7860`.
 
-To inspect the command surface:
+To inspect the supported command surface:
 
 ```sh
 make help
 ```
+
+## Documentation Map
+
+- `README.md`
+  Quick start, model concepts, validation, REST API, and solver policy.
+- `WIREFRAME.md`
+  As-built architecture and runtime/data flow across backend, routing, and UI.
+- `AGENTS.md`
+  Codex-facing maintenance, validation, and documentation rules.
+- `Makefile`
+  Supported local commands for development, validation, Docker, and Space work.
+- `Dockerfile`
+  Docker Space image build using Rust 1.95 and the declared crates.io line.
+
+## Current Dependency Shape
+
+- Package: `solverforge-fsr`; version is declared in `Cargo.toml`
+- Release binary: `solverforge_fsr`
+- Rust: `1.95`
+- SolverForge runtime: `solverforge` `0.13.1`
+- SolverForge core helpers: `solverforge-core` `0.13.1`
+- Browser UI assets: `solverforge-ui` `0.6.5`
+- Routing engine: `solverforge-maps` `2.1.4`
+- Scaffold metadata: `solverforge-cli` `2.0.4` in `solverforge.app.toml`
+
+The app serves registry-backed Rust dependencies, local static browser modules,
+and Axum API routes from one process.
+
+## Model Concepts
+
+- `Location` is a problem fact: a depot or customer coordinate.
+- `ServiceVisit` is a problem fact: a customer job the solver must place in a
+  route.
+- `TravelLeg` is a problem fact: precomputed duration, distance, and
+  reachability between two locations.
+- `TechnicianRoute` is the planning entity: one route owned by one technician.
+- `TechnicianRoute.visits` is the list planning variable: the ordered visit
+  sequence SolverForge changes.
+- `FieldServicePlan` is the planning solution with the current `HardSoftScore`.
+
+The app ships one deterministic `STANDARD` Bergamo dataset with two depots, six
+technicians, 24 customer locations, and 48 service visits.
+
+## Constraints
+
+Hard constraints:
+
+- Every service visit is assigned.
+- Every route leg is reachable.
+- The assigned technician has the required skills.
+- The assigned technician carries the required parts.
+- Visits fit their time windows.
+- Routes fit technician shift capacity.
+
+Soft constraints:
+
+- Total travel time is minimized.
+- Workload is balanced across technicians.
+- Territory affinity is preferred.
+- Higher-priority visits have less slack.
+
+## REST API
+
+- `GET /health`
+- `GET /info`
+- `GET /demo-data`
+- `GET /demo-data/{id}`
+- `POST /jobs`
+- `GET /jobs/{id}`
+- `DELETE /jobs/{id}`
+- `GET /jobs/{id}/status`
+- `GET /jobs/{id}/snapshot`
+- `GET /jobs/{id}/analysis`
+- `GET /jobs/{id}/routes`
+- `POST /jobs/{id}/pause`
+- `POST /jobs/{id}/resume`
+- `POST /jobs/{id}/cancel`
+- `GET /jobs/{id}/events`
+
+`snapshot_revision={n}` is optional for snapshots, analysis, and route
+geometry. Route geometry reports unreachable, snap-failed, and no-path legs as
+segment statuses so one failed road leg does not hide the rest of the route.
+
+## Solver Policy
+
+`solver.toml` is embedded by `FieldServicePlan` and is the runtime source of
+truth.
+
+- `list_round_robin` creates the first visit distribution.
+- Local search combines list change, list swap, sublist change, sublist swap,
+  and reverse moves over `TechnicianRoute.visits`.
+- `hill_climbing` with `first_best_score_improving` keeps this tutorial easy to
+  reason about.
+- Solving stops after 60 seconds.
+
+Road-network routing is prepared from the deterministic Bergamo coordinates and
+stored as `TravelLeg` facts before solving.
 
 ## Validation
 
@@ -104,21 +142,19 @@ Standard validation:
 make test
 ```
 
-Full local Space validation:
+Full local validation:
 
 ```sh
 make ci-local
 ```
 
 `make test` runs Rust tests, JavaScript syntax checks, and Playwright browser
-tests. Playwright is a root dev dependency in this publication bundle; the app
-serves `solverforge-ui` browser assets from the declared Cargo crate.
-`make ci-local` adds formatting, clippy, release build, and the Docker image
-build used by the Hugging Face Space.
+tests. `make ci-local` adds formatting, clippy, release build, and Docker image
+build.
 
 ## Hugging Face Space Deployment
 
-This repo is Docker-Space ready. Hugging Face reads the README front matter,
+This repo is Docker-Space ready. The Space reads the README front matter,
 builds `Dockerfile`, and expects the app to bind `PORT=7860`.
 
 Local Space-equivalent commands:
@@ -140,17 +176,16 @@ make space-run
 4. `src/domain/technician_route.rs`
    The planning entity and list variable SolverForge mutates.
 5. `src/data/data_seed.rs`
-   Demo ID, Bergamo data assembly, road-network matrix preparation, and OSM
-   cache policy.
-6. `src/constraints/mod.rs`
-   The constraint-set assembly point.
-7. `src/constraints/route_metrics.rs`
-   Shared route scoring math used by the individual constraints.
-8. `src/api/routes.rs`, `src/api/dto.rs`, `src/api/route_geometry.rs`, and
-   `src/api/sse.rs`
-   REST, DTO, route geometry, and event-stream contracts.
-9. `src/solver/service.rs`
+   Demo ID, Bergamo data assembly, routing preparation, and cache policy.
+6. `src/constraints/mod.rs` and `src/constraints/route_metrics.rs`
+   The score model and shared route-measurement math.
+7. `src/constraints/*.rs`
+   One business scoring rule per file.
+8. `src/solver/service.rs`
    Retained-job orchestration over `SolverManager<FieldServicePlan>`.
+9. `src/api/routes.rs`, `src/api/dto.rs`, `src/api/route_geometry.rs`, and
+   `src/api/sse.rs`
+   HTTP routes, transport DTOs, route geometry, and live-event streaming.
 10. `static/app.js` and `static/app-*.js`
     Browser lifecycle, dataset loading, route rendering, maps, tables, and API
     guide.
@@ -160,66 +195,14 @@ make space-run
 - `src/domain/`
   Planning model, domain types, and route entities.
 - `src/constraints/`
-  Incremental SolverForge scoring rules.
+  Incremental SolverForge scoring rules and route metric helpers.
 - `src/data/`
-  Deterministic Bergamo data and road-network preparation.
+  Deterministic Bergamo demo data and road-network preparation.
 - `src/solver/`
   Retained-job facade and runtime event payload formatting.
 - `src/api/`
   Axum routes, DTOs, route geometry, and SSE endpoint.
 - `static/`
-  Browser UI built on stock `solverforge-ui` assets.
-- `Dockerfile`
-  Multi-stage Rust 1.95 Alpine build for the Hugging Face Docker Space.
-
-## REST API
-
-- `GET /health`
-- `GET /info`
-- `GET /demo-data`
-- `GET /demo-data/{id}`
-- `POST /jobs`
-- `GET /jobs/{id}`
-- `GET /jobs/{id}/status`
-- `GET /jobs/{id}/snapshot`
-- `GET /jobs/{id}/analysis`
-- `GET /jobs/{id}/routes`
-- `POST /jobs/{id}/pause`
-- `POST /jobs/{id}/resume`
-- `POST /jobs/{id}/cancel`
-- `DELETE /jobs/{id}`
-- `GET /jobs/{id}/events`
-
-`snapshot_revision={n}` is optional for snapshots, analysis, and route
-geometry. Route geometry reports unreachable, snap-failed, and no-path legs as
-segment statuses so one bad road leg does not hide the rest of the route.
-
-## Solver Policy
-
-`solver.toml` is embedded by `FieldServicePlan` and is the runtime source of
-truth:
-
-- `list_round_robin` creates the first visit distribution.
-- local search combines list change, swap, sublist change, sublist swap, and
-  reverse moves over `TechnicianRoute.visits`.
-- `hill_climbing` with `first_best_score_improving` keeps the tutorial easy to
-  reason about.
-- solving stops after 60 seconds.
-
-## Constraints
-
-Hard constraints:
-
-- Assigned visits
-- Reachable legs
-- Required skills
-- Required parts
-- Time windows
-- Shift capacity
-
-Soft constraints:
-
-- Minimize travel
-- Balance workload
-- Territory affinity
-- Priority slack
+  Browser workspace built on stock `solverforge-ui` assets.
+- `tests/e2e/`
+  Playwright browser tests for the served app.

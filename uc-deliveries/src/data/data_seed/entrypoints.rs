@@ -1,3 +1,9 @@
+//! Public dataset ids and generator dispatch for delivery demos.
+//!
+//! City-specific modules only contain depots and visit groups. This file turns
+//! those static fixtures into normalized `Plan` values with vehicles, delivery
+//! ids, routing mode, and deterministic service windows.
+
 use std::str::FromStr;
 
 use rand::rngs::StdRng;
@@ -77,6 +83,7 @@ pub fn generate(demo: DemoData) -> Plan {
     }
 }
 
+/// Builds one city plan from static stops and deterministic vehicle settings.
 fn generate_demo_data(
     demo: DemoData,
     seed: u64,

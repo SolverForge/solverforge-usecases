@@ -1,3 +1,9 @@
+//! Small reusable incremental constraint wrapper for route-level rules.
+//!
+//! Most FSR rules score one technician route at a time. This adapter keeps that
+//! pattern explicit: a rule provides a route scorer and match counter, while
+//! SolverForge calls `on_insert` and `on_retract` when a route entity changes.
+
 use crate::domain::{FieldServicePlan, TechnicianRoute};
 use solverforge::prelude::*;
 use solverforge::IncrementalConstraint;
@@ -12,6 +18,7 @@ pub struct RouteConstraint {
 }
 
 impl RouteConstraint {
+    /// Creates a named route-level scoring rule.
     pub fn new(
         name: &'static str,
         hard: bool,
@@ -28,6 +35,7 @@ impl RouteConstraint {
         }
     }
 
+    /// Computes only the changed route's score for incremental callbacks.
     fn route_score(&self, solution: &FieldServicePlan, entity_index: usize) -> HardSoftScore {
         solution
             .technician_routes

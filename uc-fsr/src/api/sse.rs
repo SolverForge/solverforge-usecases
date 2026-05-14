@@ -1,3 +1,8 @@
+//! Server-sent events for retained FSR solve jobs.
+//!
+//! The first frame is a bootstrap status or snapshot so late subscribers can
+//! render immediately. Later frames come from the job's broadcast channel.
+
 use axum::{
     body::Body,
     extract::{Path, State},
@@ -56,6 +61,7 @@ fn event_sequence_from_json(json: &str) -> Option<u64> {
         })
 }
 
+/// Returns true when a live event is already covered by the bootstrap frame.
 fn event_is_not_newer(json: &str, bootstrap_event_sequence: Option<u64>) -> bool {
     let Some(bootstrap_event_sequence) = bootstrap_event_sequence else {
         return false;

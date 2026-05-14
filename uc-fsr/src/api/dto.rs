@@ -1,3 +1,9 @@
+//! Browser-facing JSON types for FSR retained jobs.
+//!
+//! The domain model is optimized for SolverForge joins and score calculation.
+//! DTOs keep the HTTP contract stable and browser-friendly, including string
+//! score labels and camelCase field names.
+
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 use solverforge::{
@@ -11,6 +17,8 @@ use crate::domain::FieldServicePlan;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PlanDto {
+    /// Flattened domain fields let the stock UI metadata describe facts and
+    /// entities without a hand-written transport struct for every collection.
     #[serde(flatten)]
     pub fields: Map<String, Value>,
     #[serde(default)]

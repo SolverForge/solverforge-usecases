@@ -9,8 +9,9 @@ use super::RoomKind;
 pub struct Lesson {
     #[planning_id]
     pub id: String,
+    /// Dense solver-facing join key rebuilt by `Plan::rebuild_derived_fields`.
     #[serde(skip)]
-    pub index: usize, // the solver-facing join key
+    pub index: usize,
     pub subject: String,
     pub group_idx: usize,
     pub student_count: usize,
@@ -18,14 +19,17 @@ pub struct Lesson {
     pub duration: u32,
     pub required_room_kind: RoomKind,
     // @solverforge:begin entity-variables
+    /// Scalar planning variable pointing at `Plan.timeslots`.
     #[planning_variable(value_range_provider = "timeslots", allows_unassigned = false)]
     pub timeslot_idx: Option<usize>,
+    /// Scalar planning variable pointing at `Plan.rooms`.
     #[planning_variable(value_range_provider = "rooms", allows_unassigned = false)]
     pub room_idx: Option<usize>,
     // @solverforge:end entity-variables
 }
 
 impl Lesson {
+    /// Builds an unassigned lesson with the default lecture-room requirement.
     pub fn new(
         index: usize,
         subject: String,
@@ -43,6 +47,7 @@ impl Lesson {
         )
     }
 
+    /// Builds an unassigned lesson with an explicit room-kind requirement.
     pub fn with_required_room_kind(
         index: usize,
         subject: String,
@@ -62,6 +67,7 @@ impl Lesson {
         )
     }
 
+    /// Builds an unassigned lesson with every field needed by the data seed.
     pub fn with_details(
         index: usize,
         subject: String,
