@@ -15,7 +15,7 @@ Axum server in src/main.rs
   |
   | serves /sf/* from solverforge-ui
   | serves static/* from this app
-  | exposes /api/* and /jobs/*
+  | exposes health, info, demo-data, and retained job routes
   v
 Retained solver service in src/solver/
   |

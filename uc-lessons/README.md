@@ -59,7 +59,7 @@ make help
 - Package: `solverforge-lessons`; version is declared in `Cargo.toml`
 - Release binary: `solverforge-lessons`
 - Rust: `1.95`
-- SolverForge runtime: `solverforge` `0.13.1`
+- SolverForge runtime: `solverforge` `0.14.1`
 - Browser UI assets: `solverforge-ui` `0.6.5`
 - Scaffold metadata: `solverforge-cli` `2.0.4` in `solverforge.app.toml`
 
@@ -213,5 +213,5 @@ make space-run
   Axum routes, DTOs, and SSE endpoint.
 - `static/`
   Browser workspace built on stock `solverforge-ui` assets.
-- `tests/e2e/`
-  Playwright browser smoke for the served app.
+- `Makefile`
+  Contains the inline `test-e2e` Playwright smoke for the served app.

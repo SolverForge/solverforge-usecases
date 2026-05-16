@@ -64,10 +64,11 @@ exists before they need to understand every line of how it works.
 
 ## Testing Guidance
 
-Add Rust tests next to the behavior they protect. Real browser flows belong in
-`tests/e2e/`. If you change solver behavior, run `cargo test` and the ignored
-large-demo solve. If you change UI structure, run the frontend syntax check and
-Playwright smoke.
+Add Rust tests next to the behavior they protect. The current browser smoke is
+the inline `make test-e2e` Playwright check; add a `tests/e2e/` tree only when
+the browser flow grows beyond that single smoke. If you change solver behavior,
+run `cargo test` and the ignored large-demo solve. If you change UI structure,
+run the frontend syntax check and Playwright smoke.
 
 ## Runtime Notes
 
