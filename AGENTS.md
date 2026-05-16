@@ -70,7 +70,10 @@ when present:
   changelog/version/lockfile/tag release from the bundle root.
 
 For root workflow or README-only edits, validate the YAML syntax and inspect the
-changed paths with `git diff --stat`.
+changed paths with `git diff --stat`. The root CI workflow is
+`.github/workflows/ci.yml`; it installs browser-test dependencies and then runs
+`make ci-local`. The Hugging Face publication workflow remains
+`.github/workflows/sync-hf-spaces.yml`.
 
 Run `bash scripts/verify-metadata.sh` after documentation-structure changes.
 Run `bash scripts/verify-imports.sh` when imported open-source app directories

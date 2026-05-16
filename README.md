@@ -59,15 +59,15 @@ Use the existing SolverForge app structure inside each use case:
 Run commands from the use-case directory you are changing.
 
 ```sh
-npm install
+make install-e2e
 cd uc-hospital
 make help
 make test
 make ci-local
 ```
 
-The root `npm install` provides the Playwright test runner and app-scoped
-release tooling for the bundle. Each app still serves browser assets from its
+The root `make install-e2e` target installs the Node and browser dependencies
+used by Playwright checks. Each app still serves browser assets from its
 declared `solverforge-ui` Cargo crate.
 Prefer the app's `Makefile` when present; otherwise use the app README and
 standard Cargo commands.
@@ -78,6 +78,10 @@ Root checks:
 bash scripts/verify-metadata.sh
 bash scripts/verify-imports.sh
 ```
+
+The CI workflow in `.github/workflows/ci.yml` installs the root browser-test
+dependencies with `make install-e2e` and then runs `make ci-local` on both
+GitHub and Forgejo-style runners.
 
 ## App Releases
 

@@ -1,0 +1,101 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev, release/*, feature/*]
+  pull_request:
+    branches: [main, dev, release/*]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  github:
+    if: ${{ github.server_url == 'https://github.com' }}
+    name: GitHub Use-Case Bundle
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache Rust artifacts
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            uc-deliveries
+            uc-fsr
+            uc-hospital
+            uc-lessons
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install browser test dependencies
+        run: make install-e2e
+
+      - name: Run bundle CI
+        run: make ci-local
+
+      - name: Upload browser artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: usecase-browser-artifacts
+          path: |
+            test-results
+            playwright-report
+            uc-*/test-results
+            uc-*/playwright-report
+          if-no-files-found: ignore
+
+  forgejo:
+    if: ${{ github.server_url != 'https://github.com' }}
+    name: Forgejo Use-Case Bundle
+    runs-on: rust
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install browser test dependencies
+        run: make install-e2e
+
+      - name: Run bundle CI
+        run: make ci-local
+
+      - name: Upload browser artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: usecase-browser-artifacts
+          path: |
+            test-results
+            playwright-report
+            uc-*/test-results
+            uc-*/playwright-report
+          if-no-files-found: ignore
