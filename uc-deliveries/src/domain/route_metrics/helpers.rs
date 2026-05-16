@@ -78,29 +78,3 @@ pub(super) fn straight_line_leg(from: Coord, to: Coord) -> (i64, i64) {
     let meters = haversine_distance(from, to).round() as i64;
     (meters_to_seconds(meters), meters)
 }
-
-pub(super) fn fallback_vehicle_to_delivery(
-    plan: &Plan,
-    vehicle_idx: usize,
-    delivery_id: usize,
-) -> Option<i64> {
-    let depot = plan.vehicles.get(vehicle_idx)?.depot_coord().ok()?;
-    let delivery = plan.deliveries.get(delivery_id)?.coord().ok()?;
-    Some(straight_line_leg(depot, delivery).0)
-}
-
-pub(super) fn fallback_delivery_to_vehicle(
-    plan: &Plan,
-    vehicle_idx: usize,
-    delivery_id: usize,
-) -> Option<i64> {
-    let delivery = plan.deliveries.get(delivery_id)?.coord().ok()?;
-    let depot = plan.vehicles.get(vehicle_idx)?.depot_coord().ok()?;
-    Some(straight_line_leg(delivery, depot).0)
-}
-
-pub(super) fn fallback_delivery_to_delivery(plan: &Plan, from: usize, to: usize) -> Option<i64> {
-    let from = plan.deliveries.get(from)?.coord().ok()?;
-    let to = plan.deliveries.get(to)?.coord().ok()?;
-    Some(straight_line_leg(from, to).0)
-}

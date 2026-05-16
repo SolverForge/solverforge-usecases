@@ -45,14 +45,15 @@ pub async fn prepare_plan(plan: &mut Plan) -> Result<(), RoutingError> {
 
     plan.prepared_problem_data.clear();
     for (vehicle_idx, vehicle) in plan.vehicles.iter_mut().enumerate() {
+        let route_distance_matrix = depot_routing.problem_travel_matrix(vehicle_idx);
         plan.prepared_problem_data.push(Arc::new(ProblemData {
             capacity: vehicle.capacity as i64,
-            depot: 0,
+            depot: delivery_coords.len(),
             demands: delivery_demands.clone(),
-            distance_matrix: delivery_distance_matrix.clone(),
+            distance_matrix: route_distance_matrix.clone(),
             time_windows: delivery_time_windows.clone(),
             service_durations: delivery_service_durations.clone(),
-            travel_times: depot_routing.delivery_travel_times.clone(),
+            travel_times: route_distance_matrix,
             vehicle_departure_time: vehicle.departure_time,
         }));
         vehicle.prepared_routing = Some(PreparedVehicleRouting {
@@ -84,6 +85,31 @@ struct DepotRoutingData {
 }
 
 impl DepotRoutingData {
+    fn problem_travel_matrix(&self, vehicle_idx: usize) -> Vec<Vec<i64>> {
+        let delivery_count = self.delivery_travel_times.len();
+        let depot_idx = delivery_count;
+        let mut matrix = vec![vec![0_i64; delivery_count + 1]; delivery_count + 1];
+
+        for (from, row) in self.delivery_travel_times.iter().enumerate() {
+            for (to, seconds) in row.iter().copied().enumerate() {
+                matrix[from][to] = seconds;
+            }
+        }
+
+        if let Some(outbound) = self.depot_to_delivery_seconds.get(vehicle_idx) {
+            for (delivery_idx, seconds) in outbound.iter().copied().enumerate() {
+                matrix[depot_idx][delivery_idx] = seconds;
+            }
+        }
+        if let Some(inbound) = self.delivery_to_depot_seconds.get(vehicle_idx) {
+            for (delivery_idx, seconds) in inbound.iter().copied().enumerate() {
+                matrix[delivery_idx][depot_idx] = seconds;
+            }
+        }
+
+        matrix
+    }
+
     fn straight_line(plan: &Plan, delivery_coords: &[Coord]) -> Result<Self, RoutingError> {
         let delivery_travel_times = build_travel_time_matrix(delivery_coords);
         let mut depot_to_delivery_seconds = Vec::with_capacity(plan.vehicles.len());

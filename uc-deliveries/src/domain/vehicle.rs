@@ -24,23 +24,18 @@ pub struct Vehicle {
     // @solverforge:begin entity-variables
     /// List planning variable: ordered delivery ids assigned to this vehicle.
     ///
-    /// The CVRP hook attributes tell SolverForge how to construct and improve
-    /// these lists using route distances, loads, capacities, and k-opt checks.
+    /// The route hook attributes tell SolverForge how to construct and improve
+    /// these lists with owner-specific depot, distance, and feasibility checks.
     #[planning_list_variable(
         element_collection = "deliveries",
         solution_trait = "crate::domain::DeliveryRoutingSolution",
         distance_meter = "solverforge::cvrp::MatrixDistanceMeter",
         intra_distance_meter = "solverforge::cvrp::MatrixIntraDistanceMeter",
-        cw_depot_fn = "crate::domain::delivery_clarke_wright_depot",
-        cw_distance_fn = "crate::domain::delivery_route_distance",
-        cw_element_load_fn = "crate::domain::delivery_element_load",
-        cw_capacity_fn = "crate::domain::delivery_route_capacity",
-        cw_assign_route_fn = "crate::domain::replace_delivery_route",
-        k_opt_get_route = "crate::domain::get_delivery_route",
-        k_opt_set_route = "crate::domain::replace_delivery_route",
-        k_opt_depot_fn = "crate::domain::delivery_k_opt_depot",
-        k_opt_distance_fn = "crate::domain::delivery_route_distance",
-        k_opt_feasible_fn = "crate::domain::delivery_k_opt_feasible"
+        route_get_fn = "solverforge::cvrp::get_route",
+        route_set_fn = "solverforge::cvrp::replace_route",
+        route_depot_fn = "solverforge::cvrp::depot_for_entity",
+        route_distance_fn = "solverforge::cvrp::route_distance",
+        route_feasible_fn = "crate::domain::delivery_route_feasible"
     )]
     pub delivery_order: Vec<usize>,
     // @solverforge:end entity-variables

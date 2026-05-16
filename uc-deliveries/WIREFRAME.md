@@ -22,8 +22,8 @@ pieces fit together and where each responsibility lives.
 
 ## What This Repo Is Teaching
 
-This repo is a complete `solverforge-deliveries` `1.0.1` list-variable
-SolverForge app for delivery routing.
+This repo is a complete `solverforge-deliveries` list-variable SolverForge app
+for delivery routing.
 
 It shows how to combine:
 
@@ -82,15 +82,15 @@ It shows how to combine:
 ```text
 .
 ├── Cargo.toml
-│   Rust 1.95 crate metadata for app version 1.0.1 and registry dependency
+│   Rust 1.95 crate metadata for the app package and registry dependency
 │   requests.
 ├── solver.toml
 │   Embedded search policy for construction heuristics and local search.
 ├── solverforge.app.toml
 │   App metadata, demo IDs, model facts/entities, registry dependency sources,
-│   and the `solverforge 0.13.1` runtime target.
+│   and the `solverforge 0.14.1` runtime target.
 ├── Makefile
-│   Hospital-style local build, validation, and Space/Docker commands.
+│   Local build, validation, live-road, and Space/Docker commands.
 ├── Dockerfile
 │   Multi-stage Rust 1.95 Docker image for Hugging Face Spaces.
 ├── .dockerignore
@@ -144,9 +144,11 @@ normalization, list shadow refresh, transport refresh, and the
 Route-specific behavior lives under `src/domain/route_metrics/`:
 
 - `preparation.rs`
-  Builds matrices and per-vehicle prepared routing data.
+  Builds per-vehicle prepared routing data and the depot-aware matrices consumed
+  by public `solverforge::cvrp` route helpers.
 - `cvrp_hooks.rs`
-  Supplies Clarke-Wright, k-opt, load, capacity, and route replacement hooks.
+  Supplies only the app-specific route-feasibility hook. Route get/set, depot,
+  and distance hooks come from `solverforge::cvrp`.
 - `metrics.rs`
   Computes per-vehicle route metrics.
 - `scoring.rs`

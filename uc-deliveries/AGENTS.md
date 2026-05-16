@@ -3,7 +3,8 @@
 ## Project Structure And Naming
 
 This repo follows the current `solverforge-cli` app shape. The app package
-version is `1.0.1`, and the release binary is `solverforge_deliveries`.
+version is declared in `Cargo.toml`, and the release binary is
+`solverforge_deliveries`.
 
 - `src/domain/mod.rs` owns the `solverforge::planning_model!` manifest.
 - `src/domain/plan.rs` owns the `Plan` planning solution.
@@ -11,8 +12,8 @@ version is `1.0.1`, and the release binary is `solverforge_deliveries`.
 - `src/domain/vehicle.rs` owns the `Vehicle` planning entity and its
   `delivery_order` list variable.
 - `src/domain/preview.rs` owns transport/view preview structs.
-- `src/domain/route_metrics/` owns route preparation, CVRP hooks, scoring
-  preview, route geometry, and insertion ranking.
+- `src/domain/route_metrics/` owns route preparation, the local CVRP feasibility
+  hook, scoring preview, route geometry, and insertion ranking.
 - `src/constraints/` owns one score rule per file plus `mod.rs` assembly.
 - `src/data/data_seed/` owns deterministic city demo-data modules with grouped
   visit files for scaled delivery counts.

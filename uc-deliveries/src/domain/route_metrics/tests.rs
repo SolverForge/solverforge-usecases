@@ -53,6 +53,36 @@ async fn prepare_plan_populates_vehicle_routing_data() {
         .all(|vehicle| vehicle.prepared_routing.is_some()));
 }
 
+#[tokio::test]
+async fn prepare_plan_wires_public_cvrp_depot_hooks() {
+    let mut plan = sample_plan();
+    plan.routing_mode = RoutingMode::StraightLine;
+    prepare_plan(&mut plan)
+        .await
+        .expect("straight-line prep should succeed");
+
+    let vehicle_idx = 1;
+    let depot = solverforge::cvrp::depot_for_entity(&plan, vehicle_idx);
+    let prepared = plan.vehicles[vehicle_idx]
+        .prepared_routing
+        .as_ref()
+        .expect("vehicle should have prepared routing");
+
+    assert_eq!(depot, plan.deliveries.len());
+    assert_eq!(
+        solverforge::cvrp::route_distance(&plan, vehicle_idx, depot, 0),
+        prepared.depot_to_delivery_seconds[0]
+    );
+    assert_eq!(
+        solverforge::cvrp::route_distance(&plan, vehicle_idx, 0, depot),
+        prepared.delivery_to_depot_seconds[0]
+    );
+    assert_eq!(
+        solverforge::cvrp::route_distance(&plan, vehicle_idx, 0, 1),
+        prepared.travel_times[0][1]
+    );
+}
+
 #[test]
 fn preview_reports_assignments() {
     let plan = sample_plan();

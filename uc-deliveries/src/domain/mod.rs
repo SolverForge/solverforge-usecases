@@ -28,13 +28,10 @@ solverforge::planning_model! {
     mod route_metrics;
 
     pub use route_metrics::{
-        build_routes_snapshot, delivery_clarke_wright_depot, delivery_element_load,
-        delivery_k_opt_depot, delivery_k_opt_feasible, delivery_route_capacity,
-        delivery_route_distance, evaluate_plan, get_delivery_route, prepare_plan,
-        preview_for_plan, rank_delivery_insertions, replace_delivery_route,
-        DeliveryInsertionCandidate, DeliveryRoutingSolution, PlanScoreComponents,
-        PreparedVehicleRouting, RouteLegGeometry, RouteLegSummary, RoutesSnapshot,
-        VehicleRouteMetrics, UNASSIGNED_DELIVERY_HARD_PENALTY,
+        build_routes_snapshot, delivery_route_feasible, evaluate_plan, prepare_plan,
+        preview_for_plan, rank_delivery_insertions, DeliveryInsertionCandidate,
+        DeliveryRoutingSolution, PlanScoreComponents, PreparedVehicleRouting, RouteLegGeometry,
+        RouteLegSummary, RoutesSnapshot, VehicleRouteMetrics, UNASSIGNED_DELIVERY_HARD_PENALTY,
     };
 }
 

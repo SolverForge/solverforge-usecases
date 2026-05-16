@@ -2,6 +2,12 @@
 
 All notable changes to this use case are documented in this file.
 
+## 2.0.1 (2026-05-16)
+
+### Maintenance
+
+* **release:** target SolverForge 0.14.1 and migrate delivery route hooks to the owner-aware 0.14 list-variable API.
+
 ## 2.0.0 (2026-05-14)
 
 ### Maintenance

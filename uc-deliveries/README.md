@@ -54,7 +54,7 @@ make help
 - Package: `solverforge-deliveries`; version is declared in `Cargo.toml`
 - Release binary: `solverforge_deliveries`
 - Rust: `1.95`
-- SolverForge runtime: `solverforge` `0.13.1`
+- SolverForge runtime: `solverforge` `0.14.1`
 - Browser UI assets: `solverforge-ui` `0.6.5`
 - Routing engine: `solverforge-maps` `2.1.4`
 - Scaffold metadata: `solverforge-cli` `2.0.4` in `solverforge.app.toml`
@@ -116,6 +116,8 @@ clients receive a bootstrap event and then live retained-job events.
 
 - `list_clarke_wright` builds initial delivery routes.
 - `list_k_opt` improves those routes before local search.
+- The list variable uses public `solverforge::cvrp` helpers for route get/set,
+  per-vehicle depot lookup, and route-distance reads from prepared matrices.
 - Local search combines nearby list change/swap, reverse, k-opt, ruin, and
   limited sublist moves over `Vehicle.delivery_order`.
 - `late_acceptance` with an accepted-count forager keeps several candidate
@@ -171,8 +173,8 @@ make space-run
 3. `src/domain/delivery.rs` and `src/domain/vehicle.rs`
    The problem fact and planning entity.
 4. `src/domain/route_metrics/`
-   Route preparation, SolverForge CVRP hooks, preview scoring, route geometry,
-   and insertion ranking.
+   Route preparation, public CVRP matrix wiring, local feasibility pruning,
+   preview scoring, route geometry, and insertion ranking.
 5. `src/constraints/mod.rs` and `src/constraints/*.rs`
    The score model, one rule per file.
 6. `src/data/data_seed/entrypoints.rs`
