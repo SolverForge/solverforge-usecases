@@ -55,8 +55,8 @@ make help
 - Package: `solverforge-fsr`; version is declared in `Cargo.toml`
 - Release binary: `solverforge_fsr`
 - Rust: `1.95`
-- SolverForge runtime: `solverforge` `0.13.1`
-- SolverForge core helpers: `solverforge-core` `0.13.1`
+- SolverForge runtime: `solverforge` `0.14.1`
+- SolverForge core helpers: `solverforge-core` `0.14.1`
 - Browser UI assets: `solverforge-ui` `0.6.5`
 - Routing engine: `solverforge-maps` `2.1.4`
 - Scaffold metadata: `solverforge-cli` `2.0.4` in `solverforge.app.toml`

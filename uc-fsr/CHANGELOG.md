@@ -2,6 +2,12 @@
 
 All notable changes to this use case are documented in this file.
 
+## 2.0.1 (2026-05-16)
+
+### Maintenance
+
+* **release:** target SolverForge 0.14.1 and solverforge-core 0.14.1.
+
 ## 2.0.0 (2026-05-14)
 
 ### Maintenance

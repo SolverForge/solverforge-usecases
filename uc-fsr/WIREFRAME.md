@@ -20,8 +20,8 @@ pieces fit together and where each responsibility lives.
 
 ## What This Repo Is Teaching
 
-This repo is a complete `solverforge-fsr` `1.0.1` list-variable SolverForge app
-for field-service routing in Bergamo.
+This repo is a complete `solverforge-fsr` list-variable SolverForge app for
+field-service routing in Bergamo.
 
 It shows how to combine:
 
@@ -83,13 +83,13 @@ It shows how to combine:
 ```text
 .
 ├── Cargo.toml
-│   Rust 1.95 crate metadata for app version 1.0.1 and registry dependency
+│   Rust 1.95 crate metadata for the app package and registry dependency
 │   requests.
 ├── solver.toml
 │   Embedded search policy for list construction and local search.
 ├── solverforge.app.toml
 │   App metadata, demo IDs, model facts/entities, registry dependency sources,
-│   and the `solverforge 0.13.1` runtime target.
+│   and the `solverforge 0.14.1` runtime target.
 ├── Makefile
 │   Local build, validation, and Space/Docker commands.
 ├── Dockerfile

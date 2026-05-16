@@ -3,8 +3,8 @@
 ## Project Structure And Naming
 
 `solverforge-fsr` is a Rust 1.95 SolverForge field-service routing app with an
-Axum server and static browser workspace. The app package version is `1.0.1`,
-and the release binary is `solverforge_fsr`.
+Axum server and static browser workspace. The app package version is declared
+in `Cargo.toml`, and the release binary is `solverforge_fsr`.
 
 - `src/domain/mod.rs` owns the `solverforge::planning_model!` manifest.
 - `src/domain/field_service_plan.rs` owns the `FieldServicePlan` solution.
@@ -30,7 +30,8 @@ module or responsibility when a file approaches that size.
 - `make doctor` checks local `cargo`, `rustc`, `node`, and `docker` readiness.
 - `make run` runs the debug server on `PORT` (default `7860`).
 - `make build-release` builds `solverforge_fsr` in release mode.
-- `make test` runs Rust tests plus frontend JavaScript syntax checks.
+- `make test` runs Rust tests, frontend JavaScript syntax checks, and the
+  Playwright browser smoke.
 - `make lint` runs `cargo fmt --check`, clippy with warnings denied, and JS syntax checks.
 - `make ci-local` runs the full Hugging Face Space validation path, including Docker image build.
 - `make space-run` builds and runs the Docker Space image locally.
@@ -48,8 +49,8 @@ ownership boundaries rather than large shared scripts.
 Place Rust unit tests near the code they cover, using descriptive names such as
 `reports_unreachable_route_segments`. Run `make test` before handing off normal
 changes and `make ci-local` before deployment, dependency, Docker, or Space
-changes. Frontend validation is currently syntax-level via `node --check` over
-`static/*.js`.
+changes. Frontend validation includes `node --check` over `static/*.js`; served
+browser behavior is covered by `make test-e2e`.
 
 ## Documentation And Commenting Policy
 
