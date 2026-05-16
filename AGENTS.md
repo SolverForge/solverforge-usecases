@@ -22,8 +22,8 @@ These four directories are the open-source root allowlist. Do not add another
 verification script in the same change.
 
 When refreshing an imported open-source app, copy source from the corresponding
-repo under `../use-cases/`, excluding `.git`, build output, test output,
-Playwright reports, and local caches.
+repo under `USECASE_SOURCE_ROOT` (default `../use-cases`), excluding `.git`,
+build output, test output, Playwright reports, and local caches.
 
 ## Documentation Standard
 
@@ -77,4 +77,6 @@ changed paths with `git diff --stat`. The root CI workflow is
 
 Run `bash scripts/verify-metadata.sh` after documentation-structure changes.
 Run `bash scripts/verify-imports.sh` when imported open-source app directories
-change.
+change. The verifier compares against `USECASE_SOURCE_ROOT` when the source
+repos are present; set `USECASE_SOURCE_ROOT=/path/to/use-cases` for non-default
+layouts.

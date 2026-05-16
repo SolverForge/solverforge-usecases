@@ -2,6 +2,13 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+SOURCE_ROOT="${USECASE_SOURCE_ROOT:-$ROOT/../use-cases}"
+
+if [[ ! -d "$SOURCE_ROOT" ]]; then
+  printf 'missing source root: %s\n' "$SOURCE_ROOT" >&2
+  printf 'set USECASE_SOURCE_ROOT=/path/to/use-cases to refresh imported apps\n' >&2
+  exit 1
+fi
 
 copy_app() {
   local source_dir="$1"
@@ -22,9 +29,9 @@ copy_app() {
     "$source_dir"/ "$target_dir"/
 }
 
-copy_app "$ROOT/../use-cases/solverforge-deliveries" "$ROOT/uc-deliveries"
-copy_app "$ROOT/../use-cases/solverforge-fsr" "$ROOT/uc-fsr"
-copy_app "$ROOT/../use-cases/solverforge-hospital" "$ROOT/uc-hospital"
-copy_app "$ROOT/../use-cases/solverforge-lessons" "$ROOT/uc-lessons"
+copy_app "$SOURCE_ROOT/solverforge-deliveries" "$ROOT/uc-deliveries"
+copy_app "$SOURCE_ROOT/solverforge-fsr" "$ROOT/uc-fsr"
+copy_app "$SOURCE_ROOT/solverforge-hospital" "$ROOT/uc-hospital"
+copy_app "$SOURCE_ROOT/solverforge-lessons" "$ROOT/uc-lessons"
 
 printf 'Imported source-backed SolverForge use cases.\n'

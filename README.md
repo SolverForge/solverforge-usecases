@@ -14,8 +14,10 @@ run locally and can be published as a Hugging Face Space under the matching
 | `uc-hospital` | `solverforge-hospital` | Hospital workforce scheduling with skills, availability, preferences, and coverage. |
 | `uc-lessons` | `solverforge-lessons` | Lesson scheduling with teachers, cohorts, timeslots, room types, and timetable quality. |
 
-These open-source product examples are imported from the adjacent
-`../use-cases` source repos and kept as deployable app directories here.
+These open-source product examples are imported from source repos and kept as
+deployable app directories here. The default source root is the adjacent
+`../use-cases` directory; set `USECASE_SOURCE_ROOT=/path/to/use-cases` when
+the source repos live somewhere else.
 
 ## Documentation Shape
 
@@ -78,6 +80,11 @@ Root checks:
 bash scripts/verify-metadata.sh
 bash scripts/verify-imports.sh
 ```
+
+`verify-imports` compares the bundled `uc-*` directories against
+`USECASE_SOURCE_ROOT` when that source root exists. Publication-only checkouts
+can still run CI and pre-release without the source repos; the verifier reports
+the missing source root and skips only the import drift comparison.
 
 The CI workflow in `.github/workflows/ci.yml` installs the root browser-test
 dependencies with `make install-e2e` and then runs `make ci-local` on both

@@ -2,6 +2,8 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+SOURCE_ROOT="${USECASE_SOURCE_ROOT:-$ROOT/../use-cases}"
+STRICT="${VERIFY_IMPORTS_STRICT:-0}"
 
 EXCLUDES=(
   --exclude='.git'
@@ -33,9 +35,21 @@ verify_pair() {
   fi
 }
 
-verify_pair "$ROOT/../use-cases/solverforge-deliveries" "$ROOT/uc-deliveries"
-verify_pair "$ROOT/../use-cases/solverforge-fsr" "$ROOT/uc-fsr"
-verify_pair "$ROOT/../use-cases/solverforge-hospital" "$ROOT/uc-hospital"
-verify_pair "$ROOT/../use-cases/solverforge-lessons" "$ROOT/uc-lessons"
+if [[ ! -d "$SOURCE_ROOT" ]]; then
+  if [[ "$STRICT" == "1" || "$STRICT" == "true" ]]; then
+    printf 'import source root not found: %s\n' "$SOURCE_ROOT" >&2
+    printf 'set USECASE_SOURCE_ROOT=/path/to/use-cases to run source-backed drift verification\n' >&2
+    exit 1
+  fi
+  printf 'import source root not found: %s\n' "$SOURCE_ROOT"
+  printf 'set USECASE_SOURCE_ROOT=/path/to/use-cases to run source-backed drift verification\n'
+  printf 'Skipping import drift verification because this checkout has no source repo root.\n'
+  exit 0
+fi
+
+verify_pair "$SOURCE_ROOT/solverforge-deliveries" "$ROOT/uc-deliveries"
+verify_pair "$SOURCE_ROOT/solverforge-fsr" "$ROOT/uc-fsr"
+verify_pair "$SOURCE_ROOT/solverforge-hospital" "$ROOT/uc-hospital"
+verify_pair "$SOURCE_ROOT/solverforge-lessons" "$ROOT/uc-lessons"
 
 printf 'Source-backed SolverForge imports verified.\n'

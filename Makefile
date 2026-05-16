@@ -27,6 +27,7 @@ OPEN_SOURCE_APPS := uc-deliveries uc-fsr uc-hospital uc-lessons
 APPS ?= $(OPEN_SOURCE_APPS)
 APP ?= uc-lessons
 PORT ?= 7860
+USECASE_SOURCE_ROOT ?= ../use-cases
 RELEASE_AS ?=
 RELEASE_VERSION ?=
 TAG ?=
@@ -82,6 +83,12 @@ doctor: banner
 	else \
 		printf "$(YELLOW)! docker not found; Space/Docker targets will be unavailable$(RESET)\n"; \
 	fi; \
+	if [ -d "$(USECASE_SOURCE_ROOT)" ]; then \
+		printf "$(GREEN)$(CHECK) import source root: $(USECASE_SOURCE_ROOT)$(RESET)\n"; \
+	else \
+		printf "$(YELLOW)! import source root not found: $(USECASE_SOURCE_ROOT)$(RESET)\n"; \
+		printf "$(GRAY)  set USECASE_SOURCE_ROOT=/path/to/use-cases for source-backed import drift checks$(RESET)\n"; \
+	fi; \
 	printf "$(GRAY)Official apps: $(OPEN_SOURCE_APPS)$(RESET)\n"; \
 	printf "$(GRAY)Default APP: $(APP)$(RESET)\n"; \
 	printf "$(GRAY)Default port: $(PORT)$(RESET)\n"; \
@@ -109,13 +116,13 @@ verify-metadata: banner
 	@printf "$(GREEN)$(CHECK) Metadata verified$(RESET)\n"
 
 verify-imports: banner
-	@printf "$(PROGRESS) Comparing imported apps against ../use-cases sources...\n"
-	@bash scripts/verify-imports.sh
-	@printf "$(GREEN)$(CHECK) Imported app contents verified$(RESET)\n"
+	@printf "$(PROGRESS) Comparing imported apps against $(USECASE_SOURCE_ROOT) sources...\n"
+	@USECASE_SOURCE_ROOT="$(USECASE_SOURCE_ROOT)" bash scripts/verify-imports.sh
+	@printf "$(GREEN)$(CHECK) Import drift check completed$(RESET)\n"
 
 import-usecases: banner
-	@printf "$(PROGRESS) Refreshing official app directories from ../use-cases...\n"
-	@bash scripts/import-usecases.sh
+	@printf "$(PROGRESS) Refreshing official app directories from $(USECASE_SOURCE_ROOT)...\n"
+	@USECASE_SOURCE_ROOT="$(USECASE_SOURCE_ROOT)" bash scripts/import-usecases.sh
 	@printf "$(GREEN)$(CHECK) Imports refreshed$(RESET)\n"
 
 # ============== Build & Run ==============
@@ -248,6 +255,7 @@ version: banner
 	@printf "$(CYAN)Bundle version:$(RESET) $(YELLOW)$(BOLD)$(VERSION)$(RESET)\n"
 	@printf "$(CYAN)Rust version required:$(RESET) $(YELLOW)$(BOLD)$(RUST_VERSION)$(RESET)\n"
 	@printf "$(CYAN)Official apps:$(RESET) $(YELLOW)$(BOLD)$(OPEN_SOURCE_APPS)$(RESET)\n"
+	@printf "$(CYAN)Import source root:$(RESET) $(YELLOW)$(BOLD)$(USECASE_SOURCE_ROOT)$(RESET)\n"
 	@printf "$(CYAN)Release tag format:$(RESET) $(YELLOW)$(BOLD)solverforge-<app>@<version>$(RESET)\n"
 
 clean: banner
@@ -272,8 +280,8 @@ help: banner
 	@printf "  $(GREEN)make list$(RESET)                  - List official uc-* app directories\n"
 	@printf "  $(GREEN)make doctor$(RESET)                - Check local cargo/rustc/node/docker readiness\n"
 	@printf "  $(GREEN)make verify-metadata$(RESET)       - Validate bundle metadata and required app surfaces\n"
-	@printf "  $(GREEN)make verify-imports$(RESET)        - Compare uc-* imports against ../use-cases sources\n"
-	@printf "  $(GREEN)make import-usecases$(RESET)       - Refresh official app directories from ../use-cases\n"
+	@printf "  $(GREEN)make verify-imports$(RESET)        - Compare uc-* imports against USECASE_SOURCE_ROOT\n"
+	@printf "  $(GREEN)make import-usecases$(RESET)       - Refresh official app directories from USECASE_SOURCE_ROOT\n"
 	@printf "\n$(CYAN)$(BOLD)Build & Run:$(RESET)\n"
 	@printf "  $(GREEN)make build$(RESET)                 - Build all official apps\n"
 	@printf "  $(GREEN)make build-release$(RESET)         - Build all official apps in release mode\n"
