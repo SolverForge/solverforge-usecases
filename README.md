@@ -79,10 +79,13 @@ Root checks:
 ```sh
 bash scripts/verify-metadata.sh
 bash scripts/verify-imports.sh
+bash scripts/verify-static-mvc.cjs
 ```
 
 `verify-imports` compares the bundled `uc-*` directories against
-`USECASE_SOURCE_ROOT` when that source root exists. Publication-only checkouts
+`USECASE_SOURCE_ROOT` when that source root exists.
+`verify-static-mvc.cjs` enforces the static MVC entry pattern across all use cases.
+Publication-only checkouts
 can still run CI and pre-release without the source repos; the verifier reports
 the missing source root and skips only the import drift comparison.
 

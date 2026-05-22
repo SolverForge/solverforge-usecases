@@ -34,7 +34,7 @@ TAG ?=
 
 # ============== Phony Targets ==============
 .PHONY: banner help list doctor require-node require-docker install-e2e browser-setup \
-        verify-metadata verify-imports import-usecases build build-release run run-release \
+        verify-metadata verify-imports verify-static-mvc import-usecases build build-release run run-release \
         test test-all test-rust test-frontend-syntax test-e2e test-one lint fmt fmt-check \
         clippy check ci-local space-ci space-build space-run docker-build docker-run \
         pre-release release-usecase release-usecase-dry-run release-ci verify-release-tag \
@@ -120,6 +120,11 @@ verify-imports: banner
 	@USECASE_SOURCE_ROOT="$(USECASE_SOURCE_ROOT)" bash scripts/verify-imports.sh
 	@printf "$(GREEN)$(CHECK) Import drift check completed$(RESET)\n"
 
+verify-static-mvc: banner
+	@printf "$(PROGRESS) Verifying static MVC patterns...\n"
+	@node scripts/verify-static-mvc.cjs
+	@printf "$(GREEN)$(CHECK) Static MVC patterns verified$(RESET)\n"
+
 import-usecases: banner
 	@printf "$(PROGRESS) Refreshing official app directories from $(USECASE_SOURCE_ROOT)...\n"
 	@USECASE_SOURCE_ROOT="$(USECASE_SOURCE_ROOT)" bash scripts/import-usecases.sh
@@ -168,7 +173,7 @@ test-one:
 	fi
 
 # ============== Lint & Format ==============
-lint: banner verify-metadata verify-imports fmt-check clippy test-frontend-syntax
+lint: banner verify-metadata verify-imports verify-static-mvc fmt-check clippy test-frontend-syntax
 	@printf "\n$(GREEN)$(BOLD)$(CHECK) Bundle lint checks passed$(RESET)\n\n"
 
 fmt: banner
@@ -185,17 +190,19 @@ check: lint test
 # ============== CI & Space Validation ==============
 ci-local: banner
 	@printf "$(CYAN)$(BOLD)Local CI Simulation$(RESET)\n\n"
-	@printf "$(PROGRESS) Step 1/6: Metadata verifier...\n"
+	@printf "$(PROGRESS) Step 1/7: Metadata verifier...\n"
 	@$(MAKE) verify-metadata --no-print-directory
-	@printf "$(PROGRESS) Step 2/6: Import drift verifier...\n"
+	@printf "$(PROGRESS) Step 2/7: Import drift verifier...\n"
 	@$(MAKE) verify-imports --no-print-directory
-	@printf "$(PROGRESS) Step 3/6: Format check...\n"
+	@printf "$(PROGRESS) Step 3/7: Static MVC verifier...\n"
+	@$(MAKE) verify-static-mvc --no-print-directory
+	@printf "$(PROGRESS) Step 4/7: Format check...\n"
 	@$(MAKE) fmt-check --no-print-directory
-	@printf "$(PROGRESS) Step 4/6: Clippy...\n"
+	@printf "$(PROGRESS) Step 5/7: Clippy...\n"
 	@$(MAKE) clippy --no-print-directory
-	@printf "$(PROGRESS) Step 5/6: Frontend syntax...\n"
+	@printf "$(PROGRESS) Step 6/7: Frontend syntax...\n"
 	@$(MAKE) test-frontend-syntax --no-print-directory
-	@printf "$(PROGRESS) Step 6/6: Standard app tests...\n"
+	@printf "$(PROGRESS) Step 7/7: Standard app tests...\n"
 	@$(MAKE) test-all --no-print-directory
 	@printf "\n$(GREEN)$(BOLD)$(CHECK) LOCAL CI SIMULATION PASSED$(RESET)\n\n"
 
@@ -281,6 +288,7 @@ help: banner
 	@printf "  $(GREEN)make doctor$(RESET)                - Check local cargo/rustc/node/docker readiness\n"
 	@printf "  $(GREEN)make verify-metadata$(RESET)       - Validate bundle metadata and required app surfaces\n"
 	@printf "  $(GREEN)make verify-imports$(RESET)        - Compare uc-* imports against USECASE_SOURCE_ROOT\n"
+	@printf "  $(GREEN)make verify-static-mvc$(RESET)     - Validate static MVC pattern across uc-* apps\n"
 	@printf "  $(GREEN)make import-usecases$(RESET)       - Refresh official app directories from USECASE_SOURCE_ROOT\n"
 	@printf "\n$(CYAN)$(BOLD)Build & Run:$(RESET)\n"
 	@printf "  $(GREEN)make build$(RESET)                 - Build all official apps\n"

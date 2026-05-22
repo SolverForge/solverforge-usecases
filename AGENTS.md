@@ -57,6 +57,18 @@ Codex instructions belong in `AGENTS.md`. Do not add non-Codex assistant
 instruction files, external code-intelligence directive blocks, or
 assistant-specific fallback instruction trees.
 
+## Static Frontend MVC Pattern
+
+Each use case `static/` directory must follow the same MVC entry pattern:
+
+- `static/app.js` — entry point that imports and calls `boot()` from `./app/main.mjs`.
+- `static/index.html` — must load `/app.js` with `type="module"`.
+- `static/app/main.mjs` — controller that exports `async function boot()`.
+- `static/app/models/` — domain models and data transformations.
+- `static/app/ui/` — view rendering and layout helpers.
+
+This ensures consistent ES module loading across all SolverForge apps.
+
 ## Validation
 
 Run validation from the app directory being changed. Prefer the app `Makefile`
