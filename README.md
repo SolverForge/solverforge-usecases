@@ -7,12 +7,12 @@ run locally and can be published as a Hugging Face Space under the matching
 
 ## Product Surface
 
-| Directory | Published Space | Use case |
-| --- | --- | --- |
-| `uc-deliveries` | `solverforge-deliveries` | Capacitated delivery routing with time windows and map-backed travel data. |
-| `uc-fsr` | `solverforge-fsr` | Field-service routing for technicians, visits, parts, priorities, and travel. |
-| `uc-hospital` | `solverforge-hospital` | Hospital workforce scheduling with skills, availability, preferences, and coverage. |
-| `uc-lessons` | `solverforge-lessons` | Lesson scheduling with teachers, cohorts, timeslots, room types, and timetable quality. |
+| Directory       | Published Space                                                                              | Use case                                                                                |
+| --------------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `uc-deliveries` | [`solverforge-deliveries`](https://huggingface.co/spaces/SolverForge/solverforge-deliveries) | Capacitated delivery routing with time windows and map-backed travel data.              |
+| `uc-fsr`        | [`solverforge-fsr`](https://huggingface.co/spaces/SolverForge/solverforge-fsr)               | Field-service routing for technicians, visits, parts, priorities, and travel.           |
+| `uc-hospital`   | [`solverforge-hospital`](https://huggingface.co/spaces/SolverForge/solverforge-hospital)     | Hospital workforce scheduling with skills, availability, preferences, and coverage.     |
+| `uc-lessons`    | [`solverforge-lessons`](https://huggingface.co/spaces/SolverForge/solverforge-lessons)       | Lesson scheduling with teachers, cohorts, timeslots, room types, and timetable quality. |
 
 These open-source product examples are imported from source repos and kept as
 deployable app directories here. The default source root is the adjacent
@@ -132,9 +132,9 @@ uc-lessons -> <HF_ORGANIZATION>/solverforge-lessons
 
 Required repository configuration:
 
-| Name | Type | Purpose |
-| --- | --- | --- |
-| `HF_TOKEN` | secret | Hugging Face token with write access to the target Spaces. |
+| Name              | Type     | Purpose                                                     |
+| ----------------- | -------- | ----------------------------------------------------------- |
+| `HF_TOKEN`        | secret   | Hugging Face token with write access to the target Spaces.  |
 | `HF_ORGANIZATION` | variable | Hugging Face username or organization that owns the Spaces. |
 
 Each target Space must already exist before the workflow pushes to it.
