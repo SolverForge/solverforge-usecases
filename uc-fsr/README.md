@@ -186,7 +186,7 @@ make space-run
 9. `src/api/routes.rs`, `src/api/dto.rs`, `src/api/route_geometry.rs`, and
    `src/api/sse.rs`
    HTTP routes, transport DTOs, route geometry, and live-event streaming.
-10. `static/app.js` and `static/app-*.js`
+10. `static/app/main.mjs`, `static/app/models/`, and `static/app/ui/`
     Browser lifecycle, dataset loading, route rendering, maps, tables, and API
     guide.
 

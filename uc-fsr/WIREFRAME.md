@@ -57,7 +57,7 @@ It shows how to combine:
 ## Runtime Flow
 
 1. The browser loads `static/index.html`.
-2. `static/app.js` loads `static/sf-config.json` and
+2. `static/app/main.mjs` loads `static/sf-config.json` and
    `static/generated/ui-model.json`.
 3. The app fetches `/demo-data/STANDARD`.
 4. The backend returns a `FieldServicePlan` with seed travel legs.
@@ -158,21 +158,21 @@ The REST API handles job control and snapshot reads:
 
 ## Frontend Layout
 
-`static/app.js` is the controller. It owns current plan state, retained job
+`static/app/main.mjs` is the controller. It owns current plan state, retained job
 state, route focus, event handlers, and analysis modal wiring.
 
 Supporting modules split the UI by responsibility:
 
-- `static/app-dataset.js`
-  Demo catalog and plan loading.
-- `static/app-layout.js`
-  Page shell and stock SolverForge UI component composition.
-- `static/app-route-state.js`
+- `static/app/models/route-state.mjs`
   Snapshot identity and route geometry cache coordination.
-- `static/app-render*.js`
-  Summary cards, route cards, maps, timeline, tables, and API guide.
-- `static/app-utils.js`
+- `static/app/models/utils.mjs`
   Plan cloning, labels, formatting, and color helpers.
+- `static/app/ui/dataset.mjs`
+  Demo catalog and plan loading.
+- `static/app/ui/layout.mjs`
+  Page shell and stock SolverForge UI component composition.
+- `static/app/ui/render*.mjs`
+  Summary cards, route cards, maps, timeline, tables, and API guide.
 
 ## Validation Surfaces
 
