@@ -1,5 +1,5 @@
-import { renderEmployeeView } from '../schedule/employee-view.mjs';
-import { renderLocationView } from '../schedule/location-view.mjs';
+import { renderEmployeeView } from '../models/employee-view.mjs';
+import { renderLocationView } from '../models/location-view.mjs';
 
 // Maps the generated UI-model view kinds to the local renderer functions.
 export function createViewRegistry() {

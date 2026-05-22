@@ -13,11 +13,6 @@
   <!-- The shared SolverForge UI shell mounts into this root element. -->
   <div id="sf-app"></div>
   <script src="/sf/sf.js"></script>
-  <script type="module">
-    import { bootApp } from '/app/main.mjs';
-
-    // The local app only needs one browser entry call after the shared UI loads.
-    bootApp();
-  </script>
+  <script type="module" src="/app.js"></script>
 </body>
 </html>

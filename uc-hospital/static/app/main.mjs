@@ -1,10 +1,10 @@
-import { buildAnalysisBody } from './schedule/analysis-modal.mjs';
-import { createAppShell } from './shell/app-shell.mjs';
-import { createAppState } from './shell/app-state.mjs';
-import { loadAppConfig } from './shell/config-loader.mjs';
-import { renderDataTables } from './shell/data-panel.mjs';
-import { createSolverController } from './shell/solver-controller.mjs';
-import { createViewRegistry } from './views/registry.mjs';
+import { buildAnalysisBody } from './models/analysis-modal.mjs';
+import { createAppShell } from './ui/app-shell.mjs';
+import { createAppState } from './ui/app-state.mjs';
+import { loadAppConfig } from './ui/config-loader.mjs';
+import { renderDataTables } from './ui/data-panel.mjs';
+import { createSolverController } from './ui/solver-controller.mjs';
+import { createViewRegistry } from './ui/registry.mjs';
 
 // Browser entrypoint that wires together config loading, the shared UI shell,
 // hospital-specific view renderers, and the retained-job controller.
@@ -127,4 +127,9 @@ export async function bootApp(root = globalThis) {
 // Defensive deep clone so the UI never mutates the last backend payload in place.
 function clonePlan(data) {
   return JSON.parse(JSON.stringify(data));
+}
+
+// MVC entry pattern compatibility
+export async function boot() {
+  return bootApp();
 }
