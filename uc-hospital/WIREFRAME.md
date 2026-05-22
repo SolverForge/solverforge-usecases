@@ -86,7 +86,7 @@ If you are new to this repo, read files in this order:
    See the HTTP contract.
 11. `static/app/main.mjs`
     See the browser boot sequence.
-12. `static/app/shell/` and `static/app/schedule/`
+12. `static/app/ui/` and `static/app/models/`
     See how stock `solverforge-ui` components are adapted to this hospital demo.
 
 ## Runtime Flow
@@ -113,7 +113,7 @@ through:
     visible status, timeline, and analysis panels.
 
 The browser shell also contains a visible REST API guide. That makes
-`static/app/shell/api-guide.mjs` part of the documentation surface, not just a
+`static/app/ui/api-guide.mjs` part of the documentation surface, not just a
 UI helper.
 
 ## File Map

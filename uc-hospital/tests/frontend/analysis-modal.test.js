@@ -6,7 +6,7 @@ const { withBrowserEnv } = require('./support/load-browser-modules');
 // Frontend tests double as documentation for the intended UI contract.
 test('analysis modal body uses DOM content and preserves text escaping', async () => {
   await withBrowserEnv({}, async ({ document, importModule }) => {
-    const { buildAnalysisBody } = await importModule('static/app/schedule/analysis-modal.mjs');
+    const { buildAnalysisBody } = await importModule('static/app/models/analysis-modal.mjs');
 
     const body = buildAnalysisBody(document, {
       analysis: {

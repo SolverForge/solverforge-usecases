@@ -58,7 +58,7 @@ modeling.
 - Treat `README.md`, `WIREFRAME.md`, this file,
   `docs/api-and-solver-policy.md`, `docs/screenshot.png`,
   `solver.toml` comments, and the visible API help in
-  `static/app/shell/api-guide.mjs` as one canonical documentation surface. When
+  `static/app/ui/api-guide.mjs` as one canonical documentation surface. When
   one changes, audit the others that describe the same behavior.
 - Add module-level docs or comments for every new module that explain its role
   in the app and where it sits in the data flow.

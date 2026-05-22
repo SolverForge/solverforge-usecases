@@ -7,7 +7,7 @@ const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 test('solver controller stop leaves only a terminal job for the next solve to replace', async () => {
   await withBrowserEnv({}, async ({ importModule, window }) => {
-    const { createSolverController } = await importModule('static/app/shell/solver-controller.mjs');
+    const { createSolverController } = await importModule('static/app/ui/solver-controller.mjs');
     const calls = [];
     let onMessage;
     let createCount = 0;
@@ -88,7 +88,7 @@ test('solver controller stop leaves only a terminal job for the next solve to re
 
 test('solver controller aborts a retry when terminal cleanup fails', async () => {
   await withBrowserEnv({}, async ({ importModule, window }) => {
-    const { createSolverController } = await importModule('static/app/shell/solver-controller.mjs');
+    const { createSolverController } = await importModule('static/app/ui/solver-controller.mjs');
     const calls = [];
     let onMessage;
     let createCount = 0;

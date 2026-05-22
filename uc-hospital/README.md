@@ -189,7 +189,7 @@ make space-run
    Retained-job orchestration over `SolverManager<Plan>`.
 9. `src/api/routes.rs`, `src/api/dto.rs`, and `src/api/sse.rs`
    HTTP routes, transport DTOs, and live-event streaming.
-10. `static/app/main.mjs`, `static/app/shell/`, and `static/app/schedule/`
+10. `static/app/main.mjs`, `static/app/ui/`, and `static/app/models/`
     Browser boot sequence, shell, and timeline views.
 
 ## Project Shape

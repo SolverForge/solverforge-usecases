@@ -7,7 +7,7 @@ const { duplicateNameEmployees, shift } = require('./support/fixtures');
 // These tests focus on the hospital-specific adaptation of the shared timeline widget.
 test('employee view renders empty employee lanes and an explicit unassigned lane', async () => {
   await withBrowserEnv({}, async ({ document, importModule, window }) => {
-    const { renderEmployeeView } = await importModule('static/app/schedule/employee-view.mjs');
+    const { renderEmployeeView } = await importModule('static/app/models/employee-view.mjs');
     const container = document.createElement('div');
 
     renderEmployeeView({
@@ -35,7 +35,7 @@ test('employee view renders empty employee lanes and an explicit unassigned lane
 
 test('location view uses the canonical detailed timeline surface', async () => {
   await withBrowserEnv({}, async ({ document, importModule, window }) => {
-    const { renderLocationView } = await importModule('static/app/schedule/location-view.mjs');
+    const { renderLocationView } = await importModule('static/app/models/location-view.mjs');
     const container = document.createElement('div');
 
     renderLocationView({
@@ -64,7 +64,7 @@ test('location view uses the canonical detailed timeline surface', async () => {
 
 test('timeline render does not assign read-only layout geometry', async () => {
   await withBrowserEnv({}, async ({ document, importModule, window }) => {
-    const { renderLocationView } = await importModule('static/app/schedule/location-view.mjs');
+    const { renderLocationView } = await importModule('static/app/models/location-view.mjs');
     const geometry = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(document.createElement('div')), 'clientWidth');
     const container = document.createElement('div');
 
@@ -91,7 +91,7 @@ test('timeline render does not assign read-only layout geometry', async () => {
 
 test('location view renders individual assignments without overview summaries', async () => {
   await withBrowserEnv({}, async ({ document, importModule, window }) => {
-    const { renderLocationView } = await importModule('static/app/schedule/location-view.mjs');
+    const { renderLocationView } = await importModule('static/app/models/location-view.mjs');
     const container = document.createElement('div');
 
     renderLocationView({
@@ -124,7 +124,7 @@ test('location view renders individual assignments without overview summaries', 
 
 test('timeline header drag scrolls the schedule viewport horizontally', async () => {
   await withBrowserEnv({}, async ({ document, importModule, window }) => {
-    const { renderLocationView } = await importModule('static/app/schedule/location-view.mjs');
+    const { renderLocationView } = await importModule('static/app/models/location-view.mjs');
     const container = document.createElement('div');
 
     renderLocationView({
@@ -169,7 +169,7 @@ test('timeline header drag scrolls the schedule viewport horizontally', async ()
 
 test('detailed timeline items use packed positioning from the shared timeline surface', async () => {
   await withBrowserEnv({}, async ({ document, importModule, window }) => {
-    const { renderEmployeeView } = await importModule('static/app/schedule/employee-view.mjs');
+    const { renderEmployeeView } = await importModule('static/app/models/employee-view.mjs');
     const container = document.createElement('div');
 
     renderEmployeeView({
@@ -196,7 +196,7 @@ test('detailed timeline items use packed positioning from the shared timeline su
 
 test('employee view renders availability overlays from employee day preferences', async () => {
   await withBrowserEnv({}, async ({ document, importModule, window }) => {
-    const { renderEmployeeView } = await importModule('static/app/schedule/employee-view.mjs');
+    const { renderEmployeeView } = await importModule('static/app/models/employee-view.mjs');
     const container = document.createElement('div');
 
     renderEmployeeView({

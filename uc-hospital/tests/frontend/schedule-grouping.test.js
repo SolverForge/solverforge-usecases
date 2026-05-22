@@ -6,8 +6,8 @@ const { duplicateNameEmployees, employee, shift } = require('./support/fixtures'
 
 // Grouping tests document how the schedule rows are organized before rendering.
 test('location grouping keeps unassigned shifts visible and sorts by start time', async () => {
-  const { buildShiftPresentation } = await importModule('static/app/schedule/presentation.mjs');
-  const { groupShiftRowsByLocation } = await importModule('static/app/schedule/grouping.mjs');
+  const { buildShiftPresentation } = await importModule('static/app/models/presentation.mjs');
+  const { groupShiftRowsByLocation } = await importModule('static/app/models/grouping.mjs');
 
   const presentation = buildShiftPresentation(
     [
@@ -40,8 +40,8 @@ test('location grouping keeps unassigned shifts visible and sorts by start time'
 });
 
 test('location grouping preserves first-seen lane order', async () => {
-  const { buildShiftPresentation } = await importModule('static/app/schedule/presentation.mjs');
-  const { groupShiftRowsByLocation } = await importModule('static/app/schedule/grouping.mjs');
+  const { buildShiftPresentation } = await importModule('static/app/models/presentation.mjs');
+  const { groupShiftRowsByLocation } = await importModule('static/app/models/grouping.mjs');
 
   const presentation = buildShiftPresentation(
     [
@@ -58,8 +58,8 @@ test('location grouping preserves first-seen lane order', async () => {
 });
 
 test('employee grouping keeps duplicate employee names separate and preserves empty lanes', async () => {
-  const { buildShiftPresentation } = await importModule('static/app/schedule/presentation.mjs');
-  const { groupShiftRowsByEmployee } = await importModule('static/app/schedule/grouping.mjs');
+  const { buildShiftPresentation } = await importModule('static/app/models/presentation.mjs');
+  const { groupShiftRowsByEmployee } = await importModule('static/app/models/grouping.mjs');
 
   const presentation = buildShiftPresentation(
     [shift({ employeeIdx: null })],

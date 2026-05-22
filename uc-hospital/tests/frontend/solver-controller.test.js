@@ -7,7 +7,7 @@ const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 test('solver controller keeps the retained job after transport interruption', async () => {
   await withBrowserEnv({}, async ({ importModule, window }) => {
-    const { createSolverController } = await importModule('static/app/shell/solver-controller.mjs');
+    const { createSolverController } = await importModule('static/app/ui/solver-controller.mjs');
     const calls = [];
     let onStreamError;
     let createCount = 0;
@@ -74,7 +74,7 @@ test('solver controller keeps the retained job after transport interruption', as
 
 test('solver controller pauses and resumes the retained runtime without starting over', async () => {
   await withBrowserEnv({}, async ({ importModule, window }) => {
-    const { createSolverController } = await importModule('static/app/shell/solver-controller.mjs');
+    const { createSolverController } = await importModule('static/app/ui/solver-controller.mjs');
     const calls = [];
     let onMessage;
     let createCount = 0;

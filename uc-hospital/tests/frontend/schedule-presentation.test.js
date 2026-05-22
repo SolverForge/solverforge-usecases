@@ -6,7 +6,7 @@ const { duplicateNameEmployees, employee, shift } = require('./support/fixtures'
 
 // Presentation tests lock down the transport-to-timeline conversion layer.
 test('shift presentation builds a day-aligned horizon for overnight schedules', async () => {
-  const { buildShiftPresentation } = await importModule('static/app/schedule/presentation.mjs');
+  const { buildShiftPresentation } = await importModule('static/app/models/presentation.mjs');
 
   const presentation = buildShiftPresentation(
     [
@@ -32,7 +32,7 @@ test('shift presentation builds a day-aligned horizon for overnight schedules', 
 });
 
 test('shift presentation preserves stable employee identity for duplicate names', async () => {
-  const { buildShiftPresentation } = await importModule('static/app/schedule/presentation.mjs');
+  const { buildShiftPresentation } = await importModule('static/app/models/presentation.mjs');
 
   const presentation = buildShiftPresentation(
     [

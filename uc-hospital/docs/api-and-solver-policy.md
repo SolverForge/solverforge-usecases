@@ -2,7 +2,7 @@
 
 This page holds the longer reference material that must stay aligned with
 `src/api/routes.rs`, `src/api/dto.rs`, `src/solver/service.rs`, `solver.toml`,
-and the visible API guide in `static/app/shell/api-guide.mjs`.
+and the visible API guide in `static/app/ui/api-guide.mjs`.
 
 ## REST API
 
