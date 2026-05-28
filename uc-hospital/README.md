@@ -56,7 +56,7 @@ make help
 - Package: `solverforge-hospital`; version is declared in `Cargo.toml`
 - Release binary: `solverforge-hospital`
 - Rust: `1.95`
-- SolverForge runtime: `solverforge` `0.14.1`
+- SolverForge runtime: `solverforge` `0.15.0`
 - Browser UI assets: `solverforge-ui` `0.6.5`
 - Scaffold metadata: `solverforge-cli` `2.0.4` in `solverforge.app.toml`
 
