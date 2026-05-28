@@ -2,6 +2,16 @@
 
 All notable changes to this use case are documented in this file.
 
+## 2.0.2 (2026-05-28)
+
+### Fixes
+
+* **scoring:** rebuild transient visit indexes after JSON round trips and enforce exactly-once service visit assignment.
+
+### Maintenance
+
+* **docs:** align FSR architecture notes and use-case wireframes with the current retained runtime and API surface.
+
 ## 2.0.1 (2026-05-16)
 
 ### Maintenance
