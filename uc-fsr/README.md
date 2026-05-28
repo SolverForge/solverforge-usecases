@@ -83,7 +83,7 @@ technicians, 24 customer locations, and 48 service visits.
 
 Hard constraints:
 
-- Every service visit is assigned.
+- Every service visit is assigned exactly once, and route visit indexes are valid.
 - Every route leg is reachable.
 - The assigned technician has the required skills.
 - The assigned technician carries the required parts.
@@ -169,18 +169,22 @@ make space-run
 1. `src/domain/mod.rs`
    The `planning_model!` manifest and public domain exports.
 2. `src/domain/field_service_plan.rs`
-   The solution type, fact collections, route entities, and score.
+   The solution type, fact collections, route entities, transient index
+   normalization, route shadow refresh, and score.
 3. `src/domain/location.rs`, `src/domain/service_visit.rs`, and
    `src/domain/travel_leg.rs`
    The problem facts the solver reads.
-4. `src/domain/technician_route.rs`
-   The planning entity and list variable SolverForge mutates.
+4. `src/domain/technician_route.rs` and `src/domain/route_metrics.rs`
+   The planning entity, list variable SolverForge mutates, and route shadow
+   measurements used by stock constraints.
 5. `src/data/data_seed.rs`
    Demo ID, Bergamo data assembly, routing preparation, and cache policy.
-6. `src/constraints/mod.rs` and `src/constraints/route_metrics.rs`
-   The score model and shared route-measurement math.
+6. `src/constraints/mod.rs`
+   The score model assembled from SolverForge constraints.
 7. `src/constraints/*.rs`
-   One business scoring rule per file.
+   One business scoring rule per file. Most rules use stock `ConstraintFactory`
+   streams; duplicate visit assignment uses a custom incremental counter so
+   retained score analysis counts only real duplicate groups.
 8. `src/solver/service.rs`
    Retained-job orchestration over `SolverManager<FieldServicePlan>`.
 9. `src/api/routes.rs`, `src/api/dto.rs`, `src/api/route_geometry.rs`, and
@@ -193,9 +197,9 @@ make space-run
 ## Project Shape
 
 - `src/domain/`
-  Planning model, domain types, and route entities.
+  Planning model, domain types, route entities, and route shadow measurements.
 - `src/constraints/`
-  Incremental SolverForge scoring rules and route metric helpers.
+  SolverForge scoring rules, one business rule per file; most use stock streams.
 - `src/data/`
   Deterministic Bergamo demo data and road-network preparation.
 - `src/solver/`

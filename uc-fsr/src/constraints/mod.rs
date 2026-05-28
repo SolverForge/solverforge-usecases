@@ -1,16 +1,14 @@
 //! Constraint assembly for field-service routing.
 //!
-//! Each child module owns one business rule. The small wrappers delegate shared
-//! route walking to `route_metrics`, so beginner readers can learn the rule
-//! names here before opening the scoring math.
+//! Each child module owns one business rule and uses stock SolverForge
+//! `ConstraintFactory` streams. Route-level calculations are maintained as
+//! domain shadow values so the scoring layer stays declarative.
 
 use crate::domain::FieldServicePlan;
 use solverforge::prelude::*;
 
 pub use self::assemble::create_constraints;
 
-mod route_constraint;
-pub mod route_metrics;
 #[cfg(test)]
 mod route_metrics_tests;
 
@@ -34,7 +32,9 @@ mod assemble {
     pub fn create_constraints() -> impl ConstraintSet<FieldServicePlan, HardSoftScore> {
         // @solverforge:begin constraint-calls
         (
-            assigned_visits::constraint(),
+            assigned_visits::missing_visits(),
+            assigned_visits::duplicate_assignments(),
+            assigned_visits::invalid_assignments(),
             balance_workload::constraint(),
             minimize_travel::constraint(),
             priority_slack::constraint(),

@@ -1,17 +1,12 @@
-use crate::constraints::route_metrics::{
-    priority_slack_match_count, priority_slack_score, RouteConstraint,
-};
-use crate::domain::FieldServicePlan;
+use crate::domain::{FieldServicePlan, FieldServicePlanConstraintStreams, TechnicianRoute};
 use solverforge::prelude::*;
 use solverforge::IncrementalConstraint;
 
 /// SOFT: reward serving high-priority visits with slack before their deadline.
 pub fn constraint() -> impl IncrementalConstraint<FieldServicePlan, HardSoftScore> {
-    RouteConstraint::new(
-        "Priority Slack",
-        false,
-        HardSoftScore::of(0, 1),
-        priority_slack_score,
-        priority_slack_match_count,
-    )
+    ConstraintFactory::<FieldServicePlan, HardSoftScore>::new()
+        .technician_routes()
+        .filter(|route: &TechnicianRoute| route.route_priority_slack > 0)
+        .reward(|route: &TechnicianRoute| HardSoftScore::of(0, route.route_priority_slack))
+        .named("Priority Slack")
 }

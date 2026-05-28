@@ -46,8 +46,8 @@ It shows how to combine:
 - `FieldServicePlan`
   Planning solution. It holds facts, route entities, and the current score.
 - hard score
-  Missing assignments, unreachable legs, missing skills or parts, late visits,
-  and route overtime.
+  Missing visits, duplicate visits, invalid visit indexes, unreachable legs,
+  missing skills or parts, late visits, and route overtime.
 - soft score
   Travel cost, workload balance, territory fit, and priority slack.
 - retained job
@@ -65,8 +65,9 @@ It shows how to combine:
    REST API guide.
 6. When the user clicks Solve, the browser posts the current plan to
    `POST /jobs`.
-7. `src/api/routes.rs` deserializes the `PlanDto` and calls
-   `prepare_routing()`.
+7. `src/api/routes.rs` deserializes the `PlanDto`; domain deserialization and
+   `FieldServicePlan::normalize()` restore transient service-visit indexes and
+   route shadow fields before routing preparation.
 8. `prepare_routing()` loads or fetches the Bergamo road network, computes the
    full travel matrix, and replaces seed legs with road-network legs.
 9. `SolverService` starts a retained solve through
@@ -104,9 +105,9 @@ It shows how to combine:
 │   Current browser screenshot used by the README.
 ├── src/
 │   ├── domain/
-│   │   `planning_model!` manifest, facts, route entity, and solution.
+│   │   `planning_model!` manifest, facts, route entity, shadows, and solution.
 │   ├── constraints/
-│   │   Route metric helpers and one score rule per file.
+│   │   Stock SolverForge constraint streams, one score rule per file.
 │   ├── data/
 │   │   Deterministic Bergamo seeds, demo entrypoints, and OSM matrix loading.
 │   ├── solver/
@@ -125,11 +126,19 @@ It shows how to combine:
 
 `src/domain/field_service_plan.rs` owns the public solution shape. It keeps the
 SolverForge model explicit: facts are read-only inputs, while
-`TechnicianRoute.visits` is the one mutable list variable.
+`TechnicianRoute.visits` is the one mutable list variable. Its custom
+deserializer and `normalize()` method rebuild skipped transient visit indexes
+and route shadow values after JSON round trips, direct deserialization, and
+seed travel-matrix replacement.
 
-Route-specific scoring math lives in `src/constraints/route_metrics.rs`. That
-module walks a route from depot to visits to depot, advances a service clock,
-and records reusable counters for the individual constraints.
+Route-specific scoring math lives in `src/domain/route_metrics.rs`. That module
+walks a route from depot to visits to depot, advances a service clock, and
+records reusable counters as `TechnicianRoute` shadow values. The constraint
+files then use stock SolverForge `ConstraintFactory` streams over those shadow
+fields. The assignment module uses stock streams for missing visits and invalid
+route visit indexes; duplicate assignments use a small custom
+`IncrementalConstraint` so `/jobs/{id}/analysis` reports matches only for visit
+indexes assigned more than once while scoring each extra valid assignment.
 
 `src/api/route_geometry.rs` is separate because map drawing has a different
 job from scoring. Scoring consumes matrix facts already on the plan; geometry
@@ -147,13 +156,18 @@ travel facts are prepared when a job is created.
 
 ## API And Retained Runtime
 
-The REST API handles job control and snapshot reads:
+The REST API handles discovery, job control, snapshots, and route geometry:
 
+- `/health` and `/info` expose liveness and app metadata.
+- `/demo-data` and `/demo-data/{id}` expose the deterministic demo catalog.
 - `/jobs` creates a retained solver job.
 - `/jobs/{id}` and `/jobs/{id}/status` expose summary state.
 - `/jobs/{id}/snapshot` returns an exact or latest snapshot.
 - `/jobs/{id}/analysis` runs constraint analysis for a snapshot.
 - `/jobs/{id}/routes` returns route geometry for a snapshot.
+- `/jobs/{id}/pause`, `/jobs/{id}/resume`, and `/jobs/{id}/cancel` control a
+  live job.
+- `DELETE /jobs/{id}` removes a terminal retained job.
 - `/jobs/{id}/events` streams typed lifecycle events.
 
 ## Frontend Layout

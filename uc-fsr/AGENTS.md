@@ -7,12 +7,18 @@ Axum server and static browser workspace. The app package version is declared
 in `Cargo.toml`, and the release binary is `solverforge_fsr`.
 
 - `src/domain/mod.rs` owns the `solverforge::planning_model!` manifest.
-- `src/domain/field_service_plan.rs` owns the `FieldServicePlan` solution.
+- `src/domain/field_service_plan.rs` owns the `FieldServicePlan` solution,
+  transient visit-index normalization, and route shadow refresh hook.
 - `src/domain/location.rs`, `service_visit.rs`, and `travel_leg.rs` own the
   problem facts.
 - `src/domain/technician_route.rs` owns the planning entity and its `visits`
   list variable.
-- `src/constraints/` owns one score rule per file plus route metric helpers.
+- `src/domain/route_metrics.rs` owns route shadow measurement.
+- `src/constraints/` owns SolverForge scoring rules, one business rule per file.
+  Prefer stock `ConstraintFactory` streams; `assigned_visits.rs` keeps the
+  duplicate-assignment check as a small custom `IncrementalConstraint` because
+  SolverForge 0.14 grouped projected streams cannot post-filter count
+  collectors before analysis match counting.
 - `src/data/data_seed.rs` owns deterministic Bergamo demo generation and road
   matrix preparation.
 - `src/api/` owns REST, DTO, route geometry, and SSE surfaces.

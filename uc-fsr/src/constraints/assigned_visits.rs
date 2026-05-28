@@ -1,55 +1,86 @@
-//! Assignment-coverage rule for field-service visits.
+//! Assignment-coverage rules for field-service visits.
 //!
-//! List variables should contain each service visit exactly once. This rule
-//! catches three beginner-relevant failures: a missing visit, a duplicated visit,
-//! and a route list entry that points outside the visit collection.
+//! Missing and invalid assignments fit stock SolverForge streams. Duplicate
+//! assignments need an exact count and an accurate analysis match count, so that
+//! rule uses a small custom incremental constraint instead of a grouped stream
+//! that would count singleton groups as matches.
 
-use crate::domain::FieldServicePlan;
+use crate::domain::{
+    FieldServicePlan, FieldServicePlanConstraintStreams, ServiceVisit, TechnicianRoute,
+};
 use solverforge::prelude::*;
+use solverforge::stream::joiner::equal_bi;
 use solverforge::IncrementalConstraint;
 use solverforge_core::ConstraintRef;
 
-/// HARD: every service visit must appear exactly once in a technician route.
-pub fn constraint() -> impl IncrementalConstraint<FieldServicePlan, HardSoftScore> {
-    AssignedVisitsConstraint::new()
+pub(super) fn missing_visits() -> impl IncrementalConstraint<FieldServicePlan, HardSoftScore> {
+    ConstraintFactory::<FieldServicePlan, HardSoftScore>::new()
+        .service_visits()
+        .if_not_exists((
+            ConstraintFactory::<FieldServicePlan, HardSoftScore>::new()
+                .technician_routes()
+                .flattened(|route: &TechnicianRoute| &route.visits),
+            equal_bi(
+                |visit: &ServiceVisit| visit.index,
+                |assigned_visit_idx: &usize| *assigned_visit_idx,
+            ),
+        ))
+        .penalize(hard_weight(|_: &ServiceVisit| HardSoftScore::of(1, 0)))
+        .named("Assigned Visits")
 }
 
-struct AssignedVisitsConstraint {
+pub(super) fn duplicate_assignments() -> impl IncrementalConstraint<FieldServicePlan, HardSoftScore>
+{
+    DuplicateAssignmentsConstraint::new()
+}
+
+pub(super) fn invalid_assignments() -> impl IncrementalConstraint<FieldServicePlan, HardSoftScore> {
+    ConstraintFactory::<FieldServicePlan, HardSoftScore>::new()
+        .technician_routes()
+        .filter(|route: &TechnicianRoute| route.route_invalid_visits > 0)
+        .penalize(hard_weight(|route: &TechnicianRoute| {
+            HardSoftScore::of(route.route_invalid_visits, 0)
+        }))
+        .named("Invalid Visit Assignments")
+}
+
+struct DuplicateAssignmentsConstraint {
     constraint_ref: ConstraintRef,
-}
-
-impl AssignedVisitsConstraint {
-    fn new() -> Self {
-        Self {
-            constraint_ref: ConstraintRef::new("field_service_routing", "Assigned Visits"),
-        }
-    }
+    last_score: HardSoftScore,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
-struct AssignmentIssues {
-    unassigned: i64,
-    duplicate_assignments: i64,
-    invalid_assignments: i64,
+struct DuplicateAssignmentTotals {
+    duplicate_groups: usize,
+    extra_assignments: i64,
 }
 
-impl AssignmentIssues {
-    fn total(self) -> i64 {
-        self.unassigned + self.duplicate_assignments + self.invalid_assignments
+impl DuplicateAssignmentsConstraint {
+    fn new() -> Self {
+        Self {
+            constraint_ref: ConstraintRef::new("", "Duplicate Visit Assignments"),
+            last_score: HardSoftScore::ZERO,
+        }
+    }
+
+    fn score_for(plan: &FieldServicePlan) -> HardSoftScore {
+        let totals = duplicate_assignment_totals(plan);
+        HardSoftScore::of(-totals.extra_assignments, 0)
     }
 }
 
-impl IncrementalConstraint<FieldServicePlan, HardSoftScore> for AssignedVisitsConstraint {
+impl IncrementalConstraint<FieldServicePlan, HardSoftScore> for DuplicateAssignmentsConstraint {
     fn evaluate(&self, solution: &FieldServicePlan) -> HardSoftScore {
-        HardSoftScore::of(-assignment_issues(solution).total(), 0)
+        Self::score_for(solution)
     }
 
     fn match_count(&self, solution: &FieldServicePlan) -> usize {
-        assignment_issues(solution).total() as usize
+        duplicate_assignment_totals(solution).duplicate_groups
     }
 
     fn initialize(&mut self, solution: &FieldServicePlan) -> HardSoftScore {
-        self.evaluate(solution)
+        self.last_score = Self::score_for(solution);
+        self.last_score
     }
 
     fn on_insert(
@@ -58,62 +89,52 @@ impl IncrementalConstraint<FieldServicePlan, HardSoftScore> for AssignedVisitsCo
         _entity_index: usize,
         _descriptor_index: usize,
     ) -> HardSoftScore {
-        self.evaluate(solution)
+        let next_score = Self::score_for(solution);
+        let delta = next_score - self.last_score;
+        self.last_score = next_score;
+        delta
     }
 
     fn on_retract(
         &mut self,
-        solution: &FieldServicePlan,
+        _solution: &FieldServicePlan,
         _entity_index: usize,
         _descriptor_index: usize,
     ) -> HardSoftScore {
-        -self.evaluate(solution)
+        HardSoftScore::ZERO
     }
 
-    fn reset(&mut self) {}
-
-    fn name(&self) -> &str {
-        &self.constraint_ref.name
-    }
-
-    fn is_hard(&self) -> bool {
-        true
-    }
-
-    fn weight(&self) -> HardSoftScore {
-        HardSoftScore::of(1, 0)
+    fn reset(&mut self) {
+        self.last_score = HardSoftScore::ZERO;
     }
 
     fn constraint_ref(&self) -> &ConstraintRef {
         &self.constraint_ref
     }
+
+    fn is_hard(&self) -> bool {
+        true
+    }
 }
 
-fn assignment_issues(plan: &FieldServicePlan) -> AssignmentIssues {
-    // `counts[i]` records how often service visit `i` appears across every
-    // technician route. A valid list-variable solution leaves every count at 1.
+fn duplicate_assignment_totals(plan: &FieldServicePlan) -> DuplicateAssignmentTotals {
     let mut counts = vec![0usize; plan.service_visits.len()];
-    let mut issues = AssignmentIssues::default();
-
     for route in &plan.technician_routes {
         for &visit_idx in &route.visits {
             if let Some(count) = counts.get_mut(visit_idx) {
                 *count += 1;
-            } else {
-                issues.invalid_assignments += 1;
             }
         }
     }
 
-    for count in counts {
-        match count {
-            0 => issues.unassigned += 1,
-            1 => {}
-            extra => issues.duplicate_assignments += (extra - 1) as i64,
-        }
-    }
-
-    issues
+    counts.iter().filter(|&&count| count > 1).fold(
+        DuplicateAssignmentTotals::default(),
+        |mut totals, &count| {
+            totals.duplicate_groups += 1;
+            totals.extra_assignments += (count - 1) as i64;
+            totals
+        },
+    )
 }
 
 #[cfg(test)]
@@ -122,27 +143,82 @@ mod tests {
     use crate::domain::{
         FieldServicePlan, ServiceVisit, ServiceVisitInit, TechnicianRoute, TechnicianRouteInit,
     };
-    use solverforge::IncrementalConstraint;
+    use solverforge::ConstraintSet;
 
     #[test]
     fn empty_routes_are_penalized_for_unassigned_visits() {
-        let score = constraint().evaluate(&sample_plan(vec![vec![]]));
+        let score = assignment_constraints().evaluate_all(&sample_plan(vec![vec![]]));
 
         assert_eq!(score, HardSoftScore::of(-2, 0));
     }
 
     #[test]
     fn every_visit_once_is_feasible() {
-        let score = constraint().evaluate(&sample_plan(vec![vec![0, 1]]));
+        let score = assignment_constraints().evaluate_all(&sample_plan(vec![vec![0, 1]]));
 
         assert_eq!(score, HardSoftScore::ZERO);
     }
 
     #[test]
+    fn duplicate_assignments_are_penalized_even_when_no_visit_is_missing() {
+        let score = assignment_constraints().evaluate_all(&sample_plan(vec![vec![0, 1, 1]]));
+
+        assert_eq!(score, HardSoftScore::of(-1, 0));
+    }
+
+    #[test]
+    fn duplicate_assignment_analysis_counts_only_duplicate_groups() {
+        let feasible_plan = sample_plan(vec![vec![0, 1]]);
+        let duplicate_plan = sample_plan(vec![vec![0, 1, 1]]);
+        let triplicate_plan = sample_plan(vec![vec![0, 0, 0, 1]]);
+        let constraint = duplicate_assignments();
+
+        assert_eq!(constraint.match_count(&feasible_plan), 0);
+        assert_eq!(constraint.match_count(&duplicate_plan), 1);
+        assert_eq!(constraint.match_count(&triplicate_plan), 1);
+        assert_eq!(
+            constraint.evaluate(&triplicate_plan),
+            HardSoftScore::of(-2, 0)
+        );
+    }
+
+    #[test]
     fn duplicate_or_invalid_visit_indexes_are_hard_issues() {
-        let score = constraint().evaluate(&sample_plan(vec![vec![0, 0, 99]]));
+        let score = assignment_constraints().evaluate_all(&sample_plan(vec![vec![0, 0, 99]]));
 
         assert_eq!(score, HardSoftScore::of(-3, 0));
+    }
+
+    #[test]
+    fn invalid_visit_indexes_are_not_counted_as_duplicate_service_visits() {
+        let score = assignment_constraints().evaluate_all(&sample_plan(vec![vec![0, 1, 99, 99]]));
+
+        assert_eq!(score, HardSoftScore::of(-2, 0));
+    }
+
+    #[test]
+    fn duplicate_assignment_incremental_delta_matches_fresh_score() {
+        let mut plan = sample_plan(vec![vec![0, 1]]);
+        let mut constraints = assignment_constraints();
+        let initial = constraints.initialize_all(&plan);
+
+        let retract_delta = constraints.on_retract_all(&plan, 0, 0);
+        plan.technician_routes[0].visits.push(1);
+        plan.refresh_technician_route_shadows(0);
+        let insert_delta = constraints.on_insert_all(&plan, 0, 0);
+
+        assert_eq!(
+            initial + retract_delta + insert_delta,
+            constraints.evaluate_all(&plan)
+        );
+    }
+
+    fn assignment_constraints() -> impl ConstraintSet<FieldServicePlan, HardSoftScore> {
+        (
+            missing_visits(),
+            duplicate_assignments(),
+            invalid_assignments(),
+        )
     }
 
     fn sample_plan(route_visits: Vec<Vec<usize>>) -> FieldServicePlan {

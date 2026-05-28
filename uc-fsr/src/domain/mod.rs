@@ -13,6 +13,7 @@ solverforge::planning_model! {
     mod travel_leg;
     mod technician_route;
     mod field_service_plan;
+    pub mod route_metrics;
 
     pub use location::Location;
     pub use service_visit::ServiceVisit;
@@ -21,6 +22,6 @@ solverforge::planning_model! {
     pub use travel_leg::TravelLegInit;
     pub use technician_route::TechnicianRoute;
     pub use technician_route::TechnicianRouteInit;
-    pub use field_service_plan::FieldServicePlan;
+    pub use field_service_plan::{FieldServicePlan, FieldServicePlanConstraintStreams};
     // @solverforge:end domain-exports
 }

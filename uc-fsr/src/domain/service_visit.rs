@@ -11,6 +11,8 @@ use solverforge::prelude::*;
 pub struct ServiceVisit {
     #[planning_id]
     pub id: String,
+    #[serde(skip, default)]
+    pub index: usize,
     pub name: String,
     pub customer: String,
     pub location_idx: usize,
@@ -47,6 +49,7 @@ impl ServiceVisit {
     pub fn new(init: ServiceVisitInit) -> Self {
         Self {
             id: init.id,
+            index: 0,
             name: init.name,
             customer: init.customer,
             location_idx: init.location_idx,

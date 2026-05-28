@@ -120,7 +120,9 @@ impl PlanDto {
         let mut fields = self.fields.clone();
         let _ = &self.score;
         fields.insert("score".to_string(), Value::Null);
-        serde_json::from_value(Value::Object(fields))
+        let mut plan: FieldServicePlan = serde_json::from_value(Value::Object(fields))?;
+        plan.normalize();
+        Ok(plan)
     }
 }
 
@@ -251,5 +253,80 @@ fn derive_acceptance_rate(moves_accepted: u64, moves_evaluated: u64) -> f64 {
         0.0
     } else {
         moves_accepted as f64 / moves_evaluated as f64
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::domain::{
+        FieldServicePlan, Location, ServiceVisit, ServiceVisitInit, TechnicianRoute,
+        TechnicianRouteInit, TravelLeg,
+    };
+
+    #[test]
+    fn to_domain_rebuilds_skipped_indexes_after_json_round_trip() {
+        let dto = PlanDto::from_plan(&sample_plan());
+        let plan = dto.to_domain().expect("plan should decode");
+
+        assert_eq!(plan.service_visits[0].index, 0);
+        assert_eq!(plan.service_visits[1].index, 1);
+    }
+
+    #[test]
+    fn to_domain_refreshes_route_shadows_after_json_round_trip() {
+        let dto = PlanDto::from_plan(&sample_plan());
+        let plan = dto.to_domain().expect("plan should decode");
+
+        assert_eq!(plan.technician_routes[0].route_valid_visits, 2);
+    }
+
+    fn sample_plan() -> FieldServicePlan {
+        let service_visits = (0..2)
+            .map(|idx| {
+                ServiceVisit::new(ServiceVisitInit {
+                    id: format!("visit-{idx}"),
+                    name: format!("Visit {idx}"),
+                    customer: format!("Customer {idx}"),
+                    location_idx: 0,
+                    duration_minutes: 30,
+                    earliest_minute: 480,
+                    latest_minute: 1020,
+                    required_skill_mask: 0,
+                    required_parts_mask: 0,
+                    priority: 1,
+                    territory: "center".to_string(),
+                })
+            })
+            .collect();
+        let mut route = TechnicianRoute::new(TechnicianRouteInit {
+            id: "route-0".to_string(),
+            technician_id: "tech-0".to_string(),
+            technician_name: "Tech 0".to_string(),
+            color: "#2563eb".to_string(),
+            start_location_idx: 0,
+            end_location_idx: 0,
+            shift_start_minute: 480,
+            shift_end_minute: 1020,
+            max_route_minutes: 480,
+            skill_mask: 0,
+            inventory_mask: 0,
+            territory: "center".to_string(),
+        });
+        route.visits = vec![0, 1];
+
+        FieldServicePlan::new(
+            vec![Location::new(
+                "loc-0",
+                "Hub",
+                "Hub".to_string(),
+                45_700_000,
+                9_670_000,
+                "depot".to_string(),
+            )],
+            service_visits,
+            Vec::<TravelLeg>::new(),
+            vec![route],
+        )
     }
 }

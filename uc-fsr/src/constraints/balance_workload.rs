@@ -1,17 +1,12 @@
-use crate::constraints::route_metrics::{
-    balance_workload_match_count, balance_workload_score, RouteConstraint,
-};
-use crate::domain::FieldServicePlan;
+use crate::domain::{FieldServicePlan, FieldServicePlanConstraintStreams, TechnicianRoute};
 use solverforge::prelude::*;
 use solverforge::IncrementalConstraint;
 
 /// SOFT: discourage concentrating all service and travel minutes on one route.
 pub fn constraint() -> impl IncrementalConstraint<FieldServicePlan, HardSoftScore> {
-    RouteConstraint::new(
-        "Balance Workload",
-        false,
-        HardSoftScore::of(0, 1),
-        balance_workload_score,
-        balance_workload_match_count,
-    )
+    ConstraintFactory::<FieldServicePlan, HardSoftScore>::new()
+        .technician_routes()
+        .filter(|route: &TechnicianRoute| route.workload_penalty() > 0)
+        .penalize(|route: &TechnicianRoute| HardSoftScore::of(0, route.workload_penalty()))
+        .named("Balance Workload")
 }

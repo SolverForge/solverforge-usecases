@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 use solverforge::prelude::*;
 
+use super::route_metrics::RouteStats;
+
 /// One technician's route, including the visit order SolverForge is allowed to change.
 ///
 /// A `TechnicianRoute` is the planning entity in this app. Its descriptive
@@ -28,6 +30,57 @@ pub struct TechnicianRoute {
     #[planning_list_variable(element_collection = "service_visits")]
     pub visits: Vec<usize>,
     // @solverforge:end entity-variables
+    #[cascading_update_shadow_variable]
+    #[serde(skip, default)]
+    pub route_invalid_visits: i64,
+    #[cascading_update_shadow_variable]
+    #[serde(skip, default)]
+    pub route_valid_visits: i64,
+    #[cascading_update_shadow_variable]
+    #[serde(skip, default)]
+    pub route_scored_travel_legs: i64,
+    #[cascading_update_shadow_variable]
+    #[serde(skip, default)]
+    pub route_unreachable_legs: i64,
+    #[cascading_update_shadow_variable]
+    #[serde(skip, default)]
+    pub route_missing_skill_visits: i64,
+    #[cascading_update_shadow_variable]
+    #[serde(skip, default)]
+    pub route_missing_part_visits: i64,
+    #[cascading_update_shadow_variable]
+    #[serde(skip, default)]
+    pub route_late_visits: i64,
+    #[cascading_update_shadow_variable]
+    #[serde(skip, default)]
+    pub route_late_minutes: i64,
+    #[cascading_update_shadow_variable]
+    #[serde(skip, default)]
+    pub route_overtime_minutes: i64,
+    #[cascading_update_shadow_variable]
+    #[serde(skip, default)]
+    pub route_travel_seconds: i64,
+    #[cascading_update_shadow_variable]
+    #[serde(skip, default)]
+    pub route_distance_meters: i64,
+    #[cascading_update_shadow_variable]
+    #[serde(skip, default)]
+    pub route_service_minutes: i64,
+    #[cascading_update_shadow_variable]
+    #[serde(skip, default)]
+    pub route_waiting_minutes: i64,
+    #[cascading_update_shadow_variable]
+    #[serde(skip, default)]
+    pub route_minutes: i64,
+    #[cascading_update_shadow_variable]
+    #[serde(skip, default)]
+    pub route_finish_minute: i32,
+    #[cascading_update_shadow_variable]
+    #[serde(skip, default)]
+    pub route_territory_matches: i64,
+    #[cascading_update_shadow_variable]
+    #[serde(skip, default)]
+    pub route_priority_slack: i64,
 }
 
 /// Constructor payload for `TechnicianRoute`.
@@ -72,7 +125,62 @@ impl TechnicianRoute {
             // @solverforge:begin entity-variable-init
             visits: Vec::new(),
             // @solverforge:end entity-variable-init
+            route_invalid_visits: 0,
+            route_valid_visits: 0,
+            route_scored_travel_legs: 0,
+            route_unreachable_legs: 0,
+            route_missing_skill_visits: 0,
+            route_missing_part_visits: 0,
+            route_late_visits: 0,
+            route_late_minutes: 0,
+            route_overtime_minutes: 0,
+            route_travel_seconds: 0,
+            route_distance_meters: 0,
+            route_service_minutes: 0,
+            route_waiting_minutes: 0,
+            route_minutes: 0,
+            route_finish_minute: init.shift_start_minute,
+            route_territory_matches: 0,
+            route_priority_slack: 0,
         }
+    }
+
+    /// Copies freshly computed route metrics into SolverForge shadow fields.
+    pub fn apply_route_stats(&mut self, stats: RouteStats) {
+        self.route_invalid_visits = stats.invalid_visits;
+        self.route_valid_visits = stats.valid_visits;
+        self.route_scored_travel_legs = stats.scored_travel_legs;
+        self.route_unreachable_legs = stats.unreachable_legs;
+        self.route_missing_skill_visits = stats.missing_skill_visits;
+        self.route_missing_part_visits = stats.missing_part_visits;
+        self.route_late_visits = stats.late_visits;
+        self.route_late_minutes = stats.late_minutes;
+        self.route_overtime_minutes = stats.overtime_minutes;
+        self.route_travel_seconds = stats.travel_seconds;
+        self.route_distance_meters = stats.distance_meters;
+        self.route_service_minutes = stats.service_minutes;
+        self.route_waiting_minutes = stats.waiting_minutes;
+        self.route_minutes = stats.route_minutes;
+        self.route_finish_minute = stats.finish_minute;
+        self.route_territory_matches = stats.territory_matches;
+        self.route_priority_slack = stats.priority_slack;
+    }
+
+    pub fn travel_penalty(&self) -> i64 {
+        div_ceil(self.route_travel_seconds, 60) + div_ceil(self.route_distance_meters, 1_000)
+    }
+
+    pub fn workload_penalty(&self) -> i64 {
+        let normalized = (self.route_minutes / 15).max(0);
+        normalized * normalized
+    }
+}
+
+fn div_ceil(value: i64, divisor: i64) -> i64 {
+    if value <= 0 {
+        0
+    } else {
+        (value + divisor - 1) / divisor
     }
 }
 

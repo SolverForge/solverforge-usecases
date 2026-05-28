@@ -1,17 +1,14 @@
-use crate::constraints::route_metrics::{
-    required_parts_match_count, required_parts_score, RouteConstraint,
-};
-use crate::domain::FieldServicePlan;
+use crate::domain::{FieldServicePlan, FieldServicePlanConstraintStreams, TechnicianRoute};
 use solverforge::prelude::*;
 use solverforge::IncrementalConstraint;
 
 /// HARD: route inventory must cover every assigned visit's required parts.
 pub fn constraint() -> impl IncrementalConstraint<FieldServicePlan, HardSoftScore> {
-    RouteConstraint::new(
-        "Required Parts",
-        true,
-        HardSoftScore::of(1, 0),
-        required_parts_score,
-        required_parts_match_count,
-    )
+    ConstraintFactory::<FieldServicePlan, HardSoftScore>::new()
+        .technician_routes()
+        .filter(|route: &TechnicianRoute| route.route_missing_part_visits > 0)
+        .penalize(hard_weight(|route: &TechnicianRoute| {
+            HardSoftScore::of(route.route_missing_part_visits, 0)
+        }))
+        .named("Required Parts")
 }

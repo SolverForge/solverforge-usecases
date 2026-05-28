@@ -135,6 +135,7 @@ pub async fn prepare_routing(plan: &mut FieldServicePlan) -> Result<(), DemoData
     let network = load_network().await?;
     let matrix = network.compute_matrix(&coords, None).await;
     plan.travel_legs = build_travel_legs(&matrix, coords.len());
+    plan.normalize();
     Ok(())
 }
 

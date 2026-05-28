@@ -1,14 +1,12 @@
-//! Shared route measurements used by field-service constraints.
+//! Shared route measurements stored as technician-route shadow values.
 //!
-//! SolverForge calls each constraint separately, but the business concepts
-//! overlap: travel, time windows, skills, parts, overtime, and priority slack
-//! all require walking the same ordered visit list. This module centralizes that
-//! walk so the individual constraint files stay easy to read.
+//! SolverForge calls each stock constraint separately, but the business
+//! concepts overlap: travel, time windows, skills, parts, overtime, and priority
+//! slack all require walking the same ordered visit list. This module
+//! centralizes that walk so route entities can expose simple shadow fields to
+//! the constraint builders.
 
 use crate::domain::{FieldServicePlan, ServiceVisit, TechnicianRoute, TravelLeg};
-use solverforge::prelude::*;
-
-pub use super::route_constraint::RouteConstraint;
 
 /// Aggregated measurements for one technician route.
 ///
@@ -34,12 +32,6 @@ pub struct RouteStats {
     pub finish_minute: i32,
     pub territory_matches: i64,
     pub priority_slack: i64,
-}
-
-impl RouteStats {
-    pub fn travel_minutes(&self) -> i64 {
-        div_ceil(self.travel_seconds, 60)
-    }
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -122,84 +114,6 @@ pub fn route_stats(plan: &FieldServicePlan, route: &TechnicianRoute) -> RouteSta
     stats
 }
 
-pub fn reachable_score(plan: &FieldServicePlan, route: &TechnicianRoute) -> HardSoftScore {
-    let stats = route_stats(plan, route);
-    HardSoftScore::of(-(stats.invalid_visits + stats.unreachable_legs), 0)
-}
-
-pub fn reachable_match_count(plan: &FieldServicePlan, route: &TechnicianRoute) -> usize {
-    let stats = route_stats(plan, route);
-    count_matches(stats.invalid_visits + stats.unreachable_legs)
-}
-
-pub fn required_skills_score(plan: &FieldServicePlan, route: &TechnicianRoute) -> HardSoftScore {
-    HardSoftScore::of(-route_stats(plan, route).missing_skill_visits, 0)
-}
-
-pub fn required_skills_match_count(plan: &FieldServicePlan, route: &TechnicianRoute) -> usize {
-    count_matches(route_stats(plan, route).missing_skill_visits)
-}
-
-pub fn required_parts_score(plan: &FieldServicePlan, route: &TechnicianRoute) -> HardSoftScore {
-    HardSoftScore::of(-route_stats(plan, route).missing_part_visits, 0)
-}
-
-pub fn required_parts_match_count(plan: &FieldServicePlan, route: &TechnicianRoute) -> usize {
-    count_matches(route_stats(plan, route).missing_part_visits)
-}
-
-pub fn time_windows_score(plan: &FieldServicePlan, route: &TechnicianRoute) -> HardSoftScore {
-    HardSoftScore::of(-route_stats(plan, route).late_minutes, 0)
-}
-
-pub fn time_windows_match_count(plan: &FieldServicePlan, route: &TechnicianRoute) -> usize {
-    count_matches(route_stats(plan, route).late_visits)
-}
-
-pub fn shift_capacity_score(plan: &FieldServicePlan, route: &TechnicianRoute) -> HardSoftScore {
-    HardSoftScore::of(-route_stats(plan, route).overtime_minutes, 0)
-}
-
-pub fn shift_capacity_match_count(plan: &FieldServicePlan, route: &TechnicianRoute) -> usize {
-    usize::from(route_stats(plan, route).overtime_minutes > 0)
-}
-
-pub fn minimize_travel_score(plan: &FieldServicePlan, route: &TechnicianRoute) -> HardSoftScore {
-    let stats = route_stats(plan, route);
-    let travel_minutes = stats.travel_minutes();
-    let travel_km = div_ceil(stats.distance_meters, 1_000);
-    HardSoftScore::of(0, -(travel_minutes + travel_km))
-}
-
-pub fn minimize_travel_match_count(plan: &FieldServicePlan, route: &TechnicianRoute) -> usize {
-    count_matches(route_stats(plan, route).scored_travel_legs)
-}
-
-pub fn balance_workload_score(plan: &FieldServicePlan, route: &TechnicianRoute) -> HardSoftScore {
-    let normalized = (route_stats(plan, route).route_minutes / 15).max(0);
-    HardSoftScore::of(0, -(normalized * normalized))
-}
-
-pub fn balance_workload_match_count(plan: &FieldServicePlan, route: &TechnicianRoute) -> usize {
-    usize::from(route_stats(plan, route).route_minutes > 0)
-}
-
-pub fn territory_affinity_score(plan: &FieldServicePlan, route: &TechnicianRoute) -> HardSoftScore {
-    HardSoftScore::of(0, route_stats(plan, route).territory_matches * 25)
-}
-
-pub fn territory_affinity_match_count(plan: &FieldServicePlan, route: &TechnicianRoute) -> usize {
-    count_matches(route_stats(plan, route).territory_matches)
-}
-
-pub fn priority_slack_score(plan: &FieldServicePlan, route: &TechnicianRoute) -> HardSoftScore {
-    HardSoftScore::of(0, route_stats(plan, route).priority_slack)
-}
-
-pub fn priority_slack_match_count(plan: &FieldServicePlan, route: &TechnicianRoute) -> usize {
-    count_matches(route_stats(plan, route).valid_visits)
-}
-
 pub fn leg_for(
     plan: &FieldServicePlan,
     from_location_idx: usize,
@@ -277,8 +191,4 @@ fn div_ceil(value: i64, divisor: i64) -> i64 {
     } else {
         (value + divisor - 1) / divisor
     }
-}
-
-fn count_matches(value: i64) -> usize {
-    usize::try_from(value.max(0)).unwrap_or(usize::MAX)
 }
