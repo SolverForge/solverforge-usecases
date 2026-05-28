@@ -10,7 +10,7 @@ use crate::domain::{
 };
 use solverforge::prelude::*;
 use solverforge::stream::joiner::equal_bi;
-use solverforge::IncrementalConstraint;
+use solverforge::{IncrementalConstraint, IncrementalConstraintSealed};
 use solverforge_core::ConstraintRef;
 
 pub(super) fn missing_visits() -> impl IncrementalConstraint<FieldServicePlan, HardSoftScore> {
@@ -68,6 +68,8 @@ impl DuplicateAssignmentsConstraint {
         HardSoftScore::of(-totals.extra_assignments, 0)
     }
 }
+
+impl IncrementalConstraintSealed for DuplicateAssignmentsConstraint {}
 
 impl IncrementalConstraint<FieldServicePlan, HardSoftScore> for DuplicateAssignmentsConstraint {
     fn evaluate(&self, solution: &FieldServicePlan) -> HardSoftScore {
