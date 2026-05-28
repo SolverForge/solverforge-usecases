@@ -394,10 +394,13 @@ function buildApiGuideEndpoints() {
     ? '/demo-data/' + demoCatalog.defaultId
     : '/demo-data/{defaultId}';
   return [
+    { method: 'GET', path: '/health', description: 'Check service health', curl: buildCurlCommand('GET', '/health') },
+    { method: 'GET', path: '/info', description: 'Fetch app and solver metadata', curl: buildCurlCommand('GET', '/info') },
     { method: 'GET', path: '/demo-data', description: 'Discover the default and available demo data IDs', curl: buildCurlCommand('GET', '/demo-data') },
     { method: 'GET', path: defaultDemoPath, description: 'Fetch the discovered default demo data', curl: buildCurlCommand('GET', defaultDemoPath) },
     { method: 'POST', path: '/jobs', description: 'Create a retained solving job', curl: buildCurlCommand('POST', '/jobs', { json: true, data: '@plan.json' }) },
     { method: 'GET', path: '/jobs/{id}', description: 'Get current job summary', curl: buildCurlCommand('GET', '/jobs/{id}') },
+    { method: 'GET', path: '/jobs/{id}/status', description: 'Get current job summary through the stock UI alias', curl: buildCurlCommand('GET', '/jobs/{id}/status') },
     { method: 'GET', path: '/jobs/{id}/snapshot', description: 'Fetch the latest retained snapshot', curl: buildCurlCommand('GET', '/jobs/{id}/snapshot') },
     { method: 'GET', path: '/jobs/{id}/analysis?snapshot_revision={n}', description: 'Analyze an exact snapshot revision', curl: buildCurlCommand('GET', '/jobs/{id}/analysis?snapshot_revision=3', { quoteUrl: true }) },
     { method: 'POST', path: '/jobs/{id}/pause', description: 'Request an exact runtime pause', curl: buildCurlCommand('POST', '/jobs/{id}/pause') },

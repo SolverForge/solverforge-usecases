@@ -224,6 +224,19 @@ backend splits the contract into two parts:
 - REST for control and snapshots
 - SSE for live progress
 
+The REST surface is:
+
+- `/health` and `/info` expose liveness and app metadata.
+- `/demo-data` and `/demo-data/{id}` expose the deterministic demo catalog.
+- `/jobs` creates a retained solver job.
+- `/jobs/{id}` and `/jobs/{id}/status` expose summary state.
+- `/jobs/{id}/snapshot` returns an exact or latest snapshot.
+- `/jobs/{id}/analysis` runs constraint analysis for a snapshot.
+- `/jobs/{id}/pause`, `/jobs/{id}/resume`, and `/jobs/{id}/cancel` control a
+  live job.
+- `DELETE /jobs/{id}` removes a terminal retained job.
+- `/jobs/{id}/events` streams typed lifecycle events.
+
 That separation keeps the frontend simple:
 
 - create a job

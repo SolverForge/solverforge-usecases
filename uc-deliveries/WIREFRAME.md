@@ -178,13 +178,18 @@ aggregate capacity before route ordering.
 
 ## API And Retained Runtime
 
-The REST API handles job control and snapshot reads:
+The REST API handles discovery, job control, snapshots, and route geometry:
 
+- `/health` and `/info` expose liveness and app metadata.
+- `/demo-data` and `/demo-data/{id}` expose the deterministic demo catalog.
 - `/jobs` creates a retained solver job.
 - `/jobs/{id}` and `/jobs/{id}/status` expose summary state.
 - `/jobs/{id}/snapshot` returns an exact or latest snapshot.
 - `/jobs/{id}/analysis` runs constraint analysis for a snapshot.
 - `/jobs/{id}/routes` returns route geometry for a snapshot.
+- `/jobs/{id}/pause`, `/jobs/{id}/resume`, and `/jobs/{id}/cancel` control a
+  live job.
+- `DELETE /jobs/{id}` removes a terminal retained job.
 - `/jobs/{id}/events` streams typed lifecycle events.
 
 The insertion endpoint, `/recommendations/delivery-insertions`, is app-specific.

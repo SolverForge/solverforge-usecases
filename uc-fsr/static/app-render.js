@@ -150,13 +150,21 @@
       options.apiGuideContainer.innerHTML = '';
       options.apiGuideContainer.appendChild(SF.createApiGuide({
         endpoints: [
+          { method: 'GET', path: '/health', description: 'Check service health', curl: utils.buildCurl('GET', '/health') },
+          { method: 'GET', path: '/info', description: 'Fetch app and solver metadata', curl: utils.buildCurl('GET', '/info') },
           { method: 'GET', path: '/demo-data', description: 'Discover demo datasets', curl: utils.buildCurl('GET', '/demo-data') },
           { method: 'GET', path: '/demo-data/' + (demoId || '{id}'), description: 'Fetch Bergamo seed data', curl: utils.buildCurl('GET', '/demo-data/' + (demoId || 'STANDARD')) },
           { method: 'POST', path: '/jobs', description: 'Create a retained solve job', curl: utils.buildCurl('POST', '/jobs', true) },
+          { method: 'GET', path: '/jobs/{id}', description: 'Fetch current job summary', curl: utils.buildCurl('GET', '/jobs/{id}') },
+          { method: 'GET', path: '/jobs/{id}/status', description: 'Fetch current job summary through the stock UI alias', curl: utils.buildCurl('GET', '/jobs/{id}/status') },
           { method: 'GET', path: '/jobs/{id}/events', description: 'Stream typed SolverForge lifecycle events', curl: utils.buildCurl('GET', '/jobs/{id}/events') },
           { method: 'GET', path: '/jobs/{id}/snapshot', description: 'Fetch latest route snapshot', curl: utils.buildCurl('GET', '/jobs/{id}/snapshot') },
           { method: 'GET', path: '/jobs/{id}/routes?snapshot_revision={n}', description: 'Fetch encoded route geometry for a retained snapshot', curl: utils.buildCurl('GET', '/jobs/{id}/routes?snapshot_revision={n}') },
           { method: 'GET', path: '/jobs/{id}/analysis', description: 'Analyze the latest retained score', curl: utils.buildCurl('GET', '/jobs/{id}/analysis') },
+          { method: 'POST', path: '/jobs/{id}/pause', description: 'Request a retained-job pause', curl: utils.buildCurl('POST', '/jobs/{id}/pause') },
+          { method: 'POST', path: '/jobs/{id}/resume', description: 'Resume a paused retained job', curl: utils.buildCurl('POST', '/jobs/{id}/resume') },
+          { method: 'POST', path: '/jobs/{id}/cancel', description: 'Cancel a live or paused job', curl: utils.buildCurl('POST', '/jobs/{id}/cancel') },
+          { method: 'DELETE', path: '/jobs/{id}', description: 'Delete a terminal retained job', curl: utils.buildCurl('DELETE', '/jobs/{id}') },
         ],
       }));
     }
