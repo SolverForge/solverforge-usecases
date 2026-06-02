@@ -70,32 +70,68 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        env:
+          CHECKOUT_SHA: ${{ github.sha }}
+          PRIMARY_REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}.git
+          FALLBACK_REPOSITORY_URL: http://host.containers.internal:3002/${{ github.repository }}.git
+        run: |
+          set -eu
+          git init .
+          git remote add origin "$PRIMARY_REPOSITORY_URL"
+          if ! git fetch --depth 1 origin "$CHECKOUT_SHA"; then
+            git remote set-url origin "$FALLBACK_REPOSITORY_URL"
+            git fetch --depth 1 origin "$CHECKOUT_SHA"
+          fi
+          git checkout --force --detach FETCH_HEAD
+
+      - name: Install runner system dependencies
+        run: |
+          set -eu
+          apt-get update
+          apt-get install -y --no-install-recommends ca-certificates cmake chromium
 
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          components: rustfmt, clippy
+        run: |
+          set -eu
+          cargo_bin="${CARGO_HOME:-$HOME/.cargo}/bin"
+          if [ ! -x "$cargo_bin/rustup" ]; then
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
+              | sh -s -- -y --profile minimal --component rustfmt,clippy
+            cargo_bin="$HOME/.cargo/bin"
+          fi
+          export PATH="$cargo_bin:$PATH"
+          rustup toolchain install stable --profile minimal --component rustfmt,clippy
+          rustup default stable
+          if [ -n "${GITHUB_PATH:-}" ]; then
+            echo "$cargo_bin" >> "$GITHUB_PATH"
+          fi
+          rustc --version
+          cargo --version
+          rustfmt --version
+          cargo clippy --version
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
+      - name: Check Node
+        run: |
+          node --version
+          npm --version
 
       - name: Install browser test dependencies
         run: make install-e2e
 
       - name: Run bundle CI
-        run: make ci-local
+        env:
+          CHROMIUM_PATH: /usr/bin/chromium
+          PLAYWRIGHT_CHROMIUM_EXECUTABLE: /usr/bin/chromium
+        run: |
+          export PATH="${CARGO_HOME:-$HOME/.cargo}/bin:$PATH"
+          make ci-local
 
-      - name: Upload browser artifacts on failure
+      - name: List browser artifacts on failure
         if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: usecase-browser-artifacts
-          path: |
-            test-results
-            playwright-report
-            uc-*/test-results
-            uc-*/playwright-report
-          if-no-files-found: ignore
+        run: |
+          set -eu
+          for path in test-results playwright-report uc-*/test-results uc-*/playwright-report; do
+            if [ -e "$path" ]; then
+              find "$path" -maxdepth 2 -type f -print
+            fi
+          done
