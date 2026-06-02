@@ -119,7 +119,7 @@ test-rust: banner
 
 test-frontend-syntax: require-node
 	@printf "$(PROGRESS) Checking frontend module syntax...\n"
-	@find static -name '*.js' -print0 | xargs -0 -n1 node --check && \
+	@find static -name '*.js' -print0 | xargs -0 -n1 sh -c 'node --input-type=module --check < "$$1" || { printf "%s\n" "$$1"; exit 1; }' sh && \
 		printf "$(GREEN)$(CHECK) Frontend syntax checks passed$(RESET)\n" || \
 		(printf "$(RED)$(CROSS) Frontend syntax checks failed$(RESET)\n" && exit 1)
 
