@@ -11,17 +11,17 @@ use solverforge::prelude::*;
 pub use self::assemble::create_constraints;
 
 // @solverforge:begin constraint-modules
-mod assign_room;
 mod assign_timeslot;
-mod group_availability;
-mod late_lesson;
-mod no_group_conflict;
-mod no_room_conflict;
-mod no_teacher_conflict;
-mod repeated_subject_day;
-mod room_capacity;
-mod room_kind;
+mod assign_room;
 mod teacher_availability;
+mod group_availability;
+mod room_kind;
+mod room_capacity;
+mod no_group_conflict;
+mod no_teacher_conflict;
+mod no_room_conflict;
+mod late_lesson;
+mod repeated_subject_day;
 // @solverforge:end constraint-modules
 
 mod assemble {

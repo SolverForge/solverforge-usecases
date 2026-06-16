@@ -2,6 +2,13 @@
 
 All notable changes to this use case are documented in this file.
 
+## 2.0.3 (2026-06-16)
+
+### Maintenance
+
+* **release:** target SolverForge 0.17.1 and solverforge-cli 2.2.2.
+* **metadata:** align generated scalar-variable metadata with the current SolverForge UI schema.
+
 ## 2.0.2 (2026-05-28)
 
 ### Maintenance

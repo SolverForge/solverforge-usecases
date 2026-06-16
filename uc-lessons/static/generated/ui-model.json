@@ -7,8 +7,8 @@
     "room_kind",
     "room_capacity",
     "no_group_conflict",
-    "no_room_conflict",
     "no_teacher_conflict",
+    "no_room_conflict",
     "late_lesson",
     "repeated_subject_day"
   ],
@@ -50,7 +50,8 @@
       "kind": "scalar",
       "label": "Lesson · timeslot_idx",
       "sourcePlural": "timeslots",
-      "variableField": "timeslot_idx"
+      "variableField": "timeslot_idx",
+      "scalarHooks": {}
     },
     {
       "allowsUnassigned": false,
@@ -60,7 +61,10 @@
       "kind": "scalar",
       "label": "Lesson · room_idx",
       "sourcePlural": "rooms",
-      "variableField": "room_idx"
+      "variableField": "room_idx",
+      "scalarHooks": {}
     }
-  ]
+  ],
+  "scalarGroups": [],
+  "conflictRepairs": []
 }

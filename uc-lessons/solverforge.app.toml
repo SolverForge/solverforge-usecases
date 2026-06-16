@@ -1,11 +1,12 @@
 [app]
 name = "solverforge-lessons"
 starter = "neutral-shell"
-cli_version = "2.0.4"
+cli_version = "2.2.2"
+shell = "web"
 
 [runtime]
-target = "solverforge 0.15.0"
-runtime_source = "crates.io: solverforge 0.15.0"
+target = "solverforge 0.17.1"
+runtime_source = "crates.io: solverforge 0.17.1"
 ui_source = "crates.io: solverforge-ui 0.6.5"
 
 [demo]
@@ -99,13 +100,13 @@ module = "no_group_conflict"
 enabled = true
 
 [[constraints]]
-name = "no_room_conflict"
-module = "no_room_conflict"
+name = "no_teacher_conflict"
+module = "no_teacher_conflict"
 enabled = true
 
 [[constraints]]
-name = "no_teacher_conflict"
-module = "no_teacher_conflict"
+name = "no_room_conflict"
+module = "no_room_conflict"
 enabled = true
 
 [[constraints]]
