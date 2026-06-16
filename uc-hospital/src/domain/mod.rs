@@ -14,6 +14,8 @@ solverforge::planning_model! {
 
     pub use care_hub::CareHub;
     pub use employee::Employee;
-    pub use plan::{Plan, PlanConstraintStreams, Shift};
+    pub use plan::Plan;
+    pub use plan::PlanConstraintStreams;
+    pub use plan::Shift;
     // @solverforge:end domain-exports
 }

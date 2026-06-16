@@ -1,3 +1,4 @@
+#![cfg_attr(rustfmt, rustfmt_skip)]
 //! Constraint assembly for employee scheduling.
 //!
 //! Each sibling module contributes one named rule. `create_constraints()`
@@ -10,14 +11,14 @@ pub use self::assemble::create_constraints;
 
 // @solverforge:begin constraint-modules
 mod assigned_shift;
-mod balance_assignments;
-mod desired_day;
+mod required_skill;
+mod overlapping_shift;
 mod minimum_rest;
 mod one_shift_per_day;
-mod overlapping_shift;
-mod required_skill;
 mod unavailable_employee;
 mod undesired_day;
+mod desired_day;
+mod balance_assignments;
 // @solverforge:end constraint-modules
 
 mod assemble {

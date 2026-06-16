@@ -1,13 +1,13 @@
 [package]
 name = "solverforge-hospital"
-version = "2.0.2"
+version = "2.0.3"
 edition = "2021"
 rust-version = "1.95"
 description = "SolverForge hospital scheduling example"
 publish = false
 
 [dependencies]
-solverforge = { version = "0.15.0", features = [
+solverforge = { version = "0.17.1", features = [
   "serde",
   "console",
   "verbose-logging",

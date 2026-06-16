@@ -1,24 +1,83 @@
-# Metadata consumed by SolverForge app tooling for this example repo.
 [app]
-# App identity and the CLI release line this example targets.
 name = "SolverForge Hospital"
 starter = "neutral-shell"
-cli_version = "2.0.4"
+shell = "web"
+cli_version = "2.2.2"
 
 [runtime]
-# Published crate releases used by this example.
-target = "SolverForge crates.io target"
-runtime_crate = "solverforge"
-runtime_version = "0.15.0"
-ui_crate = "solverforge-ui"
-ui_version = "0.6.5"
+target = "solverforge 0.17.1"
+runtime_source = "crates.io: solverforge 0.17.1"
+ui_source = "crates.io: solverforge-ui 0.6.5"
 
 [demo]
-# Public demo-data ids exposed by this app.
 default_size = "large"
 available_sizes = ["large"]
 
 [solution]
-# Planning-solution metadata surfaced to surrounding tooling.
 name = "Plan"
 score = "HardSoftDecimalScore"
+
+[[facts]]
+name = "employee"
+plural = "employees"
+kind = "problem_fact"
+
+[[entities]]
+name = "shift"
+plural = "shifts"
+kind = "planning_entity"
+
+[[variables]]
+entity = "shift"
+entity_plural = "shifts"
+field = "employee_idx"
+kind = "scalar"
+range = "employees"
+elements = ""
+allows_unassigned = true
+enabled = true
+
+[[constraints]]
+name = "assigned_shift"
+module = "assigned_shift"
+enabled = true
+
+[[constraints]]
+name = "required_skill"
+module = "required_skill"
+enabled = true
+
+[[constraints]]
+name = "overlapping_shift"
+module = "overlapping_shift"
+enabled = true
+
+[[constraints]]
+name = "minimum_rest"
+module = "minimum_rest"
+enabled = true
+
+[[constraints]]
+name = "one_shift_per_day"
+module = "one_shift_per_day"
+enabled = true
+
+[[constraints]]
+name = "unavailable_employee"
+module = "unavailable_employee"
+enabled = true
+
+[[constraints]]
+name = "undesired_day"
+module = "undesired_day"
+enabled = true
+
+[[constraints]]
+name = "desired_day"
+module = "desired_day"
+enabled = true
+
+[[constraints]]
+name = "balance_assignments"
+module = "balance_assignments"
+enabled = true

@@ -1,20 +1,55 @@
 {
   "entities": [
-    { "name": "shift", "plural": "shifts", "label": "Shifts" }
+    {
+      "name": "shift",
+      "plural": "shifts",
+      "label": "Shifts"
+    }
   ],
   "facts": [
-    { "name": "employee", "plural": "employees", "label": "Employees" }
+    {
+      "name": "employee",
+      "plural": "employees",
+      "label": "Employees"
+    }
   ],
   "constraints": [
-    { "name": "Assigned shift", "type": "hard" },
-    { "name": "Required skill", "type": "hard" },
-    { "name": "Overlapping shift", "type": "hard" },
-    { "name": "At least 10 hours between 2 shifts", "type": "hard" },
-    { "name": "One shift per day", "type": "hard" },
-    { "name": "Unavailable employee", "type": "hard" },
-    { "name": "Undesired day for employee", "type": "soft" },
-    { "name": "Desired day for employee", "type": "soft" },
-    { "name": "Balance employee assignments", "type": "soft" }
+    {
+      "name": "Assigned shift",
+      "type": "hard"
+    },
+    {
+      "name": "Required skill",
+      "type": "hard"
+    },
+    {
+      "name": "Overlapping shift",
+      "type": "hard"
+    },
+    {
+      "name": "At least 10 hours between 2 shifts",
+      "type": "hard"
+    },
+    {
+      "name": "One shift per day",
+      "type": "hard"
+    },
+    {
+      "name": "Unavailable employee",
+      "type": "hard"
+    },
+    {
+      "name": "Undesired day for employee",
+      "type": "soft"
+    },
+    {
+      "name": "Desired day for employee",
+      "type": "soft"
+    },
+    {
+      "name": "Balance employee assignments",
+      "type": "soft"
+    }
   ],
   "views": [
     {
@@ -25,7 +60,8 @@
       "entityPlural": "shifts",
       "sourcePlural": "employees",
       "variableField": "employeeIdx",
-      "allowsUnassigned": true
+      "allowsUnassigned": true,
+      "scalarHooks": {}
     },
     {
       "id": "by-employee",
@@ -35,7 +71,10 @@
       "entityPlural": "shifts",
       "sourcePlural": "employees",
       "variableField": "employeeIdx",
-      "allowsUnassigned": true
+      "allowsUnassigned": true,
+      "scalarHooks": {}
     }
-  ]
+  ],
+  "scalarGroups": [],
+  "conflictRepairs": []
 }
