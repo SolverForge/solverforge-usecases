@@ -26,8 +26,7 @@ type = "late_acceptance"
 late_acceptance_size = 200
 
 [phases.forager]
-type = "accepted_count"
-limit = 4
+type = "first_last_step_score_improving"
 
 [phases.move_selector]
 type = "union_move_selector"

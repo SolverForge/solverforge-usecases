@@ -6,7 +6,7 @@ use axum::http::{Request, StatusCode};
 use http_body_util::BodyExt;
 use solverforge_deliveries::api;
 use solverforge_deliveries::data::{generate, DemoData};
-use solverforge_deliveries::domain::{Plan, RoutingMode};
+use solverforge_deliveries::domain::Plan;
 use tower::ServiceExt;
 use tower_http::services::ServeDir;
 
@@ -22,13 +22,11 @@ pub fn small_plan() -> serde_json::Value {
     plan.deliveries.truncate(8);
     plan.vehicles.truncate(3);
     plan.normalize();
-    plan.routing_mode = RoutingMode::StraightLine;
     serde_json::to_value(plan.refreshed_for_transport()).expect("plan should serialize")
 }
 
 pub fn bigger_plan() -> serde_json::Value {
-    let mut plan = generate(DemoData::Philadelphia);
-    plan.routing_mode = RoutingMode::StraightLine;
+    let plan = generate(DemoData::Philadelphia);
     serde_json::to_value(plan.refreshed_for_transport()).expect("plan should serialize")
 }
 
@@ -37,13 +35,11 @@ pub fn completion_plan() -> serde_json::Value {
     plan.deliveries.truncate(6);
     plan.vehicles.truncate(2);
     plan.normalize();
-    plan.routing_mode = RoutingMode::StraightLine;
     serde_json::to_value(plan.refreshed_for_transport()).expect("plan should serialize")
 }
 
 pub fn empty_road_network_plan() -> serde_json::Value {
-    let mut plan = Plan::new("Empty Road Network", Vec::new(), Vec::new());
-    plan.routing_mode = RoutingMode::RoadNetwork;
+    let plan = Plan::new("Empty Road Network", Vec::new(), Vec::new());
     serde_json::to_value(plan.refreshed_for_transport()).expect("plan should serialize")
 }
 
@@ -52,7 +48,6 @@ pub fn small_road_network_plan() -> serde_json::Value {
     plan.deliveries.truncate(4);
     plan.vehicles.truncate(2);
     plan.normalize();
-    plan.routing_mode = RoutingMode::RoadNetwork;
     serde_json::to_value(plan.refreshed_for_transport()).expect("plan should serialize")
 }
 

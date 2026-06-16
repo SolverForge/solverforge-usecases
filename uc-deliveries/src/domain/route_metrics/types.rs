@@ -109,13 +109,3 @@ pub struct DeliveryInsertionCandidate {
     pub delta_soft: i64,
     pub preview_plan: Plan,
 }
-
-pub trait DeliveryRoutingSolution: solverforge::cvrp::VrpSolution {
-    fn delivery_plan(&self) -> &Plan;
-}
-
-impl DeliveryRoutingSolution for Plan {
-    fn delivery_plan(&self) -> &Plan {
-        self
-    }
-}

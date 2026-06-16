@@ -26,10 +26,6 @@ function demoSelect(page) {
   return page.locator('.deliveries-field').filter({ hasText: 'Demo Data' }).locator('select');
 }
 
-function routingSelect(page) {
-  return page.locator('.deliveries-field').filter({ hasText: 'Routing Mode' }).locator('select');
-}
-
 test('boots the real deliveries app and serves required browser assets', async ({ page, request }) => {
   const errors = collectBrowserErrors(page);
 
@@ -50,7 +46,6 @@ test('boots the real deliveries app and serves required browser assets', async (
   }
 
   await expect(demoSelect(page)).toHaveValue('PHILADELPHIA');
-  await expect(routingSelect(page)).toHaveValue('road_network');
   await expect(page.getByText('PHILADELPHIA · road network · 82 deliveries · 10 vehicles')).toBeVisible();
   await expect(page.locator('.deliveries-list__row')).toHaveCount(10);
   await expect(page.locator('#deliveries-map')).toBeVisible();
@@ -106,23 +101,6 @@ test('highlights a route without moving or zooming the map', async ({ page }) =>
   await expect(firstRoute).toHaveClass(/is-focused/);
   await expect(firstRoute.getByRole('button')).toHaveText('Show All');
   await expect.poll(() => page.evaluate(() => window.__fitBoundsCalls)).toBe(0);
-
-  expect(errors).toEqual([]);
-});
-
-test('starts a retained straight-line solve and returns control to the user', async ({ page }) => {
-  const errors = collectBrowserErrors(page);
-
-  await page.goto('/');
-  await routingSelect(page).selectOption('straight_line');
-  await page.locator('button').filter({ hasText: 'Solve' }).first().click();
-
-  await expect(page.locator('#sf-app')).toHaveAttribute('data-job-id', /.+/, { timeout: 10_000 });
-  const stopButton = page.locator('button').filter({ hasText: 'Stop' }).first();
-  if (await stopButton.isVisible()) {
-    await stopButton.click();
-  }
-  await expect(page.locator('button').filter({ hasText: 'Solve' }).first()).toBeVisible({ timeout: 15_000 });
 
   expect(errors).toEqual([]);
 });

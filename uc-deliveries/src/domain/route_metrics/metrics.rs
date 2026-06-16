@@ -8,7 +8,7 @@ use solverforge_maps::UNREACHABLE;
 
 use crate::domain::{Plan, Vehicle};
 
-use super::helpers::{normalized_distance, normalized_travel_time, straight_line_leg};
+use super::helpers::{normalized_distance, normalized_travel_time};
 use super::types::{RouteStopMetrics, VehicleRouteMetrics};
 
 pub(super) fn metrics_for_vehicle(plan: &Plan, vehicle: &Vehicle) -> VehicleRouteMetrics {
@@ -29,7 +29,7 @@ pub(super) fn metrics_for_vehicle(plan: &Plan, vehicle: &Vehicle) -> VehicleRout
 
         metrics.total_demand += delivery.demand;
         let (travel_seconds, travel_meters, unreachable) =
-            leg_from_previous(plan, vehicle, previous_delivery_id, delivery_id);
+            leg_from_previous(vehicle, previous_delivery_id, delivery_id);
         metrics.total_travel_seconds += travel_seconds;
         metrics.total_distance_meters += travel_meters;
         metrics.unreachable_legs += usize::from(unreachable);
@@ -62,8 +62,7 @@ pub(super) fn metrics_for_vehicle(plan: &Plan, vehicle: &Vehicle) -> VehicleRout
     }
 
     if let Some(last_delivery_id) = previous_delivery_id {
-        let (return_seconds, return_meters, unreachable) =
-            leg_to_depot(plan, vehicle, last_delivery_id);
+        let (return_seconds, return_meters, unreachable) = leg_to_depot(vehicle, last_delivery_id);
         metrics.total_travel_seconds += return_seconds;
         metrics.total_distance_meters += return_meters;
         metrics.unreachable_legs += usize::from(unreachable);
@@ -75,28 +74,17 @@ pub(super) fn metrics_for_vehicle(plan: &Plan, vehicle: &Vehicle) -> VehicleRout
 }
 
 fn leg_from_previous(
-    plan: &Plan,
     vehicle: &Vehicle,
     previous_delivery_id: Option<usize>,
     current_delivery_id: usize,
 ) -> (i64, i64, bool) {
     match previous_delivery_id {
-        Some(previous_delivery_id) => prepared_or_straight_line_delivery_leg(
-            plan,
-            vehicle,
-            previous_delivery_id,
-            current_delivery_id,
-        ),
-        None => prepared_or_straight_line_depot_leg(plan, vehicle, current_delivery_id),
+        Some(previous_delivery_id) => prepared_delivery_leg(vehicle, previous_delivery_id, current_delivery_id),
+        None => prepared_depot_leg(vehicle, current_delivery_id),
     }
 }
 
-fn prepared_or_straight_line_delivery_leg(
-    plan: &Plan,
-    vehicle: &Vehicle,
-    from_delivery_id: usize,
-    to_delivery_id: usize,
-) -> (i64, i64, bool) {
+fn prepared_delivery_leg(vehicle: &Vehicle, from_delivery_id: usize, to_delivery_id: usize) -> (i64, i64, bool) {
     if let Some(prepared) = &vehicle.prepared_routing {
         let seconds = prepared.travel_times[from_delivery_id][to_delivery_id];
         let meters = prepared.distance_matrix[from_delivery_id][to_delivery_id];
@@ -107,17 +95,10 @@ fn prepared_or_straight_line_delivery_leg(
         );
     }
 
-    let from = plan.deliveries[from_delivery_id].coord().expect("valid coord");
-    let to = plan.deliveries[to_delivery_id].coord().expect("valid coord");
-    let (seconds, meters) = straight_line_leg(from, to);
-    (seconds, meters, false)
+    (0, 0, false)
 }
 
-fn prepared_or_straight_line_depot_leg(
-    plan: &Plan,
-    vehicle: &Vehicle,
-    delivery_id: usize,
-) -> (i64, i64, bool) {
+fn prepared_depot_leg(vehicle: &Vehicle, delivery_id: usize) -> (i64, i64, bool) {
     if let Some(prepared) = &vehicle.prepared_routing {
         let seconds = prepared.depot_to_delivery_seconds[delivery_id];
         let meters = prepared.depot_to_delivery_meters[delivery_id];
@@ -128,13 +109,10 @@ fn prepared_or_straight_line_depot_leg(
         );
     }
 
-    let from = vehicle.depot_coord().expect("valid coord");
-    let to = plan.deliveries[delivery_id].coord().expect("valid coord");
-    let (seconds, meters) = straight_line_leg(from, to);
-    (seconds, meters, false)
+    (0, 0, false)
 }
 
-fn leg_to_depot(plan: &Plan, vehicle: &Vehicle, delivery_id: usize) -> (i64, i64, bool) {
+fn leg_to_depot(vehicle: &Vehicle, delivery_id: usize) -> (i64, i64, bool) {
     if let Some(prepared) = &vehicle.prepared_routing {
         let seconds = prepared.delivery_to_depot_seconds[delivery_id];
         let meters = prepared.delivery_to_depot_meters[delivery_id];
@@ -145,8 +123,5 @@ fn leg_to_depot(plan: &Plan, vehicle: &Vehicle, delivery_id: usize) -> (i64, i64
         );
     }
 
-    let from = plan.deliveries[delivery_id].coord().expect("valid coord");
-    let to = vehicle.depot_coord().expect("valid coord");
-    let (seconds, meters) = straight_line_leg(from, to);
-    (seconds, meters, false)
+    (0, 0, false)
 }

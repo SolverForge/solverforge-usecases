@@ -53,19 +53,13 @@ function createControls(shell) {
     { value: 'FIRENZE', label: 'Firenze' },
   ]);
   demoField.select.value = 'PHILADELPHIA';
-  const routingField = createSelectField('Routing Mode', [
-    { value: 'road_network', label: 'Road Network' },
-    { value: 'straight_line', label: 'Straight Line' },
-  ]);
-  routingField.select.value = 'road_network';
   const reloadButton = SF.createButton({ text: 'Reload Demo', icon: 'fa-rotate-right', variant: 'default' });
 
   controlsRow.appendChild(demoField.el);
-  controlsRow.appendChild(routingField.el);
   controlsRow.appendChild(reloadButton);
   controlsCard.appendChild(controlsRow);
   shell.appendChild(controlsCard);
-  return { demoField, routingField, reloadButton };
+  return { demoField, reloadButton };
 }
 
 function createOverview(shell, panels) {

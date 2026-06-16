@@ -37,7 +37,7 @@ PLAYWRIGHT ?= ../node_modules/.bin/playwright
 
 # ============== Phony Targets ==============
 .PHONY: banner help doctor build build-release run run-release test test-rust \
-        test-frontend-syntax test-frontend test-e2e test-live-road test-one lint fmt \
+        test-frontend-syntax test-frontend test-e2e test-live-road test-live-e2e test-one lint fmt \
         fmt-check clippy check ci-local space-ci space-build space-run docker-build \
         docker-run pre-release release-ci release-info version clean watch require-node require-docker
 
@@ -140,9 +140,20 @@ test-e2e: build-release require-node
 test-live-road: banner
 	@printf "$(ARROW) $(BOLD)Running live road-network route tests...$(RESET)\n"
 	@SOLVERFORGE_RUN_LIVE_TESTS=1 cargo test live_demo_locations_are_mutually_reachable_when_enabled -- --nocapture && \
+		SOLVERFORGE_RUN_LIVE_TESTS=1 cargo test live_clarke_wright_construction_assigns_full_philadelphia_fixture_when_enabled -- --nocapture && \
+		SOLVERFORGE_RUN_LIVE_TESTS=1 cargo test road_network_job_emits_a_non_empty_snapshot_when_live_tests_are_enabled -- --nocapture && \
+		SOLVERFORGE_RUN_LIVE_TESTS=1 cargo test road_network_jobs_lifecycle_snapshot_analysis_routes_and_delete_work_when_live_tests_are_enabled -- --nocapture && \
 		SOLVERFORGE_RUN_LIVE_TESTS=1 cargo test road_network_job_routes_work_when_live_tests_are_enabled -- --nocapture && \
-		printf "\n$(GREEN)$(CHECK) Live road-network test passed$(RESET)\n\n" || \
-		(printf "\n$(RED)$(CROSS) Live road-network test failed$(RESET)\n\n" && exit 1)
+		SOLVERFORGE_RUN_LIVE_TESTS=1 cargo test recommendations_endpoint_returns_ranked_preview_plans -- --nocapture && \
+		printf "\n$(GREEN)$(CHECK) Live road-network Rust tests passed$(RESET)\n\n" || \
+		(printf "\n$(RED)$(CROSS) Live road-network Rust tests failed$(RESET)\n\n" && exit 1)
+	@$(MAKE) test-live-e2e --no-print-directory
+
+test-live-e2e: build-release require-node
+	@printf "$(PROGRESS) Running live Playwright road-network browser test...\n"
+	@SOLVERFORGE_RUN_LIVE_TESTS=1 $(PLAYWRIGHT) test --config tests/e2e/playwright.config.js tests/e2e/app.live.spec.js && \
+		printf "$(GREEN)$(CHECK) Live Playwright road-network test passed$(RESET)\n" || \
+		(printf "$(RED)$(CROSS) Live Playwright road-network test failed$(RESET)\n" && exit 1)
 
 test-one:
 	@printf "$(PROGRESS) Running test: $(YELLOW)$(TEST)$(RESET)\n"

@@ -12,8 +12,9 @@ version is declared in `Cargo.toml`, and the release binary is
 - `src/domain/vehicle.rs` owns the `Vehicle` planning entity and its
   `delivery_order` list variable.
 - `src/domain/preview.rs` owns transport/view preview structs.
-- `src/domain/route_metrics/` owns route preparation, the local CVRP feasibility
-  hook, scoring preview, route geometry, and insertion ranking.
+- `src/domain/route_metrics/` owns route preparation, scoring preview, route
+  geometry, and insertion ranking. Solver construction and k-opt behavior
+  should come from the stock `domain = "cvrp"` list-variable profile.
 - `src/constraints/` owns one score rule per file plus `mod.rs` assembly.
 - `src/data/data_seed/` owns deterministic city demo-data modules with grouped
   visit files for scaled delivery counts.
@@ -24,6 +25,9 @@ version is declared in `Cargo.toml`, and the release binary is
 
 Keep the canonical solution name `Plan`. Do not reintroduce `DeliveryPlan` or
 `delivery_plan.rs`.
+
+Do not add local CVRP hook modules to this app. If stock CVRP construction or
+route-local behavior is wrong, fix the SolverForge CVRP profile upstream.
 
 ## File Size Rule
 
@@ -75,8 +79,8 @@ coverage under `tests/api_contract/` and shared integration helpers under
 `tests/api_contract.rs` crate. Add frontend model tests in
 `tests/frontend_models.test.mjs`, and browser-flow tests in `tests/e2e/`.
 
-Road-network tests should stay env-gated unless the test uses only cached or
-straight-line behavior. Use `SOLVERFORGE_RUN_LIVE_TESTS=1` through
+Road-network tests should stay env-gated unless the test uses an empty plan or
+an explicit prepared matrix fixture. Use `SOLVERFORGE_RUN_LIVE_TESTS=1` through
 `make test-live-road` when validating live map/routing paths.
 
 ## Runtime Notes

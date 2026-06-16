@@ -2,7 +2,7 @@
 //!
 //! City-specific modules only contain depots and visit groups. This file turns
 //! those static fixtures into normalized `Plan` values with vehicles, delivery
-//! ids, routing mode, and deterministic service windows.
+//! ids, and deterministic service windows.
 
 use std::str::FromStr;
 
@@ -11,7 +11,7 @@ use rand::{RngExt, SeedableRng};
 
 use super::types::{LocationData, VEHICLE_NAMES};
 use super::{firenze, hartford, philadelphia};
-use crate::domain::{Delivery, Plan, RoutingMode, Vehicle};
+use crate::domain::{Delivery, Plan, Vehicle};
 
 #[derive(Debug, Clone, Copy)]
 pub enum DemoData {
@@ -128,7 +128,5 @@ fn generate_demo_data(
         })
         .collect::<Vec<_>>();
 
-    let mut plan = Plan::new(demo.label(), deliveries, vehicles);
-    plan.routing_mode = RoutingMode::RoadNetwork;
-    plan
+    Plan::new(demo.label(), deliveries, vehicles)
 }

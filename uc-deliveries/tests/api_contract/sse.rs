@@ -5,7 +5,7 @@ use axum::http::{Request, StatusCode};
 use tokio_stream::StreamExt;
 use tower::ServiceExt;
 
-use crate::support::api::{read_json, small_plan, small_road_network_plan, test_app};
+use crate::support::api::{empty_road_network_plan, read_json, small_road_network_plan, test_app};
 
 #[tokio::test]
 async fn sse_endpoint_bootstraps_typed_events() {
@@ -16,7 +16,7 @@ async fn sse_endpoint_bootstraps_typed_events() {
         .oneshot(
             Request::post("/jobs")
                 .header("content-type", "application/json")
-                .body(Body::from(small_plan().to_string()))
+                .body(Body::from(empty_road_network_plan().to_string()))
                 .unwrap(),
         )
         .await

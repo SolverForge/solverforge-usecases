@@ -55,6 +55,10 @@ async fn demo_data_and_static_assets_match_current_contract() {
 
 #[tokio::test]
 async fn recommendations_endpoint_returns_ranked_preview_plans() {
+    if std::env::var("SOLVERFORGE_RUN_LIVE_TESTS").ok().as_deref() != Some("1") {
+        return;
+    }
+
     let app = test_app();
     let mut plan = small_plan();
     if let Some(order) = plan["vehicles"][0]["deliveryOrder"].as_array_mut() {

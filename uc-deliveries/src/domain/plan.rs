@@ -1,8 +1,8 @@
 //! Planning solution for the delivery-routing problem.
 //!
-//! The `Plan` owns facts, planning entities, score, routing mode, and transient
-//! prepared route matrices. It is both the solver input and the shape serialized
-//! through the API after `PlanDto` flattens it.
+//! The `Plan` owns facts, planning entities, score, the road-network routing
+//! marker, and transient prepared route matrices. It is both the solver input
+//! and the shape serialized through the API after `PlanDto` flattens it.
 
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -165,5 +165,20 @@ impl Plan {
 
     pub(crate) fn test_phase_count(config: &solverforge::SolverConfig) -> usize {
         Self::__solverforge_build_phases(config).phases().len()
+    }
+
+    pub(crate) fn test_solve_with_config(mut plan: Self, config: &solverforge::SolverConfig) -> Self {
+        let mut phases = Self::__solverforge_build_phases(config);
+        let director = solverforge::ScoreDirector::with_descriptor(
+            plan,
+            crate::constraints::create_constraints(),
+            Self::descriptor(),
+            Self::entity_count,
+        );
+        let mut scope = solverforge::__internal::SolverScope::new(director);
+        scope.start_solving();
+        solverforge::__internal::Phase::solve(&mut phases, &mut scope);
+        plan = scope.working_solution().clone();
+        plan
     }
 }

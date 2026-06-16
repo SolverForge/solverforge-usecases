@@ -11,6 +11,7 @@ import { buildAnalysisBody, buildRecommendationBody } from './ui/modals.mjs';
 import { renderMap, renderRouteList, renderSummary, renderTimelines } from './ui/overview.mjs';
 
 const DEFAULT_DEMO = 'PHILADELPHIA';
+const ROUTING_MODE = 'road_network';
 
 export async function boot() {
   const config = await fetchJson('/sf-config.json');
@@ -23,9 +24,9 @@ export async function boot() {
   let mapCtrl = null;
   let focusedVehicleId = null;
   let routeRequestToken = 0;
-  // Route geometry is only trustworthy for one retained job, snapshot revision,
-  // and routing mode. This identity prevents stale map lines from surviving
-  // dataset switches, routing-mode changes, or newer solver snapshots.
+  // Route geometry is only trustworthy for one retained job and snapshot
+  // revision. This identity prevents stale map lines from surviving dataset
+  // switches or newer solver snapshots.
   let activeRouteIdentity = null;
   let activeTab = 'overview';
   let mapLocationSignature = null;
@@ -73,12 +74,6 @@ export async function boot() {
 
   layout.reloadButton.addEventListener('click', async () => loadDemoData(layout.demoField.select.value));
   layout.demoField.select.addEventListener('change', async () => loadDemoData(layout.demoField.select.value));
-  layout.routingField.select.addEventListener('change', () => {
-    if (!currentPlan) return;
-    invalidateRoutes();
-    currentPlan.routingMode = layout.routingField.select.value;
-    renderDraftPlan(currentPlan);
-  });
 
   setActiveTab(activeTab);
   await loadDemoData(DEFAULT_DEMO);
@@ -98,14 +93,14 @@ export async function boot() {
       renderRouteListView();
     }
     const plan = await fetchJson(`/demo-data/${demoId}`);
-    plan.routingMode = plan.routingMode || layout.routingField.select.value;
+    plan.routingMode = plan.routingMode || ROUTING_MODE;
     renderServerPlan(plan);
   }
 
   async function loadAndSolve() {
     if (!currentPlan) return;
     invalidateRoutes();
-    renderDraftPlan({ ...currentPlan, routingMode: layout.routingField.select.value });
+    renderDraftPlan({ ...currentPlan, routingMode: ROUTING_MODE });
     await cleanupTerminalJob();
     await solver.start(clonePlan(currentPlan));
     syncLifecycle();
@@ -196,9 +191,8 @@ export async function boot() {
   function renderPlan(plan, refresh) {
     const nextMapLocationSignature = locationSignature(plan);
     const shouldFitMap = nextMapLocationSignature !== mapLocationSignature;
-    currentPlan = refresh({ ...plan, routingMode: plan.routingMode || layout.routingField.select.value });
+    currentPlan = refresh({ ...plan, routingMode: plan.routingMode || ROUTING_MODE });
     mapLocationSignature = nextMapLocationSignature;
-    layout.routingField.select.value = currentPlan.routingMode || 'road_network';
     renderSummaryView();
     renderRouteListView();
     renderMapView({ fitBounds: shouldFitMap });

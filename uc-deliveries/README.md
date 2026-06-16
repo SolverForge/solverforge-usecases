@@ -54,10 +54,10 @@ make help
 - Package: `solverforge-deliveries`; version is declared in `Cargo.toml`
 - Release binary: `solverforge_deliveries`
 - Rust: `1.95`
-- SolverForge runtime: `solverforge` `0.15.0`
+- SolverForge runtime: `solverforge` `0.17.1`
 - Browser UI assets: `solverforge-ui` `0.6.5`
 - Routing engine: `solverforge-maps` `2.1.4`
-- Scaffold metadata: `solverforge-cli` `2.0.4` in `solverforge.app.toml`
+- Scaffold metadata: `solverforge-cli` `2.2.2` in `solverforge.app.toml`
 
 The app serves registry-backed Rust dependencies, local static browser modules,
 and Axum API routes from one process.
@@ -68,9 +68,8 @@ and Axum API routes from one process.
 - `Vehicle` is a planning entity: each vehicle owns one mutable route.
 - `Vehicle.delivery_order` is the list planning variable: the sequence
   SolverForge changes during construction and local search.
-- `Plan` is the planning solution: it owns deliveries, vehicles, routing mode,
-  view state, and the current `HardSoftScore`.
-- `RoutingMode` selects `road_network` or `straight_line` route geometry.
+- `Plan` is the planning solution: it owns deliveries, vehicles, road-network
+  routing state, view state, and the current `HardSoftScore`.
 
 The app ships three deterministic datasets: `PHILADELPHIA` with 82 deliveries,
 `HARTFORD` with 50 deliveries, and `FIRENZE` with 80 deliveries. Each dataset
@@ -116,17 +115,17 @@ clients receive a bootstrap event and then live retained-job events.
 
 - `list_clarke_wright` builds initial delivery routes.
 - `list_k_opt` improves those routes before local search.
-- The list variable uses public `solverforge::cvrp` helpers for route get/set,
-  per-vehicle depot lookup, and route-distance reads from prepared matrices.
+- `Vehicle.delivery_order` declares `domain = "cvrp"`, so SolverForge wires
+  stock CVRP construction and route-local behavior over per-vehicle prepared
+  matrices.
 - Local search combines nearby list change/swap, reverse, k-opt, ruin, and
   limited sublist moves over `Vehicle.delivery_order`.
-- `late_acceptance` with an accepted-count forager keeps several candidate
-  moves alive per step.
+- `late_acceptance` with a first-improving forager keeps scanning past equal
+  accepted moves until the current step score improves.
 - Solving stops after 30 seconds total or after 5 seconds without improvement.
 
-`road_network` mode uses `solverforge-maps` to load a graph and return route
-geometry through `/jobs/{id}/routes`. `straight_line` mode is a fast draft and
-testing path.
+The app uses `solverforge-maps` to load a road graph and return route geometry
+through `/jobs/{id}/routes`.
 
 ## Validation
 
@@ -169,12 +168,12 @@ make space-run
 1. `src/domain/mod.rs`
    The `planning_model!` manifest and public domain exports.
 2. `src/domain/plan.rs`
-   The `Plan` solution, list-variable hook wiring, and routing mode.
+   The `Plan` solution, CVRP list-variable profile, and road-network marker.
 3. `src/domain/delivery.rs` and `src/domain/vehicle.rs`
    The problem fact and planning entity.
 4. `src/domain/route_metrics/`
-   Route preparation, public CVRP matrix wiring, local feasibility pruning,
-   preview scoring, route geometry, and insertion ranking.
+   Route preparation, CVRP matrix data, preview scoring, route geometry, and
+   insertion ranking.
 5. `src/constraints/mod.rs` and `src/constraints/*.rs`
    The score model, one rule per file.
 6. `src/data/data_seed/entrypoints.rs`

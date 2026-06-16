@@ -1,7 +1,8 @@
 use super::*;
-use crate::data::{generate, DemoData};
-use crate::domain::{prepare_plan, DeliveryKind, UNASSIGNED_DELIVERY_HARD_PENALTY};
-use solverforge::{Director, ScoreDirector, SolverConfig, SolverEvent, SolverManager};
+use crate::domain::{DeliveryKind, UNASSIGNED_DELIVERY_HARD_PENALTY};
+use solverforge::cvrp::ProblemData;
+use solverforge::{ScoreDirector, SolverConfig, SolverEvent, SolverManager};
+use std::sync::Arc;
 
 fn tiny_plan() -> Plan {
     Plan::new(
@@ -32,36 +33,93 @@ fn tiny_plan() -> Plan {
 
 fn prepared_tiny_plan_with_route() -> Plan {
     let mut plan = tiny_plan();
-    plan.routing_mode = RoutingMode::StraightLine;
     plan.vehicles[0].delivery_order = vec![0, 1];
-    tokio::runtime::Builder::new_current_thread()
-        .enable_all()
-        .build()
-        .expect("tokio runtime")
-        .block_on(async {
-            prepare_plan(&mut plan)
-                .await
-                .expect("plan preparation should work");
-        });
+    attach_test_routing(&mut plan);
     plan
 }
 
+fn prepared_tiny_plan() -> Plan {
+    let mut plan = tiny_plan();
+    attach_test_routing(&mut plan);
+    plan
+}
+
+fn attach_test_routing(plan: &mut Plan) {
+    let delivery_count = plan.deliveries.len();
+    let demands = plan
+        .deliveries
+        .iter()
+        .map(|delivery| delivery.demand)
+        .collect::<Vec<_>>();
+    let time_windows = plan
+        .deliveries
+        .iter()
+        .map(|delivery| (delivery.min_start_time, delivery.max_end_time))
+        .collect::<Vec<_>>();
+    let service_durations = plan
+        .deliveries
+        .iter()
+        .map(|delivery| delivery.service_duration)
+        .collect::<Vec<_>>();
+    let travel_times = vec![vec![0, 600], vec![660, 0]];
+    let distances = vec![vec![0, 3_000], vec![3_300, 0]];
+    let depot_to_delivery_seconds = vec![300, 900];
+    let delivery_to_depot_seconds = vec![360, 840];
+    let depot_to_delivery_meters = vec![1_500, 4_500];
+    let delivery_to_depot_meters = vec![1_800, 4_200];
+
+    plan.prepared_problem_data.clear();
+    for (vehicle_idx, vehicle) in plan.vehicles.iter_mut().enumerate() {
+        let mut problem_matrix = vec![vec![0_i64; delivery_count + 1]; delivery_count + 1];
+        for (from, row) in travel_times.iter().enumerate() {
+            for (to, seconds) in row.iter().copied().enumerate() {
+                problem_matrix[from][to] = seconds;
+            }
+        }
+        for (delivery_idx, seconds) in depot_to_delivery_seconds.iter().copied().enumerate() {
+            problem_matrix[delivery_count][delivery_idx] = seconds;
+        }
+        for (delivery_idx, seconds) in delivery_to_depot_seconds.iter().copied().enumerate() {
+            problem_matrix[delivery_idx][delivery_count] = seconds;
+        }
+
+        plan.prepared_problem_data.push(Arc::new(ProblemData {
+            capacity: vehicle.capacity as i64,
+            depot: delivery_count,
+            demands: demands.clone(),
+            distance_matrix: problem_matrix.clone(),
+            time_windows: time_windows.clone(),
+            service_durations: service_durations.clone(),
+            travel_times: problem_matrix,
+            vehicle_departure_time: vehicle.departure_time,
+        }));
+        vehicle.prepared_routing = Some(PreparedVehicleRouting {
+            problem_data_index: vehicle_idx,
+            capacity: vehicle.capacity as i64,
+            demands: demands.clone(),
+            distance_matrix: distances.clone(),
+            time_windows: time_windows.clone(),
+            service_durations: service_durations.clone(),
+            travel_times: travel_times.clone(),
+            vehicle_departure_time: vehicle.departure_time,
+            depot_to_delivery_seconds: depot_to_delivery_seconds.clone(),
+            delivery_to_depot_seconds: delivery_to_depot_seconds.clone(),
+            depot_to_delivery_meters: depot_to_delivery_meters.clone(),
+            delivery_to_depot_meters: delivery_to_depot_meters.clone(),
+        });
+    }
+}
+
 #[test]
-fn score_director_populates_vehicle_route_shadows() {
-    let plan = prepared_tiny_plan_with_route();
+fn route_shadow_listener_populates_vehicle_route_shadows() {
+    let mut plan = prepared_tiny_plan_with_route();
     assert_eq!(
         plan.vehicles[0].route_total_demand, 0,
         "prepared transport data should not eagerly populate solver shadows"
     );
 
-    let mut director = ScoreDirector::with_descriptor(
-        plan,
-        crate::constraints::create_constraints(),
-        Plan::descriptor(),
-        Plan::entity_count,
-    );
-    let score = director.calculate_score();
-    let vehicle = &director.working_solution().vehicles[0];
+    plan.refresh_vehicle_route_shadows(0);
+    let vehicle = &plan.vehicles[0];
 
     assert_eq!(vehicle.total_assigned_demand(), 2);
     assert_eq!(vehicle.capacity_overage(), 0);
@@ -69,7 +127,6 @@ fn score_director_populates_vehicle_route_shadows() {
         vehicle.total_travel_seconds() > 0,
         "route travel should be maintained as a shadow value"
     );
-    assert_eq!(score.hard(), 0);
 }
 
 #[test]
@@ -105,17 +162,7 @@ fn vehicle_route_shadows_refresh_after_list_variable_changes() {
 fn generated_list_runtime_is_non_trivial_and_builds_routes() {
     static MANAGER: SolverManager<Plan> = SolverManager::new();
 
-    let mut plan = tiny_plan();
-    plan.routing_mode = RoutingMode::StraightLine;
-    tokio::runtime::Builder::new_current_thread()
-        .enable_all()
-        .build()
-        .expect("tokio runtime")
-        .block_on(async {
-            prepare_plan(&mut plan)
-                .await
-                .expect("plan preparation should work");
-        });
+    let plan = prepared_tiny_plan();
 
     assert!(
         Plan::test_has_list_variable(),
@@ -171,73 +218,4 @@ fn generated_list_runtime_is_non_trivial_and_builds_routes() {
         saw_non_empty_best,
         "expected a non-empty best solution before cancellation"
     );
-}
-
-#[test]
-fn seeded_philadelphia_plan_emits_a_non_empty_best_solution() {
-    static MANAGER: SolverManager<Plan> = SolverManager::new();
-
-    let mut plan = generate(DemoData::Philadelphia);
-    plan.routing_mode = RoutingMode::StraightLine;
-    tokio::runtime::Builder::new_current_thread()
-        .enable_all()
-        .build()
-        .expect("tokio runtime")
-        .block_on(async {
-            prepare_plan(&mut plan)
-                .await
-                .expect("plan preparation should work");
-        });
-
-    let (job_id, mut receiver) = MANAGER.solve(plan).expect("solve should start");
-    let mut saw_non_empty_best = false;
-    let mut first_non_empty_best: Option<Plan> = None;
-    loop {
-        match receiver
-            .blocking_recv()
-            .expect("event stream should reach a terminal event")
-        {
-            SolverEvent::BestSolution { solution, .. } => {
-                if solution
-                    .vehicles
-                    .iter()
-                    .any(|vehicle| !vehicle.delivery_order.is_empty())
-                {
-                    saw_non_empty_best = true;
-                    first_non_empty_best.get_or_insert(solution.clone());
-                    MANAGER.cancel(job_id).expect("job cancel should succeed");
-                }
-            }
-            SolverEvent::Completed { .. } | SolverEvent::Cancelled { .. } => break,
-            SolverEvent::Failed { error, .. } => {
-                panic!("solve unexpectedly failed: {error}");
-            }
-            SolverEvent::Progress { .. }
-            | SolverEvent::PauseRequested { .. }
-            | SolverEvent::Paused { .. }
-            | SolverEvent::Resumed { .. } => {}
-        }
-    }
-    MANAGER
-        .delete(job_id)
-        .expect("completed test job should delete");
-
-    assert!(
-        saw_non_empty_best,
-        "expected a non-empty best solution for the seeded Philadelphia plan"
-    );
-    let best = first_non_empty_best.expect("should retain the first non-empty best solution");
-    assert!(
-        best.vehicles
-            .iter()
-            .any(|vehicle| vehicle.delivery_order.len() > 1),
-        "expected at least one multi-stop route after construction"
-    );
-    let director = ScoreDirector::with_descriptor(
-        best.clone(),
-        crate::constraints::create_constraints(),
-        Plan::descriptor(),
-        Plan::entity_count,
-    );
-    assert_eq!(director.entity_count(0), Some(best.vehicles.len()));
 }

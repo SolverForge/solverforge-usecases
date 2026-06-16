@@ -6,11 +6,10 @@
 
 use serde::{Deserialize, Serialize};
 
-/// Chooses whether routing uses fast straight lines or real road-network data.
+/// Records the road-network routing contract in transport payloads.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum RoutingMode {
-    StraightLine,
     #[default]
     RoadNetwork,
 }

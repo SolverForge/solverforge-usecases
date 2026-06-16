@@ -10,7 +10,11 @@ use crate::support::api::{
 };
 
 #[tokio::test]
-async fn straight_line_job_emits_a_non_empty_snapshot_before_cancellation() {
+async fn road_network_job_emits_a_non_empty_snapshot_when_live_tests_are_enabled() {
+    if std::env::var("SOLVERFORGE_RUN_LIVE_TESTS").ok().as_deref() != Some("1") {
+        return;
+    }
+
     let app = test_app();
     let create_response = app
         .clone()

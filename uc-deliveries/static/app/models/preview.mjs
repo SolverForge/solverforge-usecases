@@ -1,4 +1,3 @@
-const AVERAGE_SPEED_KMPH = 50;
 const UNASSIGNED_DELIVERY_HARD_PENALTY = 1_000_000;
 
 export function buildPreview(plan) {
@@ -71,14 +70,13 @@ function computeVehicleMetrics(plan, vehicle) {
   let totalLateSeconds = 0;
   let endTime = vehicle.departureTime || 0;
   let currentTime = vehicle.departureTime || 0;
-  let previous = { lat: vehicle.homeLat, lng: vehicle.homeLng };
 
   for (const [sequence, deliveryId] of (vehicle.deliveryOrder || []).entries()) {
     const delivery = plan.deliveries[deliveryId];
     if (!delivery) continue;
 
     totalDemand += Number(delivery.demand || 0);
-    const travel = estimateTravel(previous, delivery);
+    const travel = 0;
     totalTravelSeconds += travel;
     const arrivalTime = currentTime + travel;
     const serviceStartTime = Math.max(arrivalTime, delivery.minStartTime || 0);
@@ -91,7 +89,6 @@ function computeVehicleMetrics(plan, vehicle) {
     totalLateSeconds += lateSeconds;
     currentTime = departureTime;
     endTime = departureTime;
-    previous = delivery;
 
     stops.push({
       deliveryId,
@@ -111,10 +108,7 @@ function computeVehicleMetrics(plan, vehicle) {
   }
 
   if (stops.length) {
-    const depot = { lat: vehicle.homeLat, lng: vehicle.homeLng };
-    const returnTravel = estimateTravel(previous, depot);
-    totalTravelSeconds += returnTravel;
-    endTime = currentTime + returnTravel;
+    endTime = currentTime;
   }
 
   return {
@@ -131,22 +125,4 @@ function computeVehicleMetrics(plan, vehicle) {
     endTime,
     stops,
   };
-}
-
-function estimateTravel(from, to) {
-  const meters = haversineMeters(Number(from.lat), Number(from.lng), Number(to.lat), Number(to.lng));
-  const metersPerSecond = (AVERAGE_SPEED_KMPH * 1000) / 3600;
-  return Math.round(meters / metersPerSecond);
-}
-
-function haversineMeters(lat1, lng1, lat2, lng2) {
-  const toRad = (value) => (value * Math.PI) / 180;
-  const r = 6371000;
-  const dLat = toRad(lat2 - lat1);
-  const dLng = toRad(lng2 - lng1);
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-      Math.sin(dLng / 2) * Math.sin(dLng / 2);
-  return 2 * r * Math.asin(Math.sqrt(a));
 }

@@ -15,7 +15,7 @@ import {
 function basePlan() {
   return {
     name: 'Test City',
-    routingMode: 'straight_line',
+    routingMode: 'road_network',
     deliveries: [
       {
         id: 0,
@@ -79,7 +79,7 @@ test('refreshServerPlan preserves authoritative backend preview', () => {
   assert.deepEqual(refreshed.viewState.preview.unassignedDeliveryIds, [1]);
 });
 
-test('refreshPlan recomputes draft preview from straight-line estimates', () => {
+test('refreshPlan recomputes draft preview without client-side routing estimates', () => {
   const plan = basePlan();
   plan.viewState.preview = {
     hardScore: -99,
@@ -94,7 +94,7 @@ test('refreshPlan recomputes draft preview from straight-line estimates', () => 
   assert.equal(Math.abs(refreshed.viewState.preview.hardScore), 0);
   assert.notEqual(refreshed.viewState.preview.softScore, -12345);
   assert.equal(refreshed.viewState.preview.vehicles.length, 1);
-  assert.ok(refreshed.viewState.preview.vehicles[0].totalTravelSeconds > 0);
+  assert.equal(refreshed.viewState.preview.vehicles[0].totalTravelSeconds, 0);
 });
 
 test('refreshPlan uses dominant unassigned-delivery hard penalty', () => {

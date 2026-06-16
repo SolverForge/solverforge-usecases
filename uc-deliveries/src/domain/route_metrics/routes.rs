@@ -1,11 +1,8 @@
-use solverforge_maps::{
-    encode_polyline, haversine_distance, BoundingBox, Coord, NetworkConfig, RoadNetwork,
-    RoutingError,
-};
+use solverforge_maps::{encode_polyline, BoundingBox, Coord, NetworkConfig, RoadNetwork, RoutingError};
 
-use crate::domain::{Plan, RoutingMode};
+use crate::domain::Plan;
 
-use super::helpers::{delivery_coords, meters_to_seconds, route_bounds};
+use super::helpers::{delivery_coords, route_bounds};
 use super::metrics::metrics_for_vehicle;
 use super::types::{RouteLegGeometry, RouteLegSummary, RoutesSnapshot};
 
@@ -16,77 +13,13 @@ use super::types::{RouteLegGeometry, RouteLegSummary, RoutesSnapshot};
 /// map geometry the UI can draw.
 pub async fn build_routes_snapshot(plan: &Plan) -> Result<RoutesSnapshot, RoutingError> {
     let bounds = route_bounds(plan)?;
-    let vehicles = match plan.routing_mode {
-        RoutingMode::StraightLine => build_straight_line_routes(plan)?,
-        RoutingMode::RoadNetwork => build_road_routes(plan).await?,
-    };
+    let vehicles = build_road_routes(plan).await?;
 
     Ok(RoutesSnapshot {
-        routing_mode: match plan.routing_mode {
-            RoutingMode::StraightLine => "straight_line".to_string(),
-            RoutingMode::RoadNetwork => "road_network".to_string(),
-        },
+        routing_mode: "road_network".to_string(),
         bounds,
         vehicles,
     })
-}
-
-fn build_straight_line_routes(plan: &Plan) -> Result<Vec<RouteLegSummary>, RoutingError> {
-    let mut routes = Vec::with_capacity(plan.vehicles.len());
-    for vehicle in &plan.vehicles {
-        let metrics = metrics_for_vehicle(plan, vehicle);
-        let mut segments = Vec::new();
-        let mut previous_coord = vehicle.depot_coord()?;
-        let mut previous_id = None;
-        for &delivery_id in &vehicle.delivery_order {
-            let delivery = &plan.deliveries[delivery_id];
-            let coord = delivery.coord()?;
-            let meters = haversine_distance(previous_coord, coord).round() as i64;
-            let seconds = meters_to_seconds(meters);
-            segments.push(RouteLegGeometry {
-                vehicle_id: vehicle.id,
-                from_kind: if previous_id.is_some() {
-                    "delivery"
-                } else {
-                    "depot"
-                },
-                from_id: previous_id,
-                to_kind: "delivery",
-                to_id: Some(delivery_id),
-                duration_seconds: seconds,
-                distance_meters: meters,
-                encoded_polyline: encode_polyline(&[previous_coord, coord]),
-            });
-            previous_coord = coord;
-            previous_id = Some(delivery_id);
-        }
-        if let Some(last_delivery_id) = previous_id {
-            let depot = vehicle.depot_coord()?;
-            let meters = haversine_distance(previous_coord, depot).round() as i64;
-            let seconds = meters_to_seconds(meters);
-            segments.push(RouteLegGeometry {
-                vehicle_id: vehicle.id,
-                from_kind: "delivery",
-                from_id: Some(last_delivery_id),
-                to_kind: "depot",
-                to_id: None,
-                duration_seconds: seconds,
-                distance_meters: meters,
-                encoded_polyline: encode_polyline(&[previous_coord, depot]),
-            });
-        }
-        routes.push(RouteLegSummary {
-            vehicle_id: vehicle.id,
-            vehicle_name: vehicle.name.clone(),
-            total_travel_seconds: metrics.total_travel_seconds,
-            total_distance_meters: metrics.total_distance_meters,
-            total_demand: metrics.total_demand,
-            total_late_seconds: metrics.total_late_seconds,
-            stop_count: vehicle.delivery_order.len(),
-            segments,
-        });
-    }
-    Ok(routes)
 }
 
 async fn build_road_routes(plan: &Plan) -> Result<Vec<RouteLegSummary>, RoutingError> {

@@ -24,19 +24,9 @@ pub struct Vehicle {
     // @solverforge:begin entity-variables
     /// List planning variable: ordered delivery ids assigned to this vehicle.
     ///
-    /// The route hook attributes tell SolverForge how to construct and improve
-    /// these lists with owner-specific depot, distance, and feasibility checks.
-    #[planning_list_variable(
-        element_collection = "deliveries",
-        solution_trait = "crate::domain::DeliveryRoutingSolution",
-        distance_meter = "solverforge::cvrp::MatrixDistanceMeter",
-        intra_distance_meter = "solverforge::cvrp::MatrixIntraDistanceMeter",
-        route_get_fn = "solverforge::cvrp::get_route",
-        route_set_fn = "solverforge::cvrp::replace_route",
-        route_depot_fn = "solverforge::cvrp::depot_for_entity",
-        route_distance_fn = "solverforge::cvrp::route_distance",
-        route_feasible_fn = "crate::domain::delivery_route_feasible"
-    )]
+    /// The stock CVRP domain profile maps this route to SolverForge's
+    /// construction and route-local internals.
+    #[planning_list_variable(element_collection = "deliveries", domain = "cvrp")]
     pub delivery_order: Vec<usize>,
     // @solverforge:end entity-variables
     /// Transient per-vehicle routing data built before solving or previewing.

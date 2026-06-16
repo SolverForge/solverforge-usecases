@@ -7,6 +7,7 @@ const baseURL = process.env.PLAYWRIGHT_BASE_URL || `http://127.0.0.1:${port}`;
 module.exports = {
   testDir: '.',
   testMatch: '*.spec.js',
+  testIgnore: process.env.SOLVERFORGE_RUN_LIVE_TESTS === '1' ? [] : ['*.live.spec.js'],
   workers: 1,
   timeout: 45_000,
   reporter: [['list']],

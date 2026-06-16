@@ -5,7 +5,12 @@ use tower::ServiceExt;
 use crate::support::api::{bigger_plan, poll_job_state, read_json, test_app};
 
 #[tokio::test]
-async fn jobs_lifecycle_snapshot_analysis_routes_and_delete_work() {
+async fn road_network_jobs_lifecycle_snapshot_analysis_routes_and_delete_work_when_live_tests_are_enabled(
+) {
+    if std::env::var("SOLVERFORGE_RUN_LIVE_TESTS").ok().as_deref() != Some("1") {
+        return;
+    }
+
     let app = test_app();
 
     let create_response = app

@@ -22,7 +22,7 @@ fn plan_dto_ignores_inbound_score() {
     fields.insert("name".to_string(), Value::String("spoofed".to_string()));
     fields.insert(
         "routingMode".to_string(),
-        Value::String("straight_line".to_string()),
+        Value::String("road_network".to_string()),
     );
     fields.insert("viewState".to_string(), Value::Object(Map::new()));
     fields.insert("deliveries".to_string(), Value::Array(Vec::new()));
@@ -35,4 +35,24 @@ fn plan_dto_ignores_inbound_score() {
     let plan = dto.to_domain().expect("dto should deserialize");
 
     assert_eq!(plan.score, None);
+}
+
+#[test]
+fn plan_dto_rejects_removed_straight_line_routing_mode() {
+    let mut fields = Map::new();
+    fields.insert("name".to_string(), Value::String("legacy".to_string()));
+    fields.insert(
+        "routingMode".to_string(),
+        Value::String("straight_line".to_string()),
+    );
+    fields.insert("viewState".to_string(), Value::Object(Map::new()));
+    fields.insert("deliveries".to_string(), Value::Array(Vec::new()));
+    fields.insert("vehicles".to_string(), Value::Array(Vec::new()));
+
+    let dto = PlanDto {
+        fields,
+        score: None,
+    };
+
+    assert!(dto.to_domain().is_err());
 }

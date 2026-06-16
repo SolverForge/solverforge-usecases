@@ -29,7 +29,7 @@ It shows how to combine:
 
 - a `Plan` solution with a list planning variable
 - route-specific score rules
-- SolverForge CVRP construction and local-search hooks
+- SolverForge CVRP domain profile for construction and local search
 - `solverforge-maps` road-network preparation and route geometry
 - retained jobs with snapshots, analysis, cancel, pause, resume, and SSE
 - a browser plan viewer built on stock `solverforge-ui` assets
@@ -41,8 +41,8 @@ It shows how to combine:
 - `Vehicle`
   Planning entity. Each vehicle owns one ordered `delivery_order` list.
 - `Plan`
-  Planning solution. It holds deliveries, vehicles, score, routing mode, view
-  state, and prepared routing data.
+  Planning solution. It holds deliveries, vehicles, score, the road-network
+  marker, view state, and prepared routing data.
 - hard score
   Missing assignments, capacity overage, late delivery seconds, and unreachable
   route legs.
@@ -65,7 +65,7 @@ It shows how to combine:
    `POST /jobs`.
 7. `src/api/routes.rs` deserializes the `PlanDto`, rebuilds a `Plan`, and calls
    `prepare_plan()`.
-8. `prepare_plan()` builds straight-line or road-network matrices and attaches
+8. `prepare_plan()` builds road-network routing matrices and attaches
    `PreparedVehicleRouting` to each vehicle.
 9. `SolverService` starts a retained solve through `SolverManager<Plan>`.
 10. Solver events are converted by `src/solver/service/runtime_payload.rs` into
@@ -88,7 +88,7 @@ It shows how to combine:
 │   Embedded search policy for construction heuristics and local search.
 ├── solverforge.app.toml
 │   App metadata, demo IDs, model facts/entities, registry dependency sources,
-│   and the `solverforge 0.15.0` runtime target.
+│   and the `solverforge 0.17.1` runtime target.
 ├── Makefile
 │   Local build, validation, live-road, and Space/Docker commands.
 ├── Dockerfile
@@ -145,21 +145,18 @@ Route-specific behavior lives under `src/domain/route_metrics/`:
 
 - `preparation.rs`
   Builds per-vehicle prepared routing data and the depot-aware matrices consumed
-  by public `solverforge::cvrp` route helpers.
-- `cvrp_hooks.rs`
-  Supplies only the app-specific route-feasibility hook. Route get/set, depot,
-  and distance hooks come from `solverforge::cvrp`.
+  by the stock `domain = "cvrp"` list-variable profile.
 - `metrics.rs`
   Computes per-vehicle route metrics.
 - `scoring.rs`
   Builds preview DTOs and aggregate hard/soft score components.
 - `routes.rs`
-  Builds straight-line or road-network route geometry snapshots, including
-  edge-projected visual endpoints for road legs.
+  Builds road-network route geometry snapshots, including edge-projected visual
+  endpoints for road legs.
 - `insertions.rs`
   Ranks candidate insertion positions for one delivery.
 - `types.rs`
-  Shared route metrics, snapshots, candidates, and routing trait types.
+  Shared route metrics, snapshots, candidates, and prepared-routing types.
 
 This split keeps the public domain API stable while avoiding oversized files.
 
@@ -206,7 +203,7 @@ Supporting modules are split by responsibility:
 - `static/app/models/core.mjs`
   Clone and normalize incoming plans.
 - `static/app/models/preview.mjs`
-  Draft straight-line preview scoring.
+  Draft assignment and capacity preview scoring.
 - `static/app/models/timeline.mjs`
   Vehicle and delivery rail models.
 - `static/app/models/formatters.mjs`
