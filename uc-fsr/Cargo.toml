@@ -1,6 +1,6 @@
 [package]
 name = "solverforge-fsr"
-version = "2.0.3"
+version = "2.0.4"
 edition = "2021"
 rust-version = "1.95"
 description = "Constraint optimizer built with SolverForge"
@@ -10,8 +10,8 @@ name = "solverforge_fsr"
 path = "src/main.rs"
 
 [dependencies]
-solverforge = { version = "0.15.0", features = ["serde", "console", "verbose-logging"] }
-solverforge-core = { version = "0.15.0" }
+solverforge = { version = "0.17.1", features = ["serde", "console", "verbose-logging"] }
+solverforge-core = "0.17.1"
 solverforge-ui = { version = "0.6.5" }
 solverforge-maps = { version = "2.1.4" }
 # Web server

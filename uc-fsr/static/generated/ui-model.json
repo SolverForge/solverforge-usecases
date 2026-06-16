@@ -44,7 +44,10 @@
       "kind": "list",
       "label": "Technician Route · visits",
       "sourcePlural": "service_visits",
-      "variableField": "visits"
+      "variableField": "visits",
+      "scalarHooks": {}
     }
-  ]
+  ],
+  "scalarGroups": [],
+  "conflictRepairs": []
 }

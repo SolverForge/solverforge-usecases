@@ -32,9 +32,7 @@ mod assemble {
     pub fn create_constraints() -> impl ConstraintSet<FieldServicePlan, HardSoftScore> {
         // @solverforge:begin constraint-calls
         (
-            assigned_visits::missing_visits(),
-            assigned_visits::duplicate_assignments(),
-            assigned_visits::invalid_assignments(),
+            assigned_visits::constraint(),
             balance_workload::constraint(),
             minimize_travel::constraint(),
             priority_slack::constraint(),

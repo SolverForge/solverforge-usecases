@@ -10,8 +10,16 @@ use crate::domain::{
 };
 use solverforge::prelude::*;
 use solverforge::stream::joiner::equal_bi;
-use solverforge::{IncrementalConstraint, IncrementalConstraintSealed};
+use solverforge::{ConstraintSet, IncrementalConstraint, IncrementalConstraintSealed};
 use solverforge_core::ConstraintRef;
+
+pub(super) fn constraint() -> impl ConstraintSet<FieldServicePlan, HardSoftScore> {
+    (
+        missing_visits(),
+        duplicate_assignments(),
+        invalid_assignments(),
+    )
+}
 
 pub(super) fn missing_visits() -> impl IncrementalConstraint<FieldServicePlan, HardSoftScore> {
     ConstraintFactory::<FieldServicePlan, HardSoftScore>::new()
