@@ -54,7 +54,7 @@ make help
 - Package: `solverforge-deliveries`; version is declared in `Cargo.toml`
 - Release binary: `solverforge_deliveries`
 - Rust: `1.95`
-- SolverForge runtime: `solverforge` `0.17.1`
+- SolverForge runtime: `solverforge` `0.18.0`
 - Browser UI assets: `solverforge-ui` `0.6.5`
 - Routing engine: `solverforge-maps` `2.1.4`
 - Scaffold metadata: `solverforge-cli` `2.2.2` in `solverforge.app.toml`
@@ -120,8 +120,8 @@ clients receive a bootstrap event and then live retained-job events.
   matrices.
 - Local search combines nearby list change/swap, reverse, k-opt, ruin, and
   limited sublist moves over `Vehicle.delivery_order`.
-- `late_acceptance` with a first-improving forager keeps scanning past equal
-  accepted moves until the current step score improves.
+- `late_acceptance` with `first_last_step_score_improving` keeps scanning past
+  equal accepted moves until the current step score improves.
 - Solving stops after 30 seconds total or after 5 seconds without improvement.
 
 The app uses `solverforge-maps` to load a road graph and return route geometry

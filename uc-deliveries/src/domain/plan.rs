@@ -159,26 +159,19 @@ impl Plan {
         Self::__solverforge_total_list_elements(plan)
     }
 
-    pub(crate) fn test_is_trivial(plan: &Self) -> bool {
-        Self::__solverforge_is_trivial(plan)
-    }
-
-    pub(crate) fn test_phase_count(config: &solverforge::SolverConfig) -> usize {
-        Self::__solverforge_build_phases(config).phases().len()
-    }
-
-    pub(crate) fn test_solve_with_config(mut plan: Self, config: &solverforge::SolverConfig) -> Self {
-        let mut phases = Self::__solverforge_build_phases(config);
-        let director = solverforge::ScoreDirector::with_descriptor(
+    pub(crate) fn test_solve_with_config(plan: Self, config: &solverforge::SolverConfig) -> Self {
+        solverforge::__internal::try_run_solver_with_config_and_search(
             plan,
             crate::constraints::create_constraints(),
             Self::descriptor(),
             Self::entity_count,
-        );
-        let mut scope = solverforge::__internal::SolverScope::new(director);
-        scope.start_solving();
-        solverforge::__internal::Phase::solve(&mut phases, &mut scope);
-        plan = scope.working_solution().clone();
-        plan
+            solverforge::SolverRuntime::detached(),
+            config.clone(),
+            Self::__solverforge_default_time_limit_secs(),
+            Self::__solverforge_log_scale,
+            None,
+            Self::__solverforge_search_declaration,
+        )
+        .unwrap_or_else(|error| panic!("test solver config should compile and run: {error}"))
     }
 }

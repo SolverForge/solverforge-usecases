@@ -2,6 +2,14 @@
 
 All notable changes to this use case are documented in this file.
 
+## 2.0.4 (2026-07-13)
+
+### Maintenance
+
+* **release:** target SolverForge 0.18.0.
+* **tests:** run custom construction configs through the compiled runtime entrypoint.
+* **docs:** name the shipped local-search forager exactly as configured.
+
 ## 2.0.3 (2026-06-16)
 
 ### Features

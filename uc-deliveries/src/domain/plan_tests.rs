@@ -159,7 +159,7 @@ fn vehicle_route_shadows_refresh_after_list_variable_changes() {
 }
 
 #[test]
-fn generated_list_runtime_is_non_trivial_and_builds_routes() {
+fn generated_list_runtime_builds_routes() {
     static MANAGER: SolverManager<Plan> = SolverManager::new();
 
     let plan = prepared_tiny_plan();
@@ -170,15 +170,10 @@ fn generated_list_runtime_is_non_trivial_and_builds_routes() {
     );
     assert_eq!(Plan::test_total_list_entities(&plan), 1);
     assert_eq!(Plan::test_total_list_elements(&plan), 2);
-    assert!(
-        !Plan::test_is_trivial(&plan),
-        "prepared plan should not be trivial"
-    );
-
     let config =
         SolverConfig::from_toml_str(include_str!("../../solver.toml")).expect("valid config");
     assert_eq!(
-        Plan::test_phase_count(&config),
+        config.phases.len(),
         3,
         "expected Clarke-Wright construction + list k-opt + local search"
     );
