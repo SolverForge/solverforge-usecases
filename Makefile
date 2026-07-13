@@ -30,6 +30,7 @@ PORT ?= 7860
 USECASE_SOURCE_ROOT ?= ../use-cases
 RELEASE_AS ?=
 RELEASE_VERSION ?=
+PREPARED ?=
 TAG ?=
 
 # ============== Phony Targets ==============
@@ -226,6 +227,7 @@ release-usecase: banner require-node
 	@test -d "$(APP)" || (printf "$(RED)$(CROSS) Unknown APP=$(APP)$(RESET)\n" && exit 1)
 	@args="--app $(APP)"; \
 	if [ -n "$(RELEASE_AS)" ]; then args="$$args --release-as $(RELEASE_AS)"; fi; \
+	if [ -n "$(PREPARED)" ]; then args="$$args --prepared"; fi; \
 	printf "$(PROGRESS) Cutting app-scoped release for $(APP)...\n"; \
 	npm run release:usecase -- $$args
 
@@ -233,6 +235,7 @@ release-usecase-dry-run: banner require-node
 	@test -d "$(APP)" || (printf "$(RED)$(CROSS) Unknown APP=$(APP)$(RESET)\n" && exit 1)
 	@args="--app $(APP) --dry-run"; \
 	if [ -n "$(RELEASE_AS)" ]; then args="$$args --release-as $(RELEASE_AS)"; fi; \
+	if [ -n "$(PREPARED)" ]; then args="$$args --prepared"; fi; \
 	printf "$(PROGRESS) Previewing app-scoped release for $(APP)...\n"; \
 	npm run release:usecase -- $$args
 
@@ -307,6 +310,7 @@ help: banner
 	@printf "\n$(CYAN)$(BOLD)Use-Case Releases:$(RESET)\n"
 	@printf "  $(GREEN)make release-usecase-dry-run APP=uc-hospital$(RESET) - Preview app changelog/version/tag release\n"
 	@printf "  $(GREEN)make release-usecase APP=uc-hospital RELEASE_AS=patch$(RESET) - Cut app changelog/version/tag release\n"
+	@printf "  $(GREEN)make release-usecase APP=uc-hospital PREPARED=1$(RESET) - Tag an already-prepared app version without another bump\n"
 	@printf "  $(GREEN)make verify-release-tag TAG=solverforge-hospital@x.y.z$(RESET) - Validate tag against Cargo.toml, Cargo.lock, and CHANGELOG.md\n"
 	@printf "  $(GREEN)make release-ci APP=uc-hospital RELEASE_VERSION=x.y.z$(RESET) - Run tag-aware app CI gate\n"
 	@printf "\n$(CYAN)$(BOLD)Other:$(RESET)\n"

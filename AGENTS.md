@@ -68,6 +68,9 @@ when present:
 - `make release-usecase-dry-run APP=uc-hospital` before cutting an app release.
 - `make release-usecase APP=uc-hospital RELEASE_AS=patch` to generate the app
   changelog/version/lockfile/tag release from the bundle root.
+- `make release-usecase APP=uc-hospital PREPARED=1` only when the matching app
+  version, lockfile, and changelog heading are already committed; it verifies
+  those surfaces and creates the current annotated tag without another bump.
 
 For root workflow or README-only edits, validate the YAML syntax and inspect the
 changed paths with `git diff --stat`. The root CI workflow is

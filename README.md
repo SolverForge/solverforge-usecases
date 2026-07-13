@@ -110,6 +110,17 @@ make release-usecase-dry-run APP=uc-hospital
 make release-usecase APP=uc-hospital RELEASE_AS=patch
 ```
 
+If the app version, lockfile, and changelog entry were already prepared and
+committed, validate and tag that exact version without bumping it again:
+
+```sh
+make release-usecase-dry-run APP=uc-hospital PREPARED=1
+make release-usecase APP=uc-hospital PREPARED=1
+```
+
+Prepared mode verifies the three release surfaces and creates only the
+annotated app-prefixed tag. Do not combine `PREPARED=1` with `RELEASE_AS`.
+
 The release wrapper uses `commit-and-tag-version` with an app path filter,
 the app changelog, the app `Cargo.toml`, the app `Cargo.lock`, and an
 app-prefixed tag. The split app Makefiles stay in place because each `uc-*`
