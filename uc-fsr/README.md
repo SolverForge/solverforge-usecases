@@ -55,8 +55,8 @@ make help
 - Package: `solverforge-fsr`; version is declared in `Cargo.toml`
 - Release binary: `solverforge_fsr`
 - Rust: `1.95`
-- SolverForge runtime: `solverforge` `0.17.1`
-- SolverForge core helpers: `solverforge-core` `0.17.1`
+- SolverForge runtime: `solverforge` `0.18.0`
+- SolverForge core helpers: `solverforge-core` `0.18.0`
 - Browser UI assets: `solverforge-ui` `0.6.5`
 - Routing engine: `solverforge-maps` `2.1.4`
 - Scaffold metadata: `solverforge-cli` `2.2.2` in `solverforge.app.toml`
@@ -95,7 +95,7 @@ Soft constraints:
 - Total travel time is minimized.
 - Workload is balanced across technicians.
 - Territory affinity is preferred.
-- Higher-priority visits have less slack.
+- Deadline slack is rewarded more strongly for higher-priority visits.
 
 ## REST API
 
@@ -177,8 +177,9 @@ make space-run
 4. `src/domain/technician_route.rs` and `src/domain/route_metrics.rs`
    The planning entity, list variable SolverForge mutates, and route shadow
    measurements used by stock constraints.
-5. `src/data/data_seed.rs`
-   Demo ID, Bergamo data assembly, routing preparation, and cache policy.
+5. `src/data/data_seed.rs` and `src/data/bergamo_*.rs`
+   Demo ID, Bergamo data assembly, static fact catalogs, routing preparation,
+   and cache policy.
 6. `src/constraints/mod.rs`
    The score model assembled from SolverForge constraints.
 7. `src/constraints/*.rs`

@@ -90,7 +90,7 @@ It shows how to combine:
 │   Embedded search policy for list construction and local search.
 ├── solverforge.app.toml
 │   App metadata, demo IDs, model facts/entities, registry dependency sources,
-│   and the `solverforge 0.17.1` runtime target.
+│   and the `solverforge 0.18.0` runtime target.
 ├── Makefile
 │   Local build, validation, and Space/Docker commands.
 ├── Dockerfile
@@ -107,7 +107,8 @@ It shows how to combine:
 │   ├── domain/
 │   │   `planning_model!` manifest, facts, route entity, shadows, and solution.
 │   ├── constraints/
-│   │   Stock SolverForge constraint streams, one score rule per file.
+│   │   Mostly stock SolverForge streams plus the custom duplicate-assignment
+│   │   counter in `assigned_visits.rs`.
 │   ├── data/
 │   │   Deterministic Bergamo seeds, demo entrypoints, and OSM matrix loading.
 │   ├── solver/

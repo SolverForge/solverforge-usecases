@@ -5,14 +5,14 @@ cli_version = "2.2.2"
 shell = "web"
 
 [runtime]
-target = "solverforge 0.17.1"
-runtime_source = "crates.io: solverforge 0.17.1"
+target = "solverforge 0.18.0"
+runtime_source = "crates.io: solverforge 0.18.0"
 ui_source = "crates.io: solverforge-ui 0.6.5"
 
 [demo]
-default_size = "standard"
+default_size = "STANDARD"
 available_sizes = [
-    "standard",
+    "STANDARD",
 ]
 
 [solution]

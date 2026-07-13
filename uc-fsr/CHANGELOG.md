@@ -2,6 +2,14 @@
 
 All notable changes to this use case are documented in this file.
 
+## 2.0.5 (2026-07-13)
+
+### Maintenance
+
+* **release:** target SolverForge 0.18.0 and solverforge-core 0.18.0.
+* **docs:** align priority-slack semantics and the source map with the current app.
+* **metadata:** use the canonical uppercase `STANDARD` demo id.
+
 ## 2.0.4 (2026-06-16)
 
 ### Maintenance

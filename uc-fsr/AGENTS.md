@@ -17,10 +17,10 @@ in `Cargo.toml`, and the release binary is `solverforge_fsr`.
 - `src/constraints/` owns SolverForge scoring rules, one business rule per file.
   Prefer stock `ConstraintFactory` streams; `assigned_visits.rs` keeps the
   duplicate-assignment check as a small custom `IncrementalConstraint` because
-  SolverForge 0.14 grouped projected streams cannot post-filter count
-  collectors before analysis match counting.
-- `src/data/data_seed.rs` owns deterministic Bergamo demo generation and road
-  matrix preparation.
+  a grouped stream would count singleton groups as analysis matches.
+- `src/data/data_seed.rs` owns `STANDARD` demo assembly and road-matrix
+  preparation; `src/data/bergamo_*.rs` owns the static locations, visit
+  profiles, technicians, and shared catalog types.
 - `src/api/` owns REST, DTO, route geometry, and SSE surfaces.
 - `src/solver/` owns retained-job runtime orchestration.
 - `static/` owns the browser workspace, split by responsibility
