@@ -1,8 +1,9 @@
 # API And Solver Policy
 
 This page holds the longer reference material that must stay aligned with
-`src/api/routes.rs`, `src/api/dto.rs`, `src/solver/service.rs`, `solver.toml`,
-and the visible API guide in `static/app/shell/api-guide.mjs`.
+`src/api/routes.rs`, `src/api/dto.rs`, `src/solver/service.rs`,
+`src/solver/service/payload.rs`, `solver.toml`, and the visible API guide in
+`static/app/shell/api-guide.mjs`.
 
 ## REST API
 
@@ -81,9 +82,9 @@ The currently shipped policy is deliberately narrow:
 - `late_acceptance`
 - `accepted_count`
 
-That is not an accident. A candidate sweep against broader scalar phase-2/3
-variants showed that the current nearby baseline remained the best balanced
-policy for this dataset and 30-second budget.
+This is the policy exercised by the standard runtime tests. `make test-slow`
+runs the ignored large-demo acceptance solve and is the required quality gate
+when changing that policy.
 
 The canonical description of current behavior is `solver.toml`, the code,
 `README.md`, this file, and `WIREFRAME.md`.

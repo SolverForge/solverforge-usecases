@@ -2,6 +2,15 @@
 
 All notable changes to this use case are documented in this file.
 
+## 2.0.4 (2026-07-13)
+
+### Maintenance
+
+* **release:** target SolverForge 0.18.0.
+* **tests:** align zero-work retained-job coverage with the unified solver lifecycle.
+* **docs:** align CI, browser boot, event payload, and solver-policy descriptions with code.
+* **metadata:** use the canonical uppercase `LARGE` demo id.
+
 ## 2.0.3 (2026-06-16)
 
 ### Maintenance

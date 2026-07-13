@@ -5,13 +5,13 @@ shell = "web"
 cli_version = "2.2.2"
 
 [runtime]
-target = "solverforge 0.17.1"
-runtime_source = "crates.io: solverforge 0.17.1"
+target = "solverforge 0.18.0"
+runtime_source = "crates.io: solverforge 0.18.0"
 ui_source = "crates.io: solverforge-ui 0.6.5"
 
 [demo]
-default_size = "large"
-available_sizes = ["large"]
+default_size = "LARGE"
+available_sizes = ["LARGE"]
 
 [solution]
 name = "Plan"

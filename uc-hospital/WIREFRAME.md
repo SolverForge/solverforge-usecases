@@ -95,8 +95,9 @@ The shortest way to understand the app is to follow one request all the way
 through:
 
 1. The browser loads `static/index.html`.
-2. `static/app/main.mjs` loads config, the generated UI model, and the `LARGE`
-   demo dataset.
+2. `static/app/main.mjs` loads config and the generated UI model, validates the
+   configured `LARGE` id through `/demo-data`, and then fetches
+   `/demo-data/LARGE`.
 3. The frontend turns the returned `PlanDto` into schedule rails and side-panel
    summaries.
 4. When the user clicks Solve, the frontend sends the current plan to
@@ -105,12 +106,14 @@ through:
 6. `PlanDto::to_domain()` rebuilds the in-memory `Plan`, including derived
    helper fields the solver expects.
 7. `SolverService` starts a retained solve through `SolverManager<Plan>`.
-8. The solver emits lifecycle, phase, telemetry, best-solution, and analysis
-   events.
-9. `src/solver/service.rs` converts those runtime events into the JSON event
-   shapes expected by the UI.
+8. The solver emits lifecycle events carrying telemetry and best-solution
+   snapshots.
+9. `src/solver/service.rs` coordinates the event stream, while
+   `src/solver/service/payload.rs` converts runtime events into the JSON shapes
+   expected by the UI.
 10. The browser consumes those events over `/jobs/{id}/events` and updates the
-    visible status, timeline, and analysis panels.
+    visible status and timeline; analysis is fetched from
+    `/jobs/{id}/analysis` when requested.
 
 The browser shell also contains a visible REST API guide. That makes
 `static/app/shell/api-guide.mjs` part of the documentation surface, not just a
@@ -125,7 +128,7 @@ UI helper.
 ├── solver.toml
 │   Embedded solver policy. This is the runtime source of truth for search.
 ├── solverforge.app.toml
-│   App metadata used by the surrounding SolverForge tooling.
+│   App metadata, model surface, and the `solverforge 0.18.0` runtime target.
 ├── Dockerfile
 │   Container build for running the app outside the dev checkout.
 ├── Makefile
@@ -261,8 +264,8 @@ The shipped search policy is deliberately conservative:
 - `late_acceptance` and `accepted_count` keep the search moving without blowing
   up step cost
 
-That narrow configuration is intentional for this demo. It is the balanced
-30-second policy that currently performs best on the hospital dataset.
+That narrow configuration is the shipped 30-second policy for this demo.
+`make test-slow` is the acceptance gate for any solver-policy change.
 
 ## Frontend Design
 

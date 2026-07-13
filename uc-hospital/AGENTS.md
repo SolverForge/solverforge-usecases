@@ -81,10 +81,10 @@ modeling.
 The standard to aim for is: a new reader should be able to understand why a
 piece of code exists before they need to understand every line of how it works.
 
-This repo does not have a canonical hosted GitHub Actions workflow yet. Treat
-the Makefile targets, especially `make ci-local` and `make pre-release`, as the
-authoritative validation surface for the current Hugging Face Space-oriented
-deployment path.
+The bundle-level `.github/workflows/ci.yml` installs browser dependencies and
+runs the root `make ci-local`, which dispatches this app's standard checks. The
+app Makefile remains the authoritative standalone and Hugging Face Space
+validation surface, especially `make ci-local` and `make pre-release`.
 
 ## Testing Guidelines
 
@@ -105,7 +105,7 @@ exact validation commands run. Include screenshots only for visible UI changes.
 
 ## Configuration & Runtime Notes
 
-`solver.toml` is embedded from `domain/plan.rs` via
+`solver.toml` is embedded from `src/domain/plan.rs` via
 `#[planning_solution(..., solver_toml = "../../solver.toml")]`; treat it as
 the runtime source of truth. Keep `solverforge.app.toml`,
 `static/sf-config.json`, and Docker/runtime port settings aligned with any port

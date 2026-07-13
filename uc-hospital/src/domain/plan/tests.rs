@@ -160,26 +160,50 @@ fn retained_runtime_uses_embedded_solver_toml_instead_of_cwd_defaults() {
         .solve(Plan::new(Vec::new(), Vec::new()))
         .expect("job should start");
 
-    let mut completed = false;
+    let mut best_solution = None;
+    let mut cancel_requested = false;
+    let mut cancelled = false;
 
     while let Some(event) = receiver.blocking_recv() {
         match event {
-            SolverEvent::BestSolution { .. } => {}
-            SolverEvent::Completed { metadata, solution } => {
+            SolverEvent::BestSolution { solution, .. } => {
+                best_solution = Some(solution);
+                if !cancel_requested {
+                    MANAGER
+                        .cancel(job_id)
+                        .expect("zero-work solve should cancel");
+                    cancel_requested = true;
+                }
+            }
+            SolverEvent::Cancelled { metadata } => {
                 assert_eq!(
                     metadata.terminal_reason,
-                    Some(SolverTerminalReason::Completed)
+                    Some(SolverTerminalReason::Cancelled)
                 );
-                assert_eq!(solution.score, Some(HardSoftDecimalScore::ZERO));
-                completed = true;
+                cancelled = true;
                 break;
             }
-            other => panic!("unexpected event: {other:?}"),
+            SolverEvent::Progress { .. }
+            | SolverEvent::PauseRequested { .. }
+            | SolverEvent::Paused { .. }
+            | SolverEvent::Resumed { .. } => {}
+            SolverEvent::Completed { .. } => {
+                panic!("zero-work solve should remain active until cancellation")
+            }
+            SolverEvent::Failed { error, .. } => {
+                panic!("embedded solver config should run successfully: {error}")
+            }
         }
     }
 
-    assert!(completed, "expected a completed event");
-    MANAGER.delete(job_id).expect("delete completed job");
+    assert!(cancelled, "expected a cancelled event");
+    assert_eq!(
+        best_solution
+            .expect("expected an initial best solution")
+            .score,
+        Some(HardSoftDecimalScore::ZERO)
+    );
+    MANAGER.delete(job_id).expect("delete cancelled job");
 }
 
 #[test]

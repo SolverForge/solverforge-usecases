@@ -142,14 +142,18 @@ async fn stock_jobs_contract_is_exposed_without_schedule_compatibility() {
     assert!(snapshot.get("snapshotRevision").is_some());
     assert!(snapshot.get("solution").is_some());
 
-    let _ = wait_for_terminal(&app, &terminal_id).await;
+    let cancel_empty = request(&app, "POST", &format!("/jobs/{terminal_id}/cancel")).await;
+    assert_eq!(cancel_empty.status(), StatusCode::ACCEPTED);
+    let terminal = wait_for_terminal(&app, &terminal_id).await;
+    assert_eq!(terminal["lifecycleState"], "CANCELLED");
+
     let analysis = wait_for_ok_json(&app, &format!("/jobs/{terminal_id}/analysis")).await;
     assert_eq!(analysis["id"], terminal_id);
     assert_eq!(analysis["jobId"], terminal_id);
     assert!(analysis.get("analysis").is_some());
 
-    let cancel_terminal = request(&app, "POST", &format!("/jobs/{terminal_id}/cancel")).await;
-    assert_eq!(cancel_terminal.status(), StatusCode::CONFLICT);
+    let cancel_again = request(&app, "POST", &format!("/jobs/{terminal_id}/cancel")).await;
+    assert_eq!(cancel_again.status(), StatusCode::CONFLICT);
 
     let delete_terminal = request(&app, "DELETE", &format!("/jobs/{terminal_id}")).await;
     assert_eq!(delete_terminal.status(), StatusCode::NO_CONTENT);
