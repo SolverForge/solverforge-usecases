@@ -46,12 +46,11 @@ It shows how to combine:
   Planning solution. It holds facts, lesson entities, derived indexes, and the
   current `HardMediumSoftScore`.
 - hard score
-  Availability, capacity, room-kind feasibility, and teacher/group/room
-  conflicts.
+  Teacher/group availability, room capacity, and teacher/group/room conflicts.
 - medium score
   Assignment completeness for timeslot and room decisions.
 - soft score
-  Late slots and repeated subject days.
+  Room-kind fit, late slots, and repeated subject days.
 - retained job
   A solve that lives in memory so the UI can stream events, fetch snapshots,
   pause/resume, cancel, analyze, and delete terminal jobs.
@@ -61,7 +60,8 @@ It shows how to combine:
 1. The browser loads `static/index.html`.
 2. `static/app.js` loads `static/sf-config.json`,
    `static/generated/ui-model.json`, and `solverforge-ui` assets from `/sf/*`.
-3. The app fetches the default `LARGE` demo through `/demo-data`.
+3. The app fetches `/demo-data` to discover the default `LARGE` id, then loads
+   the plan from `/demo-data/LARGE`.
 4. `src/data/data_seed/entrypoints.rs` dispatches to
    `src/data/data_seed/large.rs`.
 5. `Plan::new()` normalizes fact and lesson indexes and filters stale scalar
@@ -87,7 +87,7 @@ It shows how to combine:
 │   Embedded search policy for construction and local search.
 ├── solverforge.app.toml
 │   App metadata, demo IDs, model facts/entities, registry dependency sources,
-│   and the `solverforge 0.17.1` runtime target.
+│   and the `solverforge 0.18.0` runtime target.
 ├── Makefile
 │   Local build, validation, inline browser smoke, and Space/Docker commands.
 ├── Dockerfile

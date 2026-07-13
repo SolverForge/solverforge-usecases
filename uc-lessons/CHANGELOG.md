@@ -2,6 +2,13 @@
 
 All notable changes to this use case are documented in this file.
 
+## 2.0.4 (2026-07-13)
+
+### Maintenance
+
+* **release:** target SolverForge 0.18.0.
+* **docs:** align score levels and browser demo loading with the current constraints and API.
+
 ## 2.0.3 (2026-06-16)
 
 ### Maintenance
