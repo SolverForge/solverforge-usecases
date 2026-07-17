@@ -110,6 +110,7 @@ async function main() {
     bumpFiles: [cargo, cargoLock],
     releaseCommitMessageFormat: `chore(${metadata.packageName}): release {{currentTag}}`,
     header: "# Changelog\n\nAll notable changes to this use case are documented in this file.\n",
+    writerOpts: { headerPartial: "## {{version}}{{#if date}} ({{date}}){{/if}}\n" },
     dryRun: args.dryRun,
     firstRelease: args.firstRelease || args.prepared,
   };
