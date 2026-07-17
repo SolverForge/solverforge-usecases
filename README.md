@@ -127,6 +127,30 @@ app-prefixed tag. The split app Makefiles stay in place because each `uc-*`
 directory becomes the root of a standalone Hugging Face Space after subtree
 splitting.
 
+Release creation is local; publication is a separate, explicit operation.
+Preview and publish one tag with:
+
+```sh
+make publish-usecase-dry-run TAG=solverforge-hospital@<version>
+make publish-usecase TAG=solverforge-hospital@<version>
+```
+
+To publish every allowlisted app's current manifest version:
+
+```sh
+make publish-usecases-dry-run
+make publish-usecases
+```
+
+The publication helper requires a clean `main`, verifies every annotated tag
+against its manifest, lockfile, changelog, branch ancestry, and embedded sync
+workflow, and refuses non-fast-forward branch updates or conflicting remote
+tags. It automatically selects the canonical GitHub remote; set
+`PUBLISH_REMOTE=<name>` only when the checkout uses another GitHub remote name.
+It pushes `main` once and then uses a separate `git push` for each new tag so
+GitHub emits every Space-sync event. Never batch these app tags with
+`git push --tags` or `git push --follow-tags`.
+
 ## Hugging Face Sync
 
 `.github/workflows/sync-hf-spaces.yml` publishes release-tagged `uc-*` folders

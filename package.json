@@ -2,7 +2,9 @@
   "name": "solverforge-usecases",
   "private": true,
   "scripts": {
+    "publish:usecases": "node scripts/publish-usecases.cjs",
     "release:usecase": "node scripts/release-usecase.cjs",
+    "test:release-tools": "node --test scripts/*.test.cjs",
     "verify:release-tag": "node scripts/verify-usecase-release-tag.cjs"
   },
   "devDependencies": {

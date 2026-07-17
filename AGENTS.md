@@ -71,6 +71,11 @@ when present:
 - `make release-usecase APP=uc-hospital PREPARED=1` only when the matching app
   version, lockfile, and changelog heading are already committed; it verifies
   those surfaces and creates the current annotated tag without another bump.
+- `make publish-usecase-dry-run TAG=solverforge-hospital@x.y.z` before pushing
+  one release, then `make publish-usecase TAG=...` to push `main` and that tag.
+- `make publish-usecases-dry-run` before publishing the current releases for
+  all four apps; `make publish-usecases` pushes the tags separately so GitHub
+  emits one Hugging Face sync event per app.
 
 For root workflow or README-only edits, validate the YAML syntax and inspect the
 changed paths with `git diff --stat`. The root CI workflow is

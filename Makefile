@@ -32,13 +32,16 @@ RELEASE_AS ?=
 RELEASE_VERSION ?=
 PREPARED ?=
 TAG ?=
+PUBLISH_BRANCH ?= main
+PUBLISH_REMOTE ?=
 
 # ============== Phony Targets ==============
 .PHONY: banner help list doctor require-node require-docker install-e2e browser-setup \
         verify-metadata verify-imports import-usecases build build-release run run-release \
-        test test-all test-rust test-frontend-syntax test-e2e test-one lint fmt fmt-check \
+        test test-all test-rust test-frontend-syntax test-e2e test-one test-release-tools lint fmt fmt-check \
         clippy check ci-local space-ci space-build space-run docker-build docker-run \
         pre-release release-usecase release-usecase-dry-run release-ci verify-release-tag \
+        publish-usecase publish-usecase-dry-run publish-usecases publish-usecases-dry-run \
         version clean app-target
 
 # ============== Default Target ==============
@@ -158,6 +161,9 @@ test-frontend-syntax: banner require-node
 test-e2e: banner require-node
 	@$(MAKE) app-target TARGET=test-e2e --no-print-directory
 
+test-release-tools: require-node
+	@npm run test:release-tools
+
 test-one:
 	@test -n "$(TEST)" || (printf "$(RED)$(CROSS) TEST=name is required$(RESET)\n" && exit 1)
 	@test -d "$(APP)" || (printf "$(RED)$(CROSS) Unknown APP=$(APP)$(RESET)\n" && exit 1)
@@ -186,17 +192,19 @@ check: lint test
 # ============== CI & Space Validation ==============
 ci-local: banner
 	@printf "$(CYAN)$(BOLD)Local CI Simulation$(RESET)\n\n"
-	@printf "$(PROGRESS) Step 1/6: Metadata verifier...\n"
+	@printf "$(PROGRESS) Step 1/7: Metadata verifier...\n"
 	@$(MAKE) verify-metadata --no-print-directory
-	@printf "$(PROGRESS) Step 2/6: Import drift verifier...\n"
+	@printf "$(PROGRESS) Step 2/7: Import drift verifier...\n"
 	@$(MAKE) verify-imports --no-print-directory
-	@printf "$(PROGRESS) Step 3/6: Format check...\n"
+	@printf "$(PROGRESS) Step 3/7: Format check...\n"
 	@$(MAKE) fmt-check --no-print-directory
-	@printf "$(PROGRESS) Step 4/6: Clippy...\n"
+	@printf "$(PROGRESS) Step 4/7: Clippy...\n"
 	@$(MAKE) clippy --no-print-directory
-	@printf "$(PROGRESS) Step 5/6: Frontend syntax...\n"
+	@printf "$(PROGRESS) Step 5/7: Frontend syntax...\n"
 	@$(MAKE) test-frontend-syntax --no-print-directory
-	@printf "$(PROGRESS) Step 6/6: Standard app tests...\n"
+	@printf "$(PROGRESS) Step 6/7: Release tooling tests...\n"
+	@$(MAKE) test-release-tools --no-print-directory
+	@printf "$(PROGRESS) Step 7/7: Standard app tests...\n"
 	@$(MAKE) test-all --no-print-directory
 	@printf "\n$(GREEN)$(BOLD)$(CHECK) LOCAL CI SIMULATION PASSED$(RESET)\n\n"
 
@@ -252,6 +260,21 @@ release-ci: require-node
 		printf "$(YELLOW)! RELEASE_VERSION not set; skipping tag/Cargo/changelog consistency check$(RESET)\n"; \
 	fi
 	@$(MAKE) -C "$(APP)" release-ci --no-print-directory
+
+# ============== Use-Case Publication ==============
+publish-usecase-dry-run: banner require-node
+	@test -n "$(TAG)" || (printf "$(RED)$(CROSS) TAG=solverforge-app@x.y.z is required$(RESET)\n" && exit 1)
+	@npm run publish:usecases -- --tag "$(TAG)" --branch "$(PUBLISH_BRANCH)" $(if $(PUBLISH_REMOTE),--remote "$(PUBLISH_REMOTE)") --dry-run
+
+publish-usecase: banner require-node
+	@test -n "$(TAG)" || (printf "$(RED)$(CROSS) TAG=solverforge-app@x.y.z is required$(RESET)\n" && exit 1)
+	@npm run publish:usecases -- --tag "$(TAG)" --branch "$(PUBLISH_BRANCH)" $(if $(PUBLISH_REMOTE),--remote "$(PUBLISH_REMOTE)")
+
+publish-usecases-dry-run: banner require-node
+	@npm run publish:usecases -- --all --branch "$(PUBLISH_BRANCH)" $(if $(PUBLISH_REMOTE),--remote "$(PUBLISH_REMOTE)") --dry-run
+
+publish-usecases: banner require-node
+	@npm run publish:usecases -- --all --branch "$(PUBLISH_BRANCH)" $(if $(PUBLISH_REMOTE),--remote "$(PUBLISH_REMOTE)")
 
 # ============== Metadata & Cleanup ==============
 version: banner
@@ -313,6 +336,10 @@ help: banner
 	@printf "  $(GREEN)make release-usecase APP=uc-hospital PREPARED=1$(RESET) - Tag an already-prepared app version without another bump\n"
 	@printf "  $(GREEN)make verify-release-tag TAG=solverforge-hospital@x.y.z$(RESET) - Validate tag against Cargo.toml, Cargo.lock, and CHANGELOG.md\n"
 	@printf "  $(GREEN)make release-ci APP=uc-hospital RELEASE_VERSION=x.y.z$(RESET) - Run tag-aware app CI gate\n"
+	@printf "  $(GREEN)make publish-usecase-dry-run TAG=solverforge-hospital@x.y.z$(RESET) - Preview the guarded GitHub branch/tag push\n"
+	@printf "  $(GREEN)make publish-usecase TAG=solverforge-hospital@x.y.z$(RESET) - Push main and one release tag to trigger its Space sync\n"
+	@printf "  $(GREEN)make publish-usecases-dry-run$(RESET) - Preview publication of every app's current release tag\n"
+	@printf "  $(GREEN)make publish-usecases$(RESET)        - Push main once and current app tags separately\n"
 	@printf "\n$(CYAN)$(BOLD)Other:$(RESET)\n"
 	@printf "  $(GREEN)make install-e2e$(RESET)           - Install root Playwright dependencies\n"
 	@printf "  $(GREEN)make version$(RESET)               - Show bundle metadata\n"
