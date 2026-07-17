@@ -128,7 +128,7 @@ UI helper.
 ├── solver.toml
 │   Embedded solver policy. This is the runtime source of truth for search.
 ├── solverforge.app.toml
-│   App metadata, model surface, and the `solverforge 0.18.0` runtime target.
+│   App metadata, model surface, and the `solverforge 0.19.0` runtime target.
 ├── Dockerfile
 │   Container build for running the app outside the dev checkout.
 ├── Makefile
@@ -190,7 +190,7 @@ This app is intentionally narrow.
 - There is one planning entity type: `Shift`.
 - There is one scalar planning variable: `employee_idx`.
 - Nearby search is attached directly to that scalar variable.
-- The solver does not juggle multiple variable types, chained assignments, or
+- The solver does not juggle multiple variable types, sequence assignments, or
   list planning.
 
 That makes the example easier to learn because the optimization problem stays
