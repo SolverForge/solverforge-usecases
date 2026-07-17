@@ -1592,7 +1592,7 @@ dependencies = [
 
 [[package]]
 name = "solverforge-fsr"
-version = "2.0.5"
+version = "2.0.6"
 dependencies = [
  "axum",
  "parking_lot",

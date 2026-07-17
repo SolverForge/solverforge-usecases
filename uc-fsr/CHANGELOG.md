@@ -2,6 +2,13 @@
 
 All notable changes to this use case are documented in this file.
 
+## 2.0.6 (2026-07-17)
+
+
+### Bug Fixes
+
+* **fsr:** target SolverForge 0.19.0 da3db25
+
 ## 2.0.5 (2026-07-13)
 
 ### Maintenance
