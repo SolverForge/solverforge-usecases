@@ -2,6 +2,13 @@
 
 All notable changes to this use case are documented in this file.
 
+## 2.0.5 (2026-07-17)
+
+
+### Bug Fixes
+
+* **hospital:** target SolverForge 0.19.0 88f38bd
+
 ## 2.0.4 (2026-07-13)
 
 ### Maintenance
