@@ -37,7 +37,7 @@ jobs:
   detect:
     if: ${{ github.server_url == 'https://github.com' }}
     name: Resolve release target
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.server_url == 'https://github.com' && 'ubuntu-latest' || 'rust' }}
     outputs:
       matrix: ${{ steps.build-matrix.outputs.matrix }}
       empty: ${{ steps.build-matrix.outputs.empty }}
@@ -109,7 +109,7 @@ jobs:
     name: Sync ${{ matrix.folder }}
     needs: detect
     if: ${{ always() && github.server_url == 'https://github.com' && needs.detect.result == 'success' && needs.detect.outputs.empty == 'false' }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.server_url == 'https://github.com' && 'ubuntu-latest' || 'rust' }}
 
     strategy:
       matrix: ${{ fromJson(needs.detect.outputs.matrix) }}
