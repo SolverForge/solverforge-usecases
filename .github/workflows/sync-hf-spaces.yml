@@ -35,6 +35,7 @@ concurrency:
 
 jobs:
   detect:
+    if: ${{ github.server_url == 'https://github.com' }}
     name: Resolve release target
     runs-on: ubuntu-latest
     outputs:
@@ -107,7 +108,7 @@ jobs:
   sync:
     name: Sync ${{ matrix.folder }}
     needs: detect
-    if: needs.detect.outputs.empty == 'false'
+    if: ${{ always() && github.server_url == 'https://github.com' && needs.detect.result == 'success' && needs.detect.outputs.empty == 'false' }}
     runs-on: ubuntu-latest
 
     strategy:
