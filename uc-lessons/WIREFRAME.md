@@ -87,7 +87,7 @@ It shows how to combine:
 │   Embedded search policy for construction and local search.
 ├── solverforge.app.toml
 │   App metadata, demo IDs, model facts/entities, registry dependency sources,
-│   and the `solverforge 0.19.0` runtime target.
+│   and the `solverforge 0.19.3` runtime target.
 ├── Makefile
 │   Local build, validation, inline browser smoke, and Space/Docker commands.
 ├── Dockerfile

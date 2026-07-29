@@ -2,6 +2,12 @@
 
 All notable changes to this use case are documented in this file.
 
+## 2.0.6 (2026-07-29)
+
+### Maintenance
+
+* **release:** target SolverForge 0.19.3.
+
 ## 2.0.5 (2026-07-17)
 
 
