@@ -12,18 +12,14 @@ Space names, docs, app metadata, and UI labels should use `SolverForge` and the
 
 ## Included Use Cases
 
-- `uc-deliveries` mirrors the open-source `solverforge-deliveries` app.
-- `uc-fsr` mirrors the open-source `solverforge-fsr` app.
-- `uc-hospital` mirrors the open-source `solverforge-hospital` app.
-- `uc-lessons` mirrors the open-source `solverforge-lessons` app.
+- `uc-deliveries` is the source for the open-source `solverforge-deliveries` app.
+- `uc-fsr` is the source for the open-source `solverforge-fsr` app.
+- `uc-hospital` is the source for the open-source `solverforge-hospital` app.
+- `uc-lessons` is the source for the open-source `solverforge-lessons` app.
 
 These four directories are the open-source root allowlist. Do not add another
 `uc-*` directory without updating the README, sync workflow, and metadata
 verification script in the same change.
-
-When refreshing an imported open-source app, copy source from the corresponding
-repo under `USECASE_SOURCE_ROOT` (default `../use-cases`), excluding `.git`,
-build output, test output, Playwright reports, and local caches.
 
 ## Documentation Standard
 
@@ -84,7 +80,3 @@ changed paths with `git diff --stat`. The root CI workflow is
 `.github/workflows/sync-hf-spaces.yml`.
 
 Run `bash scripts/verify-metadata.sh` after documentation-structure changes.
-Run `bash scripts/verify-imports.sh` when imported open-source app directories
-change. The verifier compares against `USECASE_SOURCE_ROOT` when the source
-repos are present; set `USECASE_SOURCE_ROOT=/path/to/use-cases` for non-default
-layouts.

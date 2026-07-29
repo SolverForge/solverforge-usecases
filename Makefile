@@ -27,7 +27,6 @@ OPEN_SOURCE_APPS := uc-deliveries uc-fsr uc-hospital uc-lessons
 APPS ?= $(OPEN_SOURCE_APPS)
 APP ?= uc-lessons
 PORT ?= 7860
-USECASE_SOURCE_ROOT ?= ../use-cases
 RELEASE_AS ?=
 RELEASE_VERSION ?=
 PREPARED ?=
@@ -37,7 +36,7 @@ PUBLISH_REMOTE ?=
 
 # ============== Phony Targets ==============
 .PHONY: banner help list doctor require-node require-docker install-e2e browser-setup \
-        verify-metadata verify-imports import-usecases build build-release run run-release \
+        verify-metadata build build-release run run-release \
         test test-all test-rust test-frontend-syntax test-e2e test-one test-release-tools lint fmt fmt-check \
         clippy check ci-local space-ci space-build space-run docker-build docker-run \
         pre-release release-usecase release-usecase-dry-run release-ci verify-release-tag \
@@ -87,12 +86,6 @@ doctor: banner
 	else \
 		printf "$(YELLOW)! docker not found; Space/Docker targets will be unavailable$(RESET)\n"; \
 	fi; \
-	if [ -d "$(USECASE_SOURCE_ROOT)" ]; then \
-		printf "$(GREEN)$(CHECK) import source root: $(USECASE_SOURCE_ROOT)$(RESET)\n"; \
-	else \
-		printf "$(YELLOW)! import source root not found: $(USECASE_SOURCE_ROOT)$(RESET)\n"; \
-		printf "$(GRAY)  set USECASE_SOURCE_ROOT=/path/to/use-cases for source-backed import drift checks$(RESET)\n"; \
-	fi; \
 	printf "$(GRAY)Official apps: $(OPEN_SOURCE_APPS)$(RESET)\n"; \
 	printf "$(GRAY)Default APP: $(APP)$(RESET)\n"; \
 	printf "$(GRAY)Default port: $(PORT)$(RESET)\n"; \
@@ -118,16 +111,6 @@ verify-metadata: banner
 	@printf "$(PROGRESS) Verifying bundle metadata and required app surfaces...\n"
 	@bash scripts/verify-metadata.sh
 	@printf "$(GREEN)$(CHECK) Metadata verified$(RESET)\n"
-
-verify-imports: banner
-	@printf "$(PROGRESS) Comparing imported apps against $(USECASE_SOURCE_ROOT) sources...\n"
-	@USECASE_SOURCE_ROOT="$(USECASE_SOURCE_ROOT)" bash scripts/verify-imports.sh
-	@printf "$(GREEN)$(CHECK) Import drift check completed$(RESET)\n"
-
-import-usecases: banner
-	@printf "$(PROGRESS) Refreshing official app directories from $(USECASE_SOURCE_ROOT)...\n"
-	@USECASE_SOURCE_ROOT="$(USECASE_SOURCE_ROOT)" bash scripts/import-usecases.sh
-	@printf "$(GREEN)$(CHECK) Imports refreshed$(RESET)\n"
 
 # ============== Build & Run ==============
 build: banner
@@ -175,7 +158,7 @@ test-one:
 	fi
 
 # ============== Lint & Format ==============
-lint: banner verify-metadata verify-imports fmt-check clippy test-frontend-syntax
+lint: banner verify-metadata fmt-check clippy test-frontend-syntax
 	@printf "\n$(GREEN)$(BOLD)$(CHECK) Bundle lint checks passed$(RESET)\n\n"
 
 fmt: banner
@@ -192,19 +175,17 @@ check: lint test
 # ============== CI & Space Validation ==============
 ci-local: banner
 	@printf "$(CYAN)$(BOLD)Local CI Simulation$(RESET)\n\n"
-	@printf "$(PROGRESS) Step 1/7: Metadata verifier...\n"
+	@printf "$(PROGRESS) Step 1/6: Metadata verifier...\n"
 	@$(MAKE) verify-metadata --no-print-directory
-	@printf "$(PROGRESS) Step 2/7: Import drift verifier...\n"
-	@$(MAKE) verify-imports --no-print-directory
-	@printf "$(PROGRESS) Step 3/7: Format check...\n"
+	@printf "$(PROGRESS) Step 2/6: Format check...\n"
 	@$(MAKE) fmt-check --no-print-directory
-	@printf "$(PROGRESS) Step 4/7: Clippy...\n"
+	@printf "$(PROGRESS) Step 3/6: Clippy...\n"
 	@$(MAKE) clippy --no-print-directory
-	@printf "$(PROGRESS) Step 5/7: Frontend syntax...\n"
+	@printf "$(PROGRESS) Step 4/6: Frontend syntax...\n"
 	@$(MAKE) test-frontend-syntax --no-print-directory
-	@printf "$(PROGRESS) Step 6/7: Release tooling tests...\n"
+	@printf "$(PROGRESS) Step 5/6: Release tooling tests...\n"
 	@$(MAKE) test-release-tools --no-print-directory
-	@printf "$(PROGRESS) Step 7/7: Standard app tests...\n"
+	@printf "$(PROGRESS) Step 6/6: Standard app tests...\n"
 	@$(MAKE) test-all --no-print-directory
 	@printf "\n$(GREEN)$(BOLD)$(CHECK) LOCAL CI SIMULATION PASSED$(RESET)\n\n"
 
@@ -281,7 +262,6 @@ version: banner
 	@printf "$(CYAN)Bundle version:$(RESET) $(YELLOW)$(BOLD)$(VERSION)$(RESET)\n"
 	@printf "$(CYAN)Rust version required:$(RESET) $(YELLOW)$(BOLD)$(RUST_VERSION)$(RESET)\n"
 	@printf "$(CYAN)Official apps:$(RESET) $(YELLOW)$(BOLD)$(OPEN_SOURCE_APPS)$(RESET)\n"
-	@printf "$(CYAN)Import source root:$(RESET) $(YELLOW)$(BOLD)$(USECASE_SOURCE_ROOT)$(RESET)\n"
 	@printf "$(CYAN)Release tag format:$(RESET) $(YELLOW)$(BOLD)solverforge-<app>@<version>$(RESET)\n"
 
 clean: banner
@@ -306,8 +286,6 @@ help: banner
 	@printf "  $(GREEN)make list$(RESET)                  - List official uc-* app directories\n"
 	@printf "  $(GREEN)make doctor$(RESET)                - Check local cargo/rustc/node/docker readiness\n"
 	@printf "  $(GREEN)make verify-metadata$(RESET)       - Validate bundle metadata and required app surfaces\n"
-	@printf "  $(GREEN)make verify-imports$(RESET)        - Compare uc-* imports against USECASE_SOURCE_ROOT\n"
-	@printf "  $(GREEN)make import-usecases$(RESET)       - Refresh official app directories from USECASE_SOURCE_ROOT\n"
 	@printf "\n$(CYAN)$(BOLD)Build & Run:$(RESET)\n"
 	@printf "  $(GREEN)make build$(RESET)                 - Build all official apps\n"
 	@printf "  $(GREEN)make build-release$(RESET)         - Build all official apps in release mode\n"
@@ -320,7 +298,7 @@ help: banner
 	@printf "  $(GREEN)make test-e2e$(RESET)              - Run each app's browser validation target\n"
 	@printf "  $(GREEN)make test-one APP=uc-hospital TEST=name$(RESET) - Run one named test\n"
 	@printf "\n$(CYAN)$(BOLD)Lint & Format:$(RESET)\n"
-	@printf "  $(GREEN)make lint$(RESET)                  - Metadata/import checks, fmt, clippy, frontend syntax\n"
+	@printf "  $(GREEN)make lint$(RESET)                  - Metadata, fmt, clippy, and frontend syntax checks\n"
 	@printf "  $(GREEN)make fmt$(RESET)                   - Format Rust code in every app\n"
 	@printf "  $(GREEN)make fmt-check$(RESET)             - Check Rust formatting in every app\n"
 	@printf "  $(GREEN)make clippy$(RESET)                - Run clippy in every app\n"
