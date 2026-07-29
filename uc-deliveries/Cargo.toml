@@ -1,6 +1,6 @@
 [package]
 name = "solverforge-deliveries"
-version = "2.0.5"
+version = "2.0.6"
 edition = "2021"
 rust-version = "1.95"
 description = "Constraint optimizer built with SolverForge"
@@ -10,7 +10,7 @@ name = "solverforge_deliveries"
 path = "src/main.rs"
 
 [dependencies]
-solverforge = { version = "0.19.0", features = [
+solverforge = { version = "0.19.3", features = [
   "serde",
   "console",
   "verbose-logging",
