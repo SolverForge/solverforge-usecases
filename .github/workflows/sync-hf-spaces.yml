@@ -17,9 +17,10 @@ on:
     tags:
       - "solverforge-deliveries@*"
       - "solverforge-fsr@*"
-      - "solverforge-furnace@*"
       - "solverforge-hospital@*"
       - "solverforge-lessons@*"
+      # solverforge-furnace is repository-only. Hugging Face requires a paid
+      # plan to create a new Docker Space, so furnace has no hosted target.
 
   workflow_dispatch:
     inputs:
@@ -66,10 +67,11 @@ jobs:
         run: |
           set -euo pipefail
 
+          # Published folders only. uc-furnace intentionally stays out of the
+          # Hugging Face sync because it has no hosted Space.
           OPEN_SOURCE_FOLDERS=$(cat <<'FOLDERS'
           uc-deliveries
           uc-fsr
-          uc-furnace
           uc-hospital
           uc-lessons
           FOLDERS
