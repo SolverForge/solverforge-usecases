@@ -19,10 +19,10 @@ repos:
         entry: make fmt-check
         language: system
         pass_filenames: false
-        files: ^uc-(deliveries|fsr|furnace|hospital|lessons)/(Cargo\.(toml|lock)|build\.rs|src/.*\.rs|tests/.*\.rs)$
+        files: ^uc-(deliveries|fleet|fsr|furnace|hospital|lessons)/(Cargo\.(toml|lock)|build\.rs|src/.*\.rs|tests/.*\.rs)$
     -   id: solverforge-usecases-clippy
         name: Clippy across open-source use cases
         entry: make clippy
         language: system
         pass_filenames: false
-        files: ^uc-(deliveries|fsr|furnace|hospital|lessons)/(Cargo\.(toml|lock)|build\.rs|src/.*\.rs|tests/.*\.rs)$
+        files: ^uc-(deliveries|fleet|fsr|furnace|hospital|lessons)/(Cargo\.(toml|lock)|build\.rs|src/.*\.rs|tests/.*\.rs)$

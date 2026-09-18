@@ -1,0 +1,84 @@
+{
+  "title": "SolverForge Fleet",
+  "subtitle": "Synthetic fleet maintenance and readiness planning",
+  "constraints": [
+    "required_assignments",
+    "work_window",
+    "dock_compatibility",
+    "dock_capacity",
+    "inspection_training_precedence",
+    "technician_capacity",
+    "parts_availability",
+    "weekly_readiness_floor",
+    "maximize_ready_days",
+    "minimize_readiness_shortfall",
+    "minimize_inspection_lateness",
+    "minimize_overtime",
+    "minimize_churn",
+    "minimize_deferral"
+  ],
+  "entities": [
+    {
+      "name": "work_package",
+      "label": "WorkPackage",
+      "plural": "work_packages"
+    },
+    {
+      "name": "inspection_assignment",
+      "label": "InspectionAssignment",
+      "plural": "inspection_assignments"
+    },
+    {
+      "name": "training_assignment",
+      "label": "TrainingAssignment",
+      "plural": "training_assignments"
+    }
+  ],
+  "facts": [
+    {
+      "name": "vessel",
+      "label": "Vessel",
+      "plural": "vessels"
+    },
+    {
+      "name": "dock",
+      "label": "Dock",
+      "plural": "docks"
+    },
+    {
+      "name": "day",
+      "label": "Day",
+      "plural": "days"
+    },
+    {
+      "name": "technician_pool",
+      "label": "TechnicianPool",
+      "plural": "technician_pools"
+    },
+    {
+      "name": "part",
+      "label": "Part",
+      "plural": "parts"
+    },
+    {
+      "name": "delivery",
+      "label": "Delivery",
+      "plural": "deliveries"
+    },
+    {
+      "name": "readiness_policy",
+      "label": "ReadinessPolicy",
+      "plural": "readiness_policies"
+    },
+    {
+      "name": "inspection_requirement",
+      "label": "InspectionRequirement",
+      "plural": "inspection_requirements"
+    },
+    {
+      "name": "training_requirement",
+      "label": "TrainingRequirement",
+      "plural": "training_requirements"
+    }
+  ]
+}

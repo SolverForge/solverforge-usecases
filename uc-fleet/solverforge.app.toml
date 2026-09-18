@@ -1,0 +1,191 @@
+[app]
+name = "solverforge-fleet"
+starter = "neutral-shell"
+cli_version = "2.2.2"
+
+[runtime]
+target = "solverforge 0.19.4"
+runtime_source = "crates.io: solverforge 0.19.4"
+ui_source = "crates.io: solverforge-ui 0.6.5"
+
+[demo]
+default_size = "large"
+available_sizes = [
+    "small",
+    "standard",
+    "large",
+]
+
+[solution]
+name = "Plan"
+score = "HardSoftScore"
+
+[[facts]]
+name = "vessel"
+plural = "vessels"
+kind = "problem_fact"
+
+[[facts]]
+name = "dock"
+plural = "docks"
+kind = "problem_fact"
+
+[[facts]]
+name = "day"
+plural = "days"
+kind = "problem_fact"
+
+[[facts]]
+name = "technician_pool"
+plural = "technician_pools"
+kind = "problem_fact"
+
+[[facts]]
+name = "part"
+plural = "parts"
+kind = "problem_fact"
+
+[[facts]]
+name = "delivery"
+plural = "deliveries"
+kind = "problem_fact"
+
+[[facts]]
+name = "readiness_policy"
+plural = "readiness_policies"
+kind = "problem_fact"
+
+[[facts]]
+name = "inspection_requirement"
+plural = "inspection_requirements"
+kind = "problem_fact"
+
+[[facts]]
+name = "training_requirement"
+plural = "training_requirements"
+kind = "problem_fact"
+
+[[entities]]
+name = "work_package"
+plural = "work_packages"
+kind = "planning_entity"
+
+[[entities]]
+name = "inspection_assignment"
+plural = "inspection_assignments"
+kind = "planning_entity"
+
+[[entities]]
+name = "training_assignment"
+plural = "training_assignments"
+kind = "planning_entity"
+
+[[variables]]
+entity = "work_package"
+entity_plural = "work_packages"
+field = "dock_idx"
+kind = "scalar"
+range = "docks"
+elements = ""
+allows_unassigned = true
+enabled = true
+
+[[variables]]
+entity = "work_package"
+entity_plural = "work_packages"
+field = "start_day_idx"
+kind = "scalar"
+range = "days"
+elements = ""
+allows_unassigned = true
+enabled = true
+
+[[variables]]
+entity = "inspection_assignment"
+entity_plural = "inspection_assignments"
+field = "day_idx"
+kind = "scalar"
+range = "days"
+elements = ""
+allows_unassigned = true
+enabled = true
+
+[[variables]]
+entity = "training_assignment"
+entity_plural = "training_assignments"
+field = "day_idx"
+kind = "scalar"
+range = "days"
+elements = ""
+allows_unassigned = true
+enabled = true
+
+[[constraints]]
+name = "dock_capacity"
+module = "dock_capacity"
+enabled = true
+
+[[constraints]]
+name = "dock_compatibility"
+module = "dock_compatibility"
+enabled = true
+
+[[constraints]]
+name = "inspection_training_precedence"
+module = "inspection_training_precedence"
+enabled = true
+
+[[constraints]]
+name = "maximize_ready_days"
+module = "maximize_ready_days"
+enabled = true
+
+[[constraints]]
+name = "minimize_churn"
+module = "minimize_churn"
+enabled = true
+
+[[constraints]]
+name = "minimize_deferral"
+module = "minimize_deferral"
+enabled = true
+
+[[constraints]]
+name = "minimize_inspection_lateness"
+module = "minimize_inspection_lateness"
+enabled = true
+
+[[constraints]]
+name = "minimize_overtime"
+module = "minimize_overtime"
+enabled = true
+
+[[constraints]]
+name = "minimize_readiness_shortfall"
+module = "minimize_readiness_shortfall"
+enabled = true
+
+[[constraints]]
+name = "parts_availability"
+module = "parts_availability"
+enabled = true
+
+[[constraints]]
+name = "required_assignments"
+module = "required_assignments"
+enabled = true
+
+[[constraints]]
+name = "technician_capacity"
+module = "technician_capacity"
+enabled = true
+
+[[constraints]]
+name = "weekly_readiness_floor"
+module = "weekly_readiness_floor"
+enabled = true
+
+[[constraints]]
+name = "work_window"
+module = "work_window"
+enabled = true

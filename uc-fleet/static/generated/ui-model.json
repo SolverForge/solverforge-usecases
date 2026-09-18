@@ -1,0 +1,124 @@
+{
+  "constraints": [
+    "dock_capacity",
+    "dock_compatibility",
+    "inspection_training_precedence",
+    "maximize_ready_days",
+    "minimize_churn",
+    "minimize_deferral",
+    "minimize_inspection_lateness",
+    "minimize_overtime",
+    "minimize_readiness_shortfall",
+    "parts_availability",
+    "required_assignments",
+    "technician_capacity",
+    "weekly_readiness_floor",
+    "work_window"
+  ],
+  "entities": [
+    {
+      "label": "Work Package",
+      "name": "work_package",
+      "plural": "work_packages"
+    },
+    {
+      "label": "Inspection Assignment",
+      "name": "inspection_assignment",
+      "plural": "inspection_assignments"
+    },
+    {
+      "label": "Training Assignment",
+      "name": "training_assignment",
+      "plural": "training_assignments"
+    }
+  ],
+  "facts": [
+    {
+      "label": "Vessel",
+      "name": "vessel",
+      "plural": "vessels"
+    },
+    {
+      "label": "Dock",
+      "name": "dock",
+      "plural": "docks"
+    },
+    {
+      "label": "Day",
+      "name": "day",
+      "plural": "days"
+    },
+    {
+      "label": "Technician Pool",
+      "name": "technician_pool",
+      "plural": "technician_pools"
+    },
+    {
+      "label": "Part",
+      "name": "part",
+      "plural": "parts"
+    },
+    {
+      "label": "Delivery",
+      "name": "delivery",
+      "plural": "deliveries"
+    },
+    {
+      "label": "Readiness Policy",
+      "name": "readiness_policy",
+      "plural": "readiness_policies"
+    },
+    {
+      "label": "Inspection Requirement",
+      "name": "inspection_requirement",
+      "plural": "inspection_requirements"
+    },
+    {
+      "label": "Training Requirement",
+      "name": "training_requirement",
+      "plural": "training_requirements"
+    }
+  ],
+  "views": [
+    {
+      "allowsUnassigned": true,
+      "entity": "work_package",
+      "entityPlural": "work_packages",
+      "id": "work_package-dock_idx",
+      "kind": "scalar",
+      "label": "Work Package · dock_idx",
+      "sourcePlural": "docks",
+      "variableField": "dock_idx"
+    },
+    {
+      "allowsUnassigned": true,
+      "entity": "work_package",
+      "entityPlural": "work_packages",
+      "id": "work_package-start_day_idx",
+      "kind": "scalar",
+      "label": "Work Package · start_day_idx",
+      "sourcePlural": "days",
+      "variableField": "start_day_idx"
+    },
+    {
+      "allowsUnassigned": true,
+      "entity": "inspection_assignment",
+      "entityPlural": "inspection_assignments",
+      "id": "inspection_assignment-day_idx",
+      "kind": "scalar",
+      "label": "Inspection Assignment · day_idx",
+      "sourcePlural": "days",
+      "variableField": "day_idx"
+    },
+    {
+      "allowsUnassigned": true,
+      "entity": "training_assignment",
+      "entityPlural": "training_assignments",
+      "id": "training_assignment-day_idx",
+      "kind": "scalar",
+      "label": "Training Assignment · day_idx",
+      "sourcePlural": "days",
+      "variableField": "day_idx"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+# Cargo build output
+debug
+target
+
+# rustfmt backups and Windows debug symbols
+**/*.rs.bk
+*.pdb
+
+# Test artifacts
+**/mutants.out*/
+test-results/
+playwright-report/
+
+# Local planning notes
+PRD.md
