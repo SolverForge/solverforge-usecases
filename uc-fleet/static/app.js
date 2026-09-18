@@ -225,6 +225,7 @@
     function publishMeta(meta) {
       state.meta = meta || state.meta;
       if (state.plan) Fleet.renderSummary(ctx);
+      Fleet.refreshDisruptionControls(ctx);
       syncLifecycleMarkers(meta);
     }
 

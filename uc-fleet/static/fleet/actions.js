@@ -46,35 +46,80 @@
     ];
   };
 
-  // Renders the disruption controls and the latest repair comparison. The
-  // baseline session is seeded from the plan currently on screen, so a repair
-  // always compares against what the operator is looking at.
+  // Explains whether a repair can start right now, so the buttons and the copy
+  // agree with the solver lifecycle instead of failing silently on click.
+  Fleet.disruptionAvailability = function (ctx) {
+    if (!ctx.state.plan) return { enabled: false, reason: 'Loading the scenario plan...' };
+    if (ctx.state.busy) return { enabled: false, reason: 'A disruption repair is already running.' };
+    if (ctx.solver.isRunning()) {
+      return { enabled: false, reason: 'A solve is running. Stop it before applying a disruption.' };
+    }
+    if (ctx.solver.getLifecycleState() === 'PAUSED') {
+      return { enabled: false, reason: 'The solve is paused. Resume or stop it before applying a disruption.' };
+    }
+    return {
+      enabled: true,
+      reason: 'A repair seeds a baseline from the plan on screen, solves the disrupted plan, and compares the two revisions.',
+    };
+  };
+
   Fleet.renderDisruptions = function (ctx) {
     if (!ctx.sections || !ctx.sections.disruption) return;
-    var controls = SF.el('div', {
-      className: 'fleet-disruptions',
-      style: { display: 'flex', flexWrap: 'wrap', gap: '0.5rem' },
-    });
+    var availability = Fleet.disruptionAvailability(ctx);
+    var buttons = [];
+    var controls = SF.el('div', { style: { display: 'flex', flexWrap: 'wrap', gap: '0.5rem' } });
     Fleet.disruptions().forEach(function (disruption) {
-      controls.appendChild(SF.createButton({
+      var button = SF.createButton({
         text: disruption.label,
         icon: disruption.icon,
         variant: 'default',
-        disabled: !!ctx.state.busy,
+        disabled: !availability.enabled,
         onClick: function () { Fleet.applyDisruption(ctx, disruption); },
-      }));
+      });
+      buttons.push(button);
+      controls.appendChild(button);
     });
-    var status = SF.el('p', null, ctx.state.busy
-      ? 'Seeding a baseline from the current plan, then solving the repaired plan...'
-      : ctx.state.compare
-        ? 'Repaired plan applied. The comparison is against the plan shown before the disruption.'
-        : 'Solve a scenario, then apply a disruption to re-solve and compare the repaired plan.');
+
+    var reason = SF.el('p', null, availability.reason);
+    var progress = SF.el('div');
     var section = SF.el('div', { className: 'sf-section' },
       SF.el('h3', null, 'Disruption repair'),
       controls,
-      status
+      reason,
+      progress
     );
+    ctx.disruption = { reason: reason, progress: progress, buttons: buttons };
     Fleet.replace(ctx.sections.disruption, section, Fleet.comparisonSection(ctx));
+    Fleet.renderRepairProgress(ctx);
+  };
+
+  // Lightweight refresh used by solver events: only updates availability text and
+  // button state so it is safe to call on every progress tick.
+  Fleet.refreshDisruptionControls = function (ctx) {
+    if (!ctx.disruption) return;
+    var availability = Fleet.disruptionAvailability(ctx);
+    ctx.disruption.buttons.forEach(function (button) {
+      button.disabled = !availability.enabled;
+    });
+    ctx.disruption.reason.textContent = availability.reason;
+  };
+
+  Fleet.renderRepairProgress = function (ctx) {
+    if (!ctx.disruption) return;
+    var repair = ctx.state.repair;
+    if (!repair || !repair.rows || !repair.rows.length) {
+      ctx.disruption.progress.textContent = '';
+      return;
+    }
+    Fleet.replace(ctx.disruption.progress, SF.createTable({
+      columns: ['Repair step', 'State'],
+      rows: repair.rows,
+    }));
+  };
+
+  Fleet.setRepair = function (ctx, label, rows) {
+    ctx.state.repair = { label: label, rows: rows };
+    Fleet.renderRepairProgress(ctx);
   };
 
   Fleet.comparisonSection = function (ctx) {
@@ -97,20 +142,16 @@
   };
 
   Fleet.applyDisruption = async function (ctx, disruption) {
-    if (ctx.state.busy || !ctx.state.plan) {
-      if (!ctx.state.plan) {
-        SF.showToast({ variant: 'warning', title: 'No plan', message: 'Load a scenario first.' });
-      }
-      return;
-    }
-    if (ctx.solver.isRunning() || ctx.solver.getLifecycleState() === 'PAUSED') {
-      SF.showToast({ variant: 'warning', title: 'Solve in progress', message: 'Stop the active solve before repairing.' });
-      return;
-    }
+    if (!Fleet.disruptionAvailability(ctx).enabled) return;
 
     ctx.state.busy = true;
     ctx.state.compare = null;
+    ctx.state.repairStartedAt = Date.now();
+    Fleet.setRepair(ctx, disruption.label, [
+      ['Baseline session', 'seeding from the current plan'],
+    ]);
     Fleet.renderDisruptions(ctx);
+
     try {
       var created = await Fleet.requestJson('/plan-sessions', {
         method: 'POST',
@@ -119,7 +160,12 @@
           scenario: { scenario_id: 'current', data: ctx.state.plan },
         },
       });
-      var baseline = await Fleet.waitForSessionSnapshot(created.planSessionId);
+      var baseline = await Fleet.waitForSessionSnapshot(ctx, created.planSessionId);
+      Fleet.setRepair(ctx, disruption.label, [
+        ['Baseline session', 'ready at revision ' + baseline.snapshotRevision],
+        ['Disruption', disruption.label + ' applied'],
+        ['Repair solve', 'starting'],
+      ]);
       var repair = await Fleet.requestJson('/plan-sessions/' + created.planSessionId + '/repair', {
         method: 'POST',
         body: {
@@ -130,7 +176,16 @@
       var snapshot = await Fleet.waitForRepairSnapshot(ctx, repair.repairJobId);
       ctx.renderPlan(snapshot.solution);
       ctx.state.compare = await Fleet.requestJson(repair.compareUrl);
+      Fleet.setRepair(ctx, disruption.label, [
+        ['Disruption', disruption.label + ' applied'],
+        ['Repair solve', 'completed at revision ' + repair.repairJobId],
+        ['Comparison', 'ready below'],
+      ]);
     } catch (error) {
+      Fleet.setRepair(ctx, disruption.label, [
+        ['Disruption', disruption.label],
+        ['Result', 'failed: ' + (error.message || String(error))],
+      ]);
       SF.showError('Repair failed', error.message || String(error));
     } finally {
       ctx.state.busy = false;
@@ -138,9 +193,13 @@
     }
   };
 
-  Fleet.waitForSessionSnapshot = async function (sessionId) {
+  Fleet.waitForSessionSnapshot = async function (ctx, sessionId) {
     for (var attempt = 0; attempt < 900; attempt += 1) {
       var status = await Fleet.requestJson('/plan-sessions/' + sessionId + '/status');
+      Fleet.setRepair(ctx, 'Seeding baseline', [
+        ['Baseline session', status.lifecycleState + ' / revision ' + (status.latestRevision != null ? status.latestRevision : 'pending')],
+        ['Baseline score', status.bestScore || status.currentScore || 'unscored'],
+      ]);
       if (status.latestRevision != null) {
         return Fleet.requestJson('/plan-sessions/' + sessionId + '/snapshots/latest');
       }
@@ -153,6 +212,12 @@
     var terminal = ['COMPLETED', 'CANCELLED', 'FAILED', 'TERMINATED_BY_CONFIG'];
     for (var attempt = 0; attempt < 900; attempt += 1) {
       var status = await ctx.backend.getJobStatus(jobId);
+      Fleet.setRepair(ctx, 'Solving repaired plan', [
+        ['Repair job', jobId],
+        ['Lifecycle', status.lifecycleState],
+        ['Repair score', status.bestScore || status.currentScore || 'unscored'],
+        ['Elapsed', Fleet.elapsedSeconds(ctx) + 's'],
+      ]);
       if (terminal.indexOf(status.lifecycleState) !== -1) {
         if (status.lifecycleState === 'FAILED') throw new Error('Repair solve failed');
         return ctx.backend.getSnapshot(jobId);
@@ -160,5 +225,10 @@
       await Fleet.sleep(200);
     }
     throw new Error('Timed out waiting for the repair solve');
+  };
+
+  Fleet.elapsedSeconds = function (ctx) {
+    var started = ctx.state.repairStartedAt || Date.now();
+    return Math.round((Date.now() - started) / 1000);
   };
 })(window);

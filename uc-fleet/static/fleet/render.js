@@ -284,6 +284,7 @@
       ctx.panels[key].style.display = key === id ? '' : 'none';
     });
     if (id === 'schedule' && ctx.state.plan) Fleet.renderSchedules(ctx);
+    if (id === 'disruptions') Fleet.renderDisruptions(ctx);
   };
 
   Fleet.destroyTimelines = function (ctx) {
