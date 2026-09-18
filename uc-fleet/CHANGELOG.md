@@ -2,6 +2,13 @@
 
 All notable changes to this use case are documented in this file.
 
+## 0.1.2 (2026-09-18)
+
+
+### Bug Fixes
+
+* **fleet:** block starting a solve during a repair a24d6d0
+
 ## 0.1.1 (2026-09-18)
 
 
