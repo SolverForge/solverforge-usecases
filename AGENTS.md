@@ -6,6 +6,11 @@ This repo is the SolverForge use-case publication bundle. Keep each `uc-*`
 directory as a deployable SolverForge app that can be split and pushed to the
 matching Hugging Face Space named `solverforge-*`.
 
+`uc-furnace` is repository-only. It is a first-class, fully runnable open-source
+use case, but it has no hosted Space because Hugging Face now requires a paid
+plan to create a new Docker Space. Keep it out of the Hugging Face sync
+allowlist unless a target Space is created.
+
 The `uc-*` prefix is intentional repository plumbing. Product-facing names,
 Space names, docs, app metadata, and UI labels should use `SolverForge` and the
 `solverforge-*` app name.
@@ -14,13 +19,15 @@ Space names, docs, app metadata, and UI labels should use `SolverForge` and the
 
 - `uc-deliveries` is the source for the open-source `solverforge-deliveries` app.
 - `uc-fsr` is the source for the open-source `solverforge-fsr` app.
-- `uc-furnace` is the source for the open-source `solverforge-furnace` app.
+- `uc-furnace` is the source for the open-source `solverforge-furnace` app
+  (repository-only; no hosted Space).
 - `uc-hospital` is the source for the open-source `solverforge-hospital` app.
 - `uc-lessons` is the source for the open-source `solverforge-lessons` app.
 
-These five directories are the open-source root allowlist. Do not add another
-`uc-*` directory without updating the README, sync workflow, release map,
-pre-commit path filter, and metadata verification script in the same change.
+These five directories are the open-source root allowlist. Four of them are also
+published to Hugging Face Spaces; `uc-furnace` is not. Do not add another `uc-*`
+directory without updating the README, sync workflow, release map, pre-commit
+path filter, and metadata verification script in the same change.
 
 ## Documentation Standard
 
@@ -71,8 +78,9 @@ when present:
 - `make publish-usecase-dry-run TAG=solverforge-hospital@x.y.z` before pushing
   one release, then `make publish-usecase TAG=...` to push `main` and that tag.
 - `make publish-usecases-dry-run` before publishing the current releases for
-  all four apps; `make publish-usecases` pushes the tags separately so GitHub
-  emits one Hugging Face sync event per app.
+  all allowlisted apps; `make publish-usecases` pushes the tags separately so
+  GitHub emits one Hugging Face sync event per published app. The
+  repository-only `uc-furnace` tag is still pushed but triggers no Space sync.
 
 For root workflow or README-only edits, validate the YAML syntax and inspect the
 changed paths with `git diff --stat`. The root CI workflow is

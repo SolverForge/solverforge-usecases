@@ -1,9 +1,10 @@
 # SolverForge Use Cases
 
 This repository is the SolverForge publication bundle for runnable use-case
-applications. Each `uc-*` directory is a self-contained SolverForge app that can
-run locally and can be published as a Hugging Face Space under the matching
-`solverforge-*` name.
+applications. Each `uc-*` directory is a self-contained SolverForge app that
+runs locally; the published use cases are also mirrored to a Hugging Face Space
+under the matching `solverforge-*` name. `uc-furnace` is repository-only: it is
+a fully runnable open-source app with no hosted Space.
 
 ## Product Surface
 
@@ -11,12 +12,13 @@ run locally and can be published as a Hugging Face Space under the matching
 | --------------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
 | `uc-deliveries` | [`solverforge-deliveries`](https://huggingface.co/spaces/SolverForge/solverforge-deliveries) | Capacitated delivery routing with time windows and map-backed travel data.              |
 | `uc-fsr`        | [`solverforge-fsr`](https://huggingface.co/spaces/SolverForge/solverforge-fsr)               | Field-service routing for technicians, visits, parts, priorities, and travel.           |
-| `uc-furnace`    | [`solverforge-furnace`](https://huggingface.co/spaces/SolverForge/solverforge-furnace)       | Heat-treatment scheduling across furnaces, work orders, task operators, and shift rosters. |
+| `uc-furnace`    | repository-only (no hosted Space)                                                            | Heat-treatment scheduling across furnaces, work orders, task operators, and shift rosters. |
 | `uc-hospital`   | [`solverforge-hospital`](https://huggingface.co/spaces/SolverForge/solverforge-hospital)     | Hospital workforce scheduling with skills, availability, preferences, and coverage.     |
 | `uc-lessons`    | [`solverforge-lessons`](https://huggingface.co/spaces/SolverForge/solverforge-lessons)       | Lesson scheduling with teachers, cohorts, timeslots, room types, and timetable quality. |
 
 These open-source product examples are maintained directly in this bundle.
-Each `uc-*` directory is the release source published to its matching Space.
+Each published `uc-*` directory is the release source for its matching Space;
+`uc-furnace` is released from this repository only.
 
 ## Documentation Shape
 
@@ -51,7 +53,7 @@ Use the existing SolverForge app structure inside each use case:
   the runtime and SolverForge contract.
 - `src/` contains the Rust app, domain model, constraints, API routes, and
   retained solver service.
-- `static/` contains the browser UI shipped with the Space.
+- `static/` contains the browser UI shipped with the app.
 - `README.md`, `AGENTS.md`, `WIREFRAME.md`, and `docs/screenshot.png` are the
   standard documentation surface for every included app.
 
@@ -117,9 +119,9 @@ annotated app-prefixed tag. Do not combine `PREPARED=1` with `RELEASE_AS`.
 
 The release wrapper uses `commit-and-tag-version` with an app path filter,
 the app changelog, the app `Cargo.toml`, the app `Cargo.lock`, and an
-app-prefixed tag. The split app Makefiles stay in place because each `uc-*`
-directory becomes the root of a standalone Hugging Face Space after subtree
-splitting.
+app-prefixed tag. The split app Makefiles stay in place because each published
+`uc-*` directory becomes the root of a standalone Hugging Face Space after
+subtree splitting.
 
 Release creation is local; publication is a separate, explicit operation.
 Preview and publish one tag with:
@@ -155,10 +157,15 @@ transformed into the public `solverforge-` prefix:
 ```text
 uc-deliveries -> <HF_ORGANIZATION>/solverforge-deliveries
 uc-fsr -> <HF_ORGANIZATION>/solverforge-fsr
-uc-furnace -> <HF_ORGANIZATION>/solverforge-furnace
 uc-hospital -> <HF_ORGANIZATION>/solverforge-hospital
 uc-lessons -> <HF_ORGANIZATION>/solverforge-lessons
 ```
+
+`uc-furnace` is intentionally excluded from the sync workflow. Hugging Face now
+requires a paid plan to create a new Docker Space, so the furnace app is
+published from this repository only rather than to a hosted Space. Re-adding it
+to the tag triggers and the folder matrix is all that is needed once a target
+Space exists.
 
 Required repository configuration:
 

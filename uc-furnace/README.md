@@ -182,12 +182,13 @@ make test-slow
 smoke. `make ci-local` adds formatting, clippy, release build, and Docker image
 build. `make pre-release` runs `ci-local` plus the slow acceptance solve.
 
-## Hugging Face Space Deployment
+## Deployment
 
-This repo is Docker-Space ready. The Space reads the README front matter,
-builds `Dockerfile`, and expects the app to bind `PORT=7860`.
+This app is repository-only. The Docker image is Space-shaped (README front
+matter, `Dockerfile`, `PORT=7860`), but it is not published to a hosted Space
+because Hugging Face now requires a paid plan to create a new Docker Space.
 
-Local Space-equivalent commands:
+Local container commands:
 
 ```sh
 make space-build
