@@ -832,7 +832,7 @@ dependencies = [
 
 [[package]]
 name = "solverforge-fleet"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "axum",
  "parking_lot",
