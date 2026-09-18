@@ -34,6 +34,7 @@ jobs:
         with:
           workspaces: |
             uc-deliveries
+            uc-fleet
             uc-fsr
             uc-furnace
             uc-hospital

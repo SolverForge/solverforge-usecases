@@ -2,23 +2,24 @@
 
 This repository is the SolverForge publication bundle for runnable use-case
 applications. Each `uc-*` directory is a self-contained SolverForge app that
-runs locally; the published use cases are also mirrored to a Hugging Face Space
-under the matching `solverforge-*` name. `uc-furnace` is repository-only: it is
-a fully runnable open-source app with no hosted Space.
+runs locally; the hosted use cases are also mirrored to a Hugging Face Space
+under the matching `solverforge-*` name. `uc-fleet` and `uc-furnace` are
+repository-only: they are fully runnable open-source apps with no hosted Space.
 
 ## Product Surface
 
 | Directory       | Published Space                                                                              | Use case                                                                                |
 | --------------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
 | `uc-deliveries` | [`solverforge-deliveries`](https://huggingface.co/spaces/SolverForge/solverforge-deliveries) | Capacitated delivery routing with time windows and map-backed travel data.              |
+| `uc-fleet`       | repository-only (no hosted Space)                                                            | Fleet readiness planning across maintenance, inspections, training, docks, technicians, and parts. |
 | `uc-fsr`        | [`solverforge-fsr`](https://huggingface.co/spaces/SolverForge/solverforge-fsr)               | Field-service routing for technicians, visits, parts, priorities, and travel.           |
 | `uc-furnace`    | repository-only (no hosted Space)                                                            | Heat-treatment scheduling across furnaces, work orders, task operators, and shift rosters. |
 | `uc-hospital`   | [`solverforge-hospital`](https://huggingface.co/spaces/SolverForge/solverforge-hospital)     | Hospital workforce scheduling with skills, availability, preferences, and coverage.     |
 | `uc-lessons`    | [`solverforge-lessons`](https://huggingface.co/spaces/SolverForge/solverforge-lessons)       | Lesson scheduling with teachers, cohorts, timeslots, room types, and timetable quality. |
 
 These open-source product examples are maintained directly in this bundle.
-Each published `uc-*` directory is the release source for its matching Space;
-`uc-furnace` is released from this repository only.
+Each hosted `uc-*` directory is the release source for its matching Space;
+`uc-fleet` and `uc-furnace` are released from this repository only.
 
 ## Documentation Shape
 
@@ -93,6 +94,7 @@ Each use case has its own package version in `uc-*/Cargo.toml`, its own
 
 ```text
 solverforge-deliveries@<version>
+solverforge-fleet@<version>
 solverforge-fsr@<version>
 solverforge-furnace@<version>
 solverforge-hospital@<version>
@@ -161,11 +163,10 @@ uc-hospital -> <HF_ORGANIZATION>/solverforge-hospital
 uc-lessons -> <HF_ORGANIZATION>/solverforge-lessons
 ```
 
-`uc-furnace` is intentionally excluded from the sync workflow. Hugging Face now
-requires a paid plan to create a new Docker Space, so the furnace app is
-published from this repository only rather than to a hosted Space. Re-adding it
-to the tag triggers and the folder matrix is all that is needed once a target
-Space exists.
+`uc-fleet` and `uc-furnace` are intentionally excluded from the sync workflow.
+Both apps are published from this repository only rather than to hosted Spaces.
+Add an app to the tag triggers and folder matrix only after its Hugging Face
+target exists.
 
 Required repository configuration:
 

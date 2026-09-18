@@ -47,6 +47,7 @@ test("all-app publication derives one valid current release tag per allowlisted 
     tags.map((tag) => tag.slice(0, tag.lastIndexOf("@"))),
     [
       "solverforge-deliveries",
+      "solverforge-fleet",
       "solverforge-fsr",
       "solverforge-furnace",
       "solverforge-hospital",
