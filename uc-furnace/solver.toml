@@ -1,0 +1,166 @@
+random_seed = 42
+
+[termination]
+seconds_spent_limit = 45
+unimproved_seconds_spent_limit = 12
+
+[[phases]]
+type = "construction_heuristic"
+construction_heuristic_type = "weakest_fit_decreasing"
+construction_obligation = "assign_when_candidate_exists"
+group_name = "furnace_assignment"
+value_candidate_limit = 64
+group_candidate_limit = 160
+
+[[phases]]
+type = "construction_heuristic"
+construction_heuristic_type = "cheapest_insertion"
+construction_obligation = "assign_when_candidate_exists"
+group_name = "roster_shift_assignment"
+value_candidate_limit = 4
+
+[[phases]]
+type = "construction_heuristic"
+construction_heuristic_type = "weakest_fit"
+construction_obligation = "assign_when_candidate_exists"
+group_name = "task_operator_assignment"
+
+[[phases]]
+type = "local_search"
+local_search_type = "variable_neighborhood_descent"
+
+[[phases.neighborhoods]]
+type = "compound_conflict_repair_move_selector"
+constraints = [
+  "minimumRest",
+  "visibleShiftLimit",
+  "taskOperatorOnOwningShift",
+  "shiftRoleCoverage",
+  "monitoringCapacity",
+  "furnaceOverlap",
+  "changeoverGap",
+]
+max_matches_per_step = 16
+max_repairs_per_match = 32
+max_moves_per_step = 256
+require_hard_improvement = true
+
+[[phases.neighborhoods]]
+type = "cartesian_product_move_selector"
+require_hard_improvement = true
+
+[[phases.neighborhoods.selectors]]
+type = "compound_conflict_repair_move_selector"
+constraints = [
+  "minimumRest",
+  "visibleShiftLimit",
+  "furnaceOverlap",
+  "changeoverGap",
+]
+max_matches_per_step = 16
+max_repairs_per_match = 8
+max_moves_per_step = 32
+require_hard_improvement = false
+
+[[phases.neighborhoods.selectors]]
+type = "grouped_scalar_move_selector"
+group_name = "task_operator_assignment"
+max_moves_per_step = 256
+
+[[phases.neighborhoods]]
+type = "grouped_scalar_move_selector"
+group_name = "furnace_assignment"
+value_candidate_limit = 160
+max_moves_per_step = 256
+require_hard_improvement = true
+
+[[phases.neighborhoods]]
+type = "grouped_scalar_move_selector"
+group_name = "roster_shift_assignment"
+value_candidate_limit = 4
+max_moves_per_step = 256
+require_hard_improvement = true
+
+[[phases.neighborhoods]]
+type = "grouped_scalar_move_selector"
+group_name = "task_operator_assignment"
+max_moves_per_step = 256
+require_hard_improvement = true
+
+[[phases]]
+type = "local_search"
+
+[phases.acceptor]
+type = "simulated_annealing"
+decay_rate = 0.999985
+hard_regression_policy = "never_accept_hard_regression"
+
+[phases.forager]
+type = "accepted_count"
+limit = 256
+
+[phases.move_selector]
+type = "union_move_selector"
+selection_order = "round_robin"
+
+[[phases.move_selector.selectors]]
+type = "compound_conflict_repair_move_selector"
+constraints = [
+  "minimumRest",
+  "visibleShiftLimit",
+  "taskOperatorOnOwningShift",
+  "shiftRoleCoverage",
+  "monitoringCapacity",
+  "furnaceOverlap",
+  "changeoverGap",
+]
+max_matches_per_step = 16
+max_repairs_per_match = 32
+max_moves_per_step = 256
+require_hard_improvement = true
+
+[[phases.move_selector.selectors]]
+type = "cartesian_product_move_selector"
+require_hard_improvement = true
+
+[[phases.move_selector.selectors.selectors]]
+type = "compound_conflict_repair_move_selector"
+constraints = [
+  "minimumRest",
+  "visibleShiftLimit",
+  "furnaceOverlap",
+  "changeoverGap",
+]
+max_matches_per_step = 16
+max_repairs_per_match = 8
+max_moves_per_step = 32
+require_hard_improvement = false
+
+[[phases.move_selector.selectors.selectors]]
+type = "grouped_scalar_move_selector"
+group_name = "task_operator_assignment"
+max_moves_per_step = 256
+
+[[phases.move_selector.selectors]]
+type = "grouped_scalar_move_selector"
+group_name = "furnace_schedule_task_assignment"
+value_candidate_limit = 4
+max_moves_per_step = 512
+
+[[phases.move_selector.selectors]]
+type = "grouped_scalar_move_selector"
+group_name = "furnace_assignment"
+value_candidate_limit = 160
+max_moves_per_step = 256
+
+[[phases.move_selector.selectors]]
+type = "grouped_scalar_move_selector"
+group_name = "roster_shift_assignment"
+value_candidate_limit = 4
+max_moves_per_step = 256
+
+[[phases.move_selector.selectors]]
+type = "grouped_scalar_move_selector"
+group_name = "task_operator_assignment"
+max_moves_per_step = 256
+require_hard_improvement = true

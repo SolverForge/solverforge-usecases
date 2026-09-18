@@ -1,0 +1,50 @@
+{
+  "entities": [
+    { "id": "assignments", "label": "Assignments", "plural": "assignments" },
+    { "id": "operatorShiftAssignments", "label": "Operator Shift Assignments", "plural": "operatorShiftAssignments" }
+  ],
+  "facts": [
+    { "id": "furnaces", "label": "Furnaces", "plural": "furnaces" },
+    { "id": "workOrders", "label": "Work Orders", "plural": "workOrders" },
+    { "id": "operators", "label": "Operators", "plural": "operators" },
+    { "id": "shifts", "label": "Shifts", "plural": "shifts" },
+    { "id": "shiftCoverageDemands", "label": "Shift Coverage Demands", "plural": "shiftCoverageDemands" }
+  ],
+  "constraints": [
+    { "name": "unassignedOrders", "type": "hard" },
+    { "name": "incompatibleProcess", "type": "hard" },
+    { "name": "excessiveTemperature", "type": "hard" },
+    { "name": "excessiveLoad", "type": "hard" },
+    { "name": "outsideWeek", "type": "hard" },
+    { "name": "furnaceOverlap", "type": "hard" },
+    { "name": "changeoverGap", "type": "hard" },
+    { "name": "loadBuildShiftOwnership", "type": "hard" },
+    { "name": "programShiftOwnership", "type": "hard" },
+    { "name": "quenchShiftOwnership", "type": "hard" },
+    { "name": "unloadShiftOwnership", "type": "hard" },
+    { "name": "assignedTasksRequireScheduledFurnace", "type": "hard" },
+    { "name": "requiredTaskAssigned", "type": "hard" },
+    { "name": "taskOperatorSkilled", "type": "hard" },
+    { "name": "taskOperatorOnOwningShift", "type": "hard" },
+    { "name": "operatorDoubleBooked", "type": "hard" },
+    { "name": "shiftRoleCoverage", "type": "hard" },
+    { "name": "monitoringCapacity", "type": "hard" },
+    { "name": "dayOnlyNight", "type": "hard" },
+    { "name": "minimumRest", "type": "hard" },
+    { "name": "visibleShiftLimit", "type": "hard" },
+    { "name": "consecutiveNights", "type": "hard" },
+    { "name": "expressLateness", "type": "soft" },
+    { "name": "urgentLateness", "type": "soft" },
+    { "name": "standardLateness", "type": "soft" },
+    { "name": "thermalChangeover", "type": "soft" },
+    { "name": "earlyStartPressure", "type": "soft" },
+    { "name": "nightStartPreference", "type": "soft" },
+    { "name": "overtime", "type": "soft" },
+    { "name": "shiftLoadBalance", "type": "soft" }
+  ],
+  "views": [
+    { "id": "schedule", "label": "Schedule", "kind": "timeline", "icon": "fa-fire" },
+    { "id": "crew", "label": "Crew", "kind": "table", "icon": "fa-users" },
+    { "id": "orders", "label": "Orders", "kind": "table", "icon": "fa-industry" }
+  ]
+}

@@ -1,0 +1,265 @@
+[app]
+name = "SolverForge Furnace"
+starter = "neutral-shell"
+cli_version = "2.2.2"
+shell = "web"
+
+[runtime]
+target = "solverforge 0.19.4"
+runtime_source = "crates.io: solverforge 0.19.4"
+ui_source = "crates.io: solverforge-ui 0.6.5"
+
+[demo]
+default_size = "STANDARD"
+available_sizes = [
+    "STANDARD",
+]
+
+[solution]
+name = "Plan"
+score = "HardSoftScore"
+
+[[facts]]
+name = "furnace"
+plural = "furnaces"
+kind = "problem_fact"
+
+[[facts]]
+name = "work_order"
+plural = "work_orders"
+kind = "problem_fact"
+
+[[facts]]
+name = "operator"
+plural = "operators"
+kind = "problem_fact"
+
+[[facts]]
+name = "shift"
+plural = "shifts"
+kind = "problem_fact"
+
+[[facts]]
+name = "shift_coverage_demand"
+plural = "shift_coverage_demands"
+kind = "problem_fact"
+
+[[entities]]
+name = "furnace_assignment"
+plural = "assignments"
+kind = "planning_entity"
+
+[[entities]]
+name = "operator_shift_assignment"
+plural = "operator_shift_assignments"
+kind = "planning_entity"
+
+[[variables]]
+entity = "furnace_assignment"
+entity_plural = "assignments"
+field = "assignment"
+kind = "scalar"
+range = "compatible_assignments"
+elements = ""
+allows_unassigned = true
+enabled = true
+
+[[variables]]
+entity = "furnace_assignment"
+entity_plural = "assignments"
+field = "load_build_operator_id"
+kind = "scalar"
+range = "eligible_load_build_operator_ids"
+elements = ""
+allows_unassigned = true
+enabled = true
+
+[[variables]]
+entity = "furnace_assignment"
+entity_plural = "assignments"
+field = "program_operator_id"
+kind = "scalar"
+range = "eligible_program_operator_ids"
+elements = ""
+allows_unassigned = true
+enabled = true
+
+[[variables]]
+entity = "furnace_assignment"
+entity_plural = "assignments"
+field = "quench_operator_id"
+kind = "scalar"
+range = "eligible_quench_operator_ids"
+elements = ""
+allows_unassigned = true
+enabled = true
+
+[[variables]]
+entity = "furnace_assignment"
+entity_plural = "assignments"
+field = "unload_operator_id"
+kind = "scalar"
+range = "eligible_unload_operator_ids"
+elements = ""
+allows_unassigned = true
+enabled = true
+
+[[variables]]
+entity = "operator_shift_assignment"
+entity_plural = "operator_shift_assignments"
+field = "shift_type"
+kind = "scalar"
+range = "allowed_shift_types"
+elements = ""
+allows_unassigned = true
+enabled = true
+
+[[constraints]]
+name = "unassigned_orders"
+module = "furnace_hard"
+enabled = true
+
+[[constraints]]
+name = "incompatible_process"
+module = "furnace_hard"
+enabled = true
+
+[[constraints]]
+name = "excessive_temperature"
+module = "furnace_hard"
+enabled = true
+
+[[constraints]]
+name = "excessive_load"
+module = "furnace_hard"
+enabled = true
+
+[[constraints]]
+name = "outside_week"
+module = "furnace_hard"
+enabled = true
+
+[[constraints]]
+name = "furnace_overlap"
+module = "furnace_hard"
+enabled = true
+
+[[constraints]]
+name = "changeover_gap"
+module = "furnace_hard"
+enabled = true
+
+[[constraints]]
+name = "load_build_shift_ownership"
+module = "furnace_hard"
+enabled = true
+
+[[constraints]]
+name = "program_shift_ownership"
+module = "furnace_hard"
+enabled = true
+
+[[constraints]]
+name = "quench_shift_ownership"
+module = "furnace_hard"
+enabled = true
+
+[[constraints]]
+name = "unload_shift_ownership"
+module = "furnace_hard"
+enabled = true
+
+[[constraints]]
+name = "assigned_tasks_require_scheduled_furnace"
+module = "staffing_hard"
+enabled = true
+
+[[constraints]]
+name = "required_task_assigned"
+module = "staffing_hard"
+enabled = true
+
+[[constraints]]
+name = "task_operator_skilled"
+module = "staffing_hard"
+enabled = true
+
+[[constraints]]
+name = "task_operator_on_owning_shift"
+module = "staffing_hard"
+enabled = true
+
+[[constraints]]
+name = "operator_double_booked"
+module = "staffing_hard"
+enabled = true
+
+[[constraints]]
+name = "shift_role_coverage"
+module = "staffing_hard"
+enabled = true
+
+[[constraints]]
+name = "monitoring_capacity"
+module = "monitoring_hard"
+enabled = true
+
+[[constraints]]
+name = "day_only_night"
+module = "roster_hard"
+enabled = true
+
+[[constraints]]
+name = "minimum_rest"
+module = "roster_hard"
+enabled = true
+
+[[constraints]]
+name = "visible_shift_limit"
+module = "roster_hard"
+enabled = true
+
+[[constraints]]
+name = "consecutive_nights"
+module = "roster_hard"
+enabled = true
+
+[[constraints]]
+name = "express_lateness"
+module = "furnace_soft"
+enabled = true
+
+[[constraints]]
+name = "urgent_lateness"
+module = "furnace_soft"
+enabled = true
+
+[[constraints]]
+name = "standard_lateness"
+module = "furnace_soft"
+enabled = true
+
+[[constraints]]
+name = "thermal_changeover"
+module = "furnace_soft"
+enabled = true
+
+[[constraints]]
+name = "early_start_pressure"
+module = "furnace_soft"
+enabled = true
+
+[[constraints]]
+name = "night_start_preference"
+module = "furnace_soft"
+enabled = true
+
+[[constraints]]
+name = "overtime"
+module = "roster_soft"
+enabled = true
+
+[[constraints]]
+name = "shift_load_balance"
+module = "roster_soft"
+enabled = true
