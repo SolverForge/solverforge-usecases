@@ -33,8 +33,6 @@ pub(super) async fn create_plan_session(
     {
         return Err(StatusCode::BAD_REQUEST);
     }
-    let _metadata = request.metadata.as_ref();
-
     let plan = scenario_plan(&request.scenario)?;
     let baseline_plan = PlanDto::from_plan(&plan);
     let job_id = state
@@ -46,9 +44,6 @@ pub(super) async fn create_plan_session(
         .get_status(&job_id)
         .map_err(status_from_solver_error)?;
     let plan_session_id = format!("session_{}", Uuid::new_v4());
-    let solver_profile = request
-        .solver_profile
-        .unwrap_or_else(|| "fleet_default_v1".to_string());
 
     let record = PlanSessionRecord {
         active_job_id: job_id.clone(),
@@ -71,7 +66,6 @@ pub(super) async fn create_plan_session(
         latest_revision: status.latest_snapshot_revision,
         status_url: format!("/plan-sessions/{plan_session_id}/status"),
         snapshot_url: format!("/plan-sessions/{plan_session_id}/snapshots/latest"),
-        solver_profile,
     }))
 }
 
@@ -150,7 +144,6 @@ pub(super) async fn repair_plan_session(
     Json(request): Json<RepairRequest>,
 ) -> Result<Json<RepairResponse>, StatusCode> {
     let record = session_record(&state, &id)?;
-    let _repair_policy = request.repair_policy.as_ref();
     let requested_baseline_revision = request
         .baseline_revision
         .as_ref()

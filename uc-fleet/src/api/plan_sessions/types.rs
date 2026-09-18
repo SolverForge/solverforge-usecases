@@ -36,9 +36,6 @@ pub struct PlanSessionRepairLink {
 pub struct CreatePlanSessionRequest {
     pub domain: Option<String>,
     pub scenario: ScenarioRequest,
-    #[serde(alias = "solver_profile")]
-    pub solver_profile: Option<String>,
-    pub metadata: Option<Value>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -59,7 +56,6 @@ pub struct CreatePlanSessionResponse {
     pub latest_revision: Option<u64>,
     pub status_url: String,
     pub snapshot_url: String,
-    pub solver_profile: String,
 }
 
 #[derive(Debug, Serialize)]
@@ -82,19 +78,13 @@ pub struct RepairRequest {
     #[serde(alias = "baseline_revision")]
     pub baseline_revision: Option<Value>,
     pub event: RepairEvent,
-    #[serde(alias = "repair_policy")]
-    pub repair_policy: Option<Value>,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RepairEvent {
-    #[serde(alias = "event_id")]
-    pub event_id: Option<String>,
     #[serde(rename = "type")]
     pub event_type: String,
-    #[serde(alias = "occurred_at")]
-    pub occurred_at: Option<String>,
     pub payload: Value,
 }
 
@@ -150,9 +140,6 @@ pub struct ScenarioSummary {
 pub struct CreateSolveRequest {
     #[serde(alias = "scenario_id")]
     pub scenario_id: String,
-    #[serde(alias = "objective_profile")]
-    pub objective_profile: Option<String>,
-    pub seed: Option<u64>,
 }
 
 #[derive(Debug, Serialize)]

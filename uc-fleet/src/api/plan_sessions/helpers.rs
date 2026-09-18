@@ -44,47 +44,52 @@ pub(super) fn scenario_plan(request: &ScenarioRequest) -> Result<Plan, StatusCod
 }
 
 pub(super) fn apply_repair_event(plan: &mut Plan, event: &RepairEvent) -> Result<(), StatusCode> {
-    let _event_id = event.event_id.as_deref();
-    let _occurred_at = event.occurred_at.as_deref();
+    // Every disruption must carry the fields its handler needs. Rejecting an
+    // incomplete event here keeps a repair from silently re-solving the
+    // unmodified plan and reporting a no-op as a successful repair.
     match event.event_type.as_str() {
         "technician_unavailable" | "technician_capacity_drop" | "resource_capacity_changed" => {
-            let pool_id = string_payload(&event.payload, "pool_id")
-                .or_else(|| string_payload(&event.payload, "skill_pool_id"))
-                .unwrap_or_else(|| "ELEC".to_string());
-            let delta = int_payload(&event.payload, "delta").unwrap_or(-1);
-            let start_day = int_payload(&event.payload, "start_day").unwrap_or(15);
-            let end_day = int_payload(&event.payload, "end_day").unwrap_or(21);
+            let pool_id = required_string(&event.payload, &["pool_id", "skill_pool_id"])?;
+            let delta = required_int(&event.payload, &["delta"])?;
+            let start_day = required_int(&event.payload, &["start_day"])?;
+            let end_day = required_int(&event.payload, &["end_day"])?;
             apply_technician_shortage_window(plan, &pool_id, delta, start_day, end_day);
             seed_technician_shortage_repair(plan, &pool_id, start_day, end_day);
             Ok(())
         }
         "parts_delay" | "delayed_delivery" => {
-            let delivery_id = string_payload(&event.payload, "delivery_id")
-                .unwrap_or_else(|| "DELIV-01".to_string());
-            let new_arrival_day = int_payload(&event.payload, "new_arrival_day")
-                .or_else(|| int_payload(&event.payload, "arrival_day"))
-                .or_else(|| int_payload(&event.payload, "delay_days").map(|delay| 19 + delay))
-                .unwrap_or(29);
+            let delivery_id = required_string(&event.payload, &["delivery_id"])?;
+            let new_arrival_day =
+                required_int(&event.payload, &["new_arrival_day", "arrival_day"])?;
             apply_parts_delay(plan, &delivery_id, new_arrival_day);
             Ok(())
         }
         "readiness_floor_changed" | "policy_override" => {
-            let value = int_payload(&event.payload, "value")
-                .or_else(|| int_payload(&event.payload, "min_ready_overall_per_week"))
-                .unwrap_or(9);
+            let value = required_int(&event.payload, &["value", "min_ready_overall_per_week"])?;
             apply_readiness_floor(plan, value);
             Ok(())
         }
         "dock_outage" => {
-            let dock_id =
-                string_payload(&event.payload, "dock_id").unwrap_or_else(|| "D2".to_string());
-            let start_day = int_payload(&event.payload, "start_day").unwrap_or(22);
-            let end_day = int_payload(&event.payload, "end_day").unwrap_or(31);
+            let dock_id = required_string(&event.payload, &["dock_id"])?;
+            let start_day = required_int(&event.payload, &["start_day"])?;
+            let end_day = required_int(&event.payload, &["end_day"])?;
             apply_dock_outage(plan, &dock_id, start_day, end_day);
             Ok(())
         }
         _ => Err(StatusCode::BAD_REQUEST),
     }
+}
+
+fn required_string(payload: &Value, keys: &[&str]) -> Result<String, StatusCode> {
+    keys.iter()
+        .find_map(|key| string_payload(payload, key))
+        .ok_or(StatusCode::BAD_REQUEST)
+}
+
+fn required_int(payload: &Value, keys: &[&str]) -> Result<i32, StatusCode> {
+    keys.iter()
+        .find_map(|key| int_payload(payload, key))
+        .ok_or(StatusCode::BAD_REQUEST)
 }
 
 pub(super) fn solve_result_from_plan(

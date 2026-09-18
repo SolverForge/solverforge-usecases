@@ -9,7 +9,8 @@ use axum::{
 use crate::constraints::support::{revision_diff, RevisionDiff};
 
 use super::helpers::{
-    lifecycle_to_solve_status, scenario_plan, solve_result_from_plan, status_from_solver_error,
+    apply_repair_event, lifecycle_to_solve_status, scenario_plan, solve_result_from_plan,
+    status_from_solver_error,
 };
 use super::types::{
     CompareSolvesRequest, CreateSolveRequest, CreateSolveResponse, LoadScenarioRequest,
@@ -40,14 +41,19 @@ pub(super) async fn load_scenario(
 pub(super) async fn perturb_scenario(
     Json(request): Json<PerturbScenarioRequest>,
 ) -> Result<Json<PerturbScenarioResponse>, StatusCode> {
+    // Apply every event to the named base scenario so invalid or incomplete
+    // events fail here instead of silently producing an unperturbed plan.
+    let mut plan = scenario_plan(&ScenarioRequest {
+        scenario_id: request.base_scenario_id.clone(),
+        data: None,
+    })?;
     let mut changes = Vec::new();
-    let mut parts = vec![request.base_scenario_id];
-    for event in request.perturbations {
+    for event in &request.perturbations {
+        apply_repair_event(&mut plan, event)?;
         changes.push(format!("{} applied", event.event_type));
-        parts.push(event.event_type);
     }
     Ok(Json(PerturbScenarioResponse {
-        scenario_id: parts.join("+"),
+        scenario_id: format!("{}_perturbed", request.base_scenario_id),
         changes,
     }))
 }
@@ -56,8 +62,6 @@ pub(super) async fn create_solve(
     State(state): State<Arc<AppState>>,
     Json(request): Json<CreateSolveRequest>,
 ) -> Result<Json<CreateSolveResponse>, StatusCode> {
-    let _objective_profile = request.objective_profile.as_deref();
-    let _seed = request.seed;
     let plan = scenario_plan(&ScenarioRequest {
         scenario_id: request.scenario_id,
         data: None,
