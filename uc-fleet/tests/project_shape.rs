@@ -10,15 +10,51 @@ fn read(path: &str) -> String {
     fs::read_to_string(project_path(path)).unwrap_or_else(|error| panic!("{path}: {error}"))
 }
 
+/// Reads the first `version = "..."` line, which is the package version in a
+/// Cargo manifest.
+fn manifest_package_version(manifest: &str) -> String {
+    manifest
+        .lines()
+        .find_map(|line| line.strip_prefix("version = \""))
+        .map(|value| value.trim_end_matches('"').to_string())
+        .expect("Cargo.toml package version")
+}
+
+/// Reads the version of the `solverforge-fleet` package block in Cargo.lock.
+fn lockfile_package_version(lockfile: &str) -> String {
+    let mut in_fleet_block = false;
+    for line in lockfile.lines() {
+        if line == "[[package]]" {
+            in_fleet_block = false;
+        }
+        if line == "name = \"solverforge-fleet\"" {
+            in_fleet_block = true;
+            continue;
+        }
+        if in_fleet_block {
+            if let Some(value) = line.strip_prefix("version = \"") {
+                return value.trim_end_matches('"').to_string();
+            }
+        }
+    }
+    panic!("solverforge-fleet package block in Cargo.lock");
+}
+
 #[test]
 fn package_metadata_and_repository_only_packaging_stay_aligned() {
     let cargo = read("Cargo.toml");
+    let lockfile = read("Cargo.lock");
     let app = read("solverforge.app.toml");
     let dockerfile = read("Dockerfile");
     let makefile = read("Makefile");
 
     assert!(cargo.contains("name = \"solverforge-fleet\""));
-    assert!(cargo.contains("version = \"0.1.0\""));
+    // Never pin the release version here: the release tooling owns it. Assert
+    // only that the manifest and lockfile agree, which catches a bad bump.
+    assert_eq!(
+        manifest_package_version(&cargo),
+        lockfile_package_version(&lockfile)
+    );
     assert!(cargo.contains("rust-version = \"1.95\""));
     assert!(cargo.contains("solverforge = { version = \"0.19.4\""));
     assert!(cargo.contains("solverforge-core = \"0.19.4\""));
