@@ -144,7 +144,7 @@
   Fleet.applyDisruption = async function (ctx, disruption) {
     if (!Fleet.disruptionAvailability(ctx).enabled) return;
 
-    ctx.state.busy = true;
+    ctx.setBusy(true);
     ctx.state.compare = null;
     ctx.state.repairStartedAt = Date.now();
     Fleet.setRepair(ctx, disruption.label, [
@@ -188,7 +188,7 @@
       ]);
       SF.showError('Repair failed', error.message || String(error));
     } finally {
-      ctx.state.busy = false;
+      ctx.setBusy(false);
       Fleet.renderDisruptions(ctx);
     }
   };

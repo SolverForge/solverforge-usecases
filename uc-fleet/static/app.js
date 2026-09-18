@@ -75,6 +75,7 @@
     });
     ctx.solver = solver;
     ctx.renderPlan = renderPlan;
+    ctx.setBusy = setBusy;
 
     var header = SF.createHeader({
       logo: '/sf/img/ouroboros.svg',
@@ -160,9 +161,9 @@
         select.appendChild(option);
       });
       select.addEventListener('change', function () {
-        if (solver.isRunning() || solver.getLifecycleState() === 'PAUSED') {
+        if (state.busy || solver.isRunning() || solver.getLifecycleState() === 'PAUSED') {
           select.value = state.selectedDemoId;
-          SF.showToast({ variant: 'warning', title: 'Scenario locked', message: 'Stop the active solve before switching scenarios.' });
+          SF.showToast({ variant: 'warning', title: 'Scenario locked', message: 'Stop the active solve or repair before switching scenarios.' });
           return;
         }
         loadDemo(select.value).catch(function () { select.value = state.selectedDemoId; });
@@ -177,6 +178,10 @@
     }
 
     function startSolve() {
+      if (state.busy) {
+        SF.showToast({ variant: 'warning', title: 'Repair in progress', message: 'Wait for the disruption repair to finish before starting a solve.' });
+        return;
+      }
       if (!canSolve() || solver.isRunning() || solver.getLifecycleState() === 'PAUSED') return;
       cleanupTerminalJob()
         .then(function () {
@@ -262,11 +267,24 @@
     function updateSolveAvailability() {
       var button = Fleet.findHeaderButton(header, 'Solve');
       if (!button) return;
-      var disabled = !canSolve();
+      var disabled = !canSolve() || state.busy;
       button.disabled = disabled;
       button.setAttribute('aria-disabled', disabled ? 'true' : 'false');
-      button.title = disabled ? (state.bootstrapError || 'Loading scenario...') : '';
-      if (ctx.scenarioSelect) ctx.scenarioSelect.disabled = state.loadingDemo || solver.isRunning() || solver.getLifecycleState() === 'PAUSED';
+      button.title = disabled
+        ? (state.busy ? 'Repair in progress' : (state.bootstrapError || 'Loading scenario...'))
+        : '';
+      if (ctx.scenarioSelect) {
+        ctx.scenarioSelect.disabled = state.busy || state.loadingDemo || solver.isRunning() || solver.getLifecycleState() === 'PAUSED';
+      }
+    }
+
+    // Busy means a disruption repair owns the pipeline. Starting a solve
+    // concurrently would race the repair's final render, so both the header
+    // Solve button and the scenario selector are held until it finishes.
+    function setBusy(value) {
+      state.busy = value;
+      updateSolveAvailability();
+      Fleet.refreshDisruptionControls(ctx);
     }
   }
 
