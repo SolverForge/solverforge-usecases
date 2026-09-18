@@ -1,0 +1,5 @@
+target/
+.git/
+test-results/
+playwright-report/
+*.rs.bk
