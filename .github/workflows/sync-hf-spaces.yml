@@ -17,6 +17,7 @@ on:
     tags:
       - "solverforge-deliveries@*"
       - "solverforge-fsr@*"
+      - "solverforge-furnace@*"
       - "solverforge-hospital@*"
       - "solverforge-lessons@*"
 
@@ -68,6 +69,7 @@ jobs:
           OPEN_SOURCE_FOLDERS=$(cat <<'FOLDERS'
           uc-deliveries
           uc-fsr
+          uc-furnace
           uc-hospital
           uc-lessons
           FOLDERS

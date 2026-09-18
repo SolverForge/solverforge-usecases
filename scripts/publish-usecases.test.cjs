@@ -45,7 +45,13 @@ test("all-app publication derives one valid current release tag per allowlisted 
   const tags = releaseTagsForAllApps();
   assert.deepEqual(
     tags.map((tag) => tag.slice(0, tag.lastIndexOf("@"))),
-    ["solverforge-deliveries", "solverforge-fsr", "solverforge-hospital", "solverforge-lessons"],
+    [
+      "solverforge-deliveries",
+      "solverforge-fsr",
+      "solverforge-furnace",
+      "solverforge-hospital",
+      "solverforge-lessons",
+    ],
   );
   assert.equal(tags.every((tag) => /@\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(tag)), true);
 });

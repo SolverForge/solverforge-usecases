@@ -11,6 +11,7 @@ run locally and can be published as a Hugging Face Space under the matching
 | --------------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
 | `uc-deliveries` | [`solverforge-deliveries`](https://huggingface.co/spaces/SolverForge/solverforge-deliveries) | Capacitated delivery routing with time windows and map-backed travel data.              |
 | `uc-fsr`        | [`solverforge-fsr`](https://huggingface.co/spaces/SolverForge/solverforge-fsr)               | Field-service routing for technicians, visits, parts, priorities, and travel.           |
+| `uc-furnace`    | [`solverforge-furnace`](https://huggingface.co/spaces/SolverForge/solverforge-furnace)       | Heat-treatment scheduling across furnaces, work orders, task operators, and shift rosters. |
 | `uc-hospital`   | [`solverforge-hospital`](https://huggingface.co/spaces/SolverForge/solverforge-hospital)     | Hospital workforce scheduling with skills, availability, preferences, and coverage.     |
 | `uc-lessons`    | [`solverforge-lessons`](https://huggingface.co/spaces/SolverForge/solverforge-lessons)       | Lesson scheduling with teachers, cohorts, timeslots, room types, and timetable quality. |
 
@@ -91,6 +92,7 @@ Each use case has its own package version in `uc-*/Cargo.toml`, its own
 ```text
 solverforge-deliveries@<version>
 solverforge-fsr@<version>
+solverforge-furnace@<version>
 solverforge-hospital@<version>
 solverforge-lessons@<version>
 ```
@@ -153,6 +155,7 @@ transformed into the public `solverforge-` prefix:
 ```text
 uc-deliveries -> <HF_ORGANIZATION>/solverforge-deliveries
 uc-fsr -> <HF_ORGANIZATION>/solverforge-fsr
+uc-furnace -> <HF_ORGANIZATION>/solverforge-furnace
 uc-hospital -> <HF_ORGANIZATION>/solverforge-hospital
 uc-lessons -> <HF_ORGANIZATION>/solverforge-lessons
 ```

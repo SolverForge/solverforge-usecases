@@ -14,12 +14,13 @@ Space names, docs, app metadata, and UI labels should use `SolverForge` and the
 
 - `uc-deliveries` is the source for the open-source `solverforge-deliveries` app.
 - `uc-fsr` is the source for the open-source `solverforge-fsr` app.
+- `uc-furnace` is the source for the open-source `solverforge-furnace` app.
 - `uc-hospital` is the source for the open-source `solverforge-hospital` app.
 - `uc-lessons` is the source for the open-source `solverforge-lessons` app.
 
-These four directories are the open-source root allowlist. Do not add another
-`uc-*` directory without updating the README, sync workflow, and metadata
-verification script in the same change.
+These five directories are the open-source root allowlist. Do not add another
+`uc-*` directory without updating the README, sync workflow, release map,
+pre-commit path filter, and metadata verification script in the same change.
 
 ## Documentation Standard
 

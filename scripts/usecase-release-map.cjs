@@ -9,6 +9,11 @@ const APPS = {
     spaceName: "solverforge-fsr",
     displayName: "SolverForge FSR",
   },
+  "uc-furnace": {
+    packageName: "solverforge-furnace",
+    spaceName: "solverforge-furnace",
+    displayName: "SolverForge Furnace",
+  },
   "uc-hospital": {
     packageName: "solverforge-hospital",
     spaceName: "solverforge-hospital",
