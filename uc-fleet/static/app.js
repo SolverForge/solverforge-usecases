@@ -31,10 +31,12 @@
       plan: null,
       meta: null,
       analysis: null,
+      compare: null,
       catalog: null,
       selectedDemoId: null,
       bootstrapError: null,
       loadingDemo: false,
+      busy: false,
     };
     var ctx = {
       app: app,
@@ -72,6 +74,7 @@
       },
     });
     ctx.solver = solver;
+    ctx.renderPlan = renderPlan;
 
     var header = SF.createHeader({
       logo: '/sf/img/ouroboros.svg',
@@ -81,6 +84,7 @@
         { id: 'schedule', label: 'Schedule', icon: 'fa-table-columns', active: true },
         { id: 'readiness', label: 'Readiness', icon: 'fa-gauge-high' },
         { id: 'resources', label: 'Resources', icon: 'fa-chart-simple' },
+        { id: 'disruptions', label: 'Disruptions', icon: 'fa-triangle-exclamation' },
         { id: 'data', label: 'Data', icon: 'fa-table' },
         { id: 'api', label: 'REST API', icon: 'fa-book' },
       ],

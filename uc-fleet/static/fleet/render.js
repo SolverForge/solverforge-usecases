@@ -11,6 +11,7 @@
       { id: 'schedule', active: true },
       { id: 'readiness' },
       { id: 'resources' },
+      { id: 'disruptions' },
       { id: 'data' },
       { id: 'api' },
     ].forEach(function (entry) {
@@ -34,6 +35,7 @@
       unassigned: SF.el('div'),
       readiness: SF.el('div'),
       resources: SF.el('div'),
+      disruption: SF.el('div'),
       data: SF.el('div'),
       api: SF.el('div'),
     };
@@ -50,6 +52,7 @@
     });
     panels.readiness.appendChild(ctx.sections.readiness);
     panels.resources.appendChild(ctx.sections.resources);
+    panels.disruptions.appendChild(ctx.sections.disruption);
     panels.data.appendChild(ctx.sections.data);
     panels.api.appendChild(ctx.sections.api);
     return main;
@@ -61,6 +64,7 @@
     Fleet.renderSchedules(ctx);
     Fleet.renderReadiness(ctx);
     Fleet.renderResources(ctx);
+    Fleet.renderDisruptions(ctx);
     Fleet.renderData(ctx);
   };
 

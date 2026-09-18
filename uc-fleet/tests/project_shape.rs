@@ -102,7 +102,7 @@ fn browser_shell_uses_solverforge_ui_and_fleet_modules() {
 
     assert!(index.contains("/sf/sf.css"));
     assert!(index.contains("/sf/sf.js"));
-    for module in ["utils", "schedule", "render"] {
+    for module in ["utils", "schedule", "actions", "render"] {
         assert!(
             index.contains(&format!("/fleet/{module}.js")),
             "missing Fleet script {module}"

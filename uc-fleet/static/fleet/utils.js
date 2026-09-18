@@ -37,6 +37,30 @@
   };
 
   Fleet.formatPercent = function (value) {
-    return Math.round(Number(value || 0) * 10) / 10 + '%';
+    return Math.round(Number(value) * 10) / 10 + '%';
+  };
+
+  Fleet.signed = function (value) {
+    var number = Number(value || 0);
+    return number > 0 ? '+' + number : String(number);
+  };
+
+  Fleet.sleep = function (milliseconds) {
+    return new Promise(function (resolve) {
+      global.setTimeout(resolve, milliseconds);
+    });
+  };
+
+  Fleet.requestJson = async function (path, options) {
+    var opts = options || {};
+    var response = await fetch(path, {
+      method: opts.method || 'GET',
+      headers: opts.body ? { 'content-type': 'application/json' } : undefined,
+      body: opts.body ? JSON.stringify(opts.body) : undefined,
+    });
+    if (!response.ok) throw new Error(path + ' returned HTTP ' + response.status);
+    var contentType = response.headers.get('content-type') || '';
+    if (contentType.indexOf('json') === -1) return {};
+    return response.json();
   };
 })(window);
