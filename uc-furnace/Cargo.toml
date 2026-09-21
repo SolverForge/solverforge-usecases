@@ -4,6 +4,7 @@ version = "2.0.0"
 edition = "2021"
 rust-version = "1.95"
 description = "SolverForge heat-treatment furnace scheduling example"
+license = "Apache-2.0"
 publish = false
 
 [[bin]]

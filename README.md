@@ -176,3 +176,10 @@ Required repository configuration:
 | `HF_ORGANIZATION` | variable | Hugging Face username or organization that owns the Spaces. |
 
 Each target Space must already exist before the workflow pushes to it.
+
+## License
+
+This bundle is released under the Apache License, Version 2.0. See
+[`LICENSE`](LICENSE) and [`NOTICE`](NOTICE). Each app also declares
+`license = "Apache-2.0"` in its `Cargo.toml` and `license: apache-2.0` in its
+`README.md` front matter.

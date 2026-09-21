@@ -4,6 +4,7 @@ version = "2.0.7"
 edition = "2021"
 rust-version = "1.95"
 description = "Constraint optimizer built with SolverForge"
+license = "Apache-2.0"
 
 [[bin]]
 name = "solverforge-lessons"
