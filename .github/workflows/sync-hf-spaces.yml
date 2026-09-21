@@ -19,8 +19,8 @@ on:
       - "solverforge-fsr@*"
       - "solverforge-hospital@*"
       - "solverforge-lessons@*"
-      # solverforge-fleet and solverforge-furnace are repository-only. Keep
-      # both out of tag triggers unless Hugging Face targets are created.
+      # solverforge-fleet, solverforge-flightcrew, and solverforge-furnace are
+      # repository-only. Keep them out unless Hugging Face targets are created.
 
   workflow_dispatch:
     inputs:
@@ -67,8 +67,8 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Published folders only. uc-fleet and uc-furnace are repository-only
-          # unless Hugging Face targets are created for them.
+          # Published folders only. uc-fleet, uc-flightcrew, and uc-furnace are
+          # repository-only unless Hugging Face targets are created for them.
           OPEN_SOURCE_FOLDERS=$(cat <<'FOLDERS'
           uc-deliveries
           uc-fsr

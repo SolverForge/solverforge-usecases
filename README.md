@@ -3,7 +3,7 @@
 This repository is the SolverForge publication bundle for runnable use-case
 applications. Each `uc-*` directory is a self-contained SolverForge app that
 runs locally; the hosted use cases are also mirrored to a Hugging Face Space
-under the matching `solverforge-*` name. `uc-fleet` and `uc-furnace` are
+under the matching `solverforge-*` name. `uc-fleet`, `uc-flightcrew`, and `uc-furnace` are
 repository-only: they are fully runnable open-source apps with no hosted Space.
 
 ## Product Surface
@@ -12,6 +12,7 @@ repository-only: they are fully runnable open-source apps with no hosted Space.
 | --------------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
 | `uc-deliveries` | [`solverforge-deliveries`](https://huggingface.co/spaces/SolverForge/solverforge-deliveries) | Capacitated delivery routing with time windows and map-backed travel data.              |
 | `uc-fleet`       | repository-only (no hosted Space)                                                            | Fleet readiness planning across maintenance, inspections, training, docks, technicians, and parts. |
+| `uc-flightcrew`  | repository-only (no hosted Space)                                                            | Flight crew assignment with qualifications, availability, connection continuity, and duty-rest rules. |
 | `uc-fsr`        | [`solverforge-fsr`](https://huggingface.co/spaces/SolverForge/solverforge-fsr)               | Field-service routing for technicians, visits, parts, priorities, and travel.           |
 | `uc-furnace`    | repository-only (no hosted Space)                                                            | Heat-treatment scheduling across furnaces, work orders, task operators, and shift rosters. |
 | `uc-hospital`   | [`solverforge-hospital`](https://huggingface.co/spaces/SolverForge/solverforge-hospital)     | Hospital workforce scheduling with skills, availability, preferences, and coverage.     |
@@ -19,7 +20,7 @@ repository-only: they are fully runnable open-source apps with no hosted Space.
 
 These open-source product examples are maintained directly in this bundle.
 Each hosted `uc-*` directory is the release source for its matching Space;
-`uc-fleet` and `uc-furnace` are released from this repository only.
+`uc-fleet`, `uc-flightcrew`, and `uc-furnace` are released from this repository only.
 
 ## Documentation Shape
 
@@ -95,6 +96,7 @@ Each use case has its own package version in `uc-*/Cargo.toml`, its own
 ```text
 solverforge-deliveries@<version>
 solverforge-fleet@<version>
+solverforge-flightcrew@<version>
 solverforge-fsr@<version>
 solverforge-furnace@<version>
 solverforge-hospital@<version>
@@ -163,8 +165,8 @@ uc-hospital -> <HF_ORGANIZATION>/solverforge-hospital
 uc-lessons -> <HF_ORGANIZATION>/solverforge-lessons
 ```
 
-`uc-fleet` and `uc-furnace` are intentionally excluded from the sync workflow.
-Both apps are published from this repository only rather than to hosted Spaces.
+`uc-fleet`, `uc-flightcrew`, and `uc-furnace` are intentionally excluded from the sync workflow.
+These apps are published from this repository only rather than to hosted Spaces.
 Add an app to the tag triggers and folder matrix only after its Hugging Face
 target exists.
 

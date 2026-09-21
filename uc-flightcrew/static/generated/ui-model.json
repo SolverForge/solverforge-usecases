@@ -1,0 +1,57 @@
+{
+  "conflictRepairs": [],
+  "constraints": [
+    "assigned_crew",
+    "consecutive_long_haul_recovery",
+    "employee_unavailable",
+    "extended_recovery_rest",
+    "first_assignment_home",
+    "flight_conflict",
+    "last_assignment_home",
+    "long_haul_recovery",
+    "minimum_rest_away",
+    "minimum_rest_home",
+    "required_skill",
+    "transfer_continuity"
+  ],
+  "entities": [
+    {
+      "label": "Crew Assignment",
+      "name": "crew_assignment",
+      "plural": "crew_assignments"
+    }
+  ],
+  "facts": [
+    {
+      "label": "Airport",
+      "name": "airport",
+      "plural": "airports"
+    },
+    {
+      "label": "Employee",
+      "name": "employee",
+      "plural": "employees"
+    },
+    {
+      "label": "Flight",
+      "name": "flight",
+      "plural": "flights"
+    }
+  ],
+  "scalarGroups": [],
+  "views": [
+    {
+      "allowsUnassigned": true,
+      "countableRange": null,
+      "entity": "crew_assignment",
+      "entityPlural": "crew_assignments",
+      "id": "crew_assignment-employee_idx",
+      "kind": "scalar",
+      "label": "Crew Assignment · employee_idx",
+      "listMetadata": {},
+      "scalarHooks": {},
+      "sourcePlural": "employees",
+      "variableField": "employee_idx"
+    }
+  ]
+}

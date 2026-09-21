@@ -7,6 +7,7 @@ cd "$ROOT"
 open_source_dirs=(
   uc-deliveries
   uc-fleet
+  uc-flightcrew
   uc-fsr
   uc-furnace
   uc-hospital
@@ -16,6 +17,7 @@ open_source_dirs=(
 expected_spaces=(
   solverforge-deliveries
   solverforge-fleet
+  solverforge-flightcrew
   solverforge-fsr
   solverforge-furnace
   solverforge-hospital
@@ -68,7 +70,7 @@ for index in "${!open_source_dirs[@]}"; do
   }
 done
 
-if rg -n 'solverforge-(deliveries|fleet|fsr|furnace|hospital|lessons)@[0-9]+\.[0-9]+\.[0-9]+' README.md >/tmp/solverforge-usecases-versioned-tags.txt; then
+if rg -n 'solverforge-(deliveries|fleet|flightcrew|fsr|furnace|hospital|lessons)@[0-9]+\.[0-9]+\.[0-9]+' README.md >/tmp/solverforge-usecases-versioned-tags.txt; then
   cat /tmp/solverforge-usecases-versioned-tags.txt >&2
   rm -f /tmp/solverforge-usecases-versioned-tags.txt
   printf 'root README release-tag examples must use @<version>, not current app versions\n' >&2
@@ -76,7 +78,7 @@ if rg -n 'solverforge-(deliveries|fleet|fsr|furnace|hospital|lessons)@[0-9]+\.[0
 fi
 rm -f /tmp/solverforge-usecases-versioned-tags.txt
 
-if rg -n 'Package:.*solverforge-(deliveries|fleet|fsr|furnace|hospital|lessons).*`[0-9]+\.[0-9]+\.[0-9]+`' uc-*/README.md >/tmp/solverforge-usecases-package-versions.txt; then
+if rg -n 'Package:.*solverforge-(deliveries|fleet|flightcrew|fsr|furnace|hospital|lessons).*`[0-9]+\.[0-9]+\.[0-9]+`' uc-*/README.md >/tmp/solverforge-usecases-package-versions.txt; then
   cat /tmp/solverforge-usecases-package-versions.txt >&2
   rm -f /tmp/solverforge-usecases-package-versions.txt
   printf 'app README package lines must point to Cargo.toml instead of duplicating current app versions\n' >&2

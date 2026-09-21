@@ -1,0 +1,113 @@
+scalar_groups = []
+conflict_repairs = []
+
+[app]
+name = "SolverForge Flight Crew"
+starter = "neutral-shell"
+shell = "web"
+cli_version = "3.1.0"
+
+[runtime]
+target = "solverforge 0.19.5"
+runtime_source = "crates.io: solverforge 0.19.5"
+ui_source = "crates.io: solverforge-ui 0.9.0"
+
+[demo]
+default_size = "STANDARD"
+available_sizes = ["STANDARD"]
+
+[solution]
+name = "Plan"
+score = "HardSoftScore"
+scalar_groups_path = ""
+conflict_repairs_path = ""
+
+[[facts]]
+name = "airport"
+plural = "airports"
+kind = "problem_fact"
+
+[[facts]]
+name = "employee"
+plural = "employees"
+kind = "problem_fact"
+
+[[facts]]
+name = "flight"
+plural = "flights"
+kind = "problem_fact"
+
+[[entities]]
+name = "crew_assignment"
+plural = "crew_assignments"
+kind = "planning_entity"
+
+[[variables]]
+entity = "crew_assignment"
+entity_plural = "crew_assignments"
+field = "employee_idx"
+kind = "scalar"
+range = "employees"
+elements = ""
+allows_unassigned = true
+enabled = true
+
+[[constraints]]
+name = "assigned_crew"
+module = "assigned_crew"
+enabled = true
+
+[[constraints]]
+name = "consecutive_long_haul_recovery"
+module = "consecutive_long_haul_recovery"
+enabled = true
+
+[[constraints]]
+name = "employee_unavailable"
+module = "employee_unavailable"
+enabled = true
+
+[[constraints]]
+name = "extended_recovery_rest"
+module = "extended_recovery_rest"
+enabled = true
+
+[[constraints]]
+name = "first_assignment_home"
+module = "first_assignment_home"
+enabled = true
+
+[[constraints]]
+name = "flight_conflict"
+module = "flight_conflict"
+enabled = true
+
+[[constraints]]
+name = "last_assignment_home"
+module = "last_assignment_home"
+enabled = true
+
+[[constraints]]
+name = "long_haul_recovery"
+module = "long_haul_recovery"
+enabled = true
+
+[[constraints]]
+name = "minimum_rest_away"
+module = "minimum_rest_away"
+enabled = true
+
+[[constraints]]
+name = "minimum_rest_home"
+module = "minimum_rest_home"
+enabled = true
+
+[[constraints]]
+name = "required_skill"
+module = "required_skill"
+enabled = true
+
+[[constraints]]
+name = "transfer_continuity"
+module = "transfer_continuity"
+enabled = true

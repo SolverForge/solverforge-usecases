@@ -35,6 +35,7 @@ jobs:
           workspaces: |
             uc-deliveries
             uc-fleet
+            uc-flightcrew
             uc-fsr
             uc-furnace
             uc-hospital

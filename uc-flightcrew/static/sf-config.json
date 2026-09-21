@@ -1,0 +1,43 @@
+{
+  "title": "SolverForge Flight Crew",
+  "subtitle": "Global crew rotations · EASA-style rest · live score analysis",
+  "defaultDemoId": "STANDARD",
+  "constraints": [
+    "assigned_crew",
+    "required_skill",
+    "flight_conflict",
+    "transfer_continuity",
+    "employee_unavailable",
+    "first_assignment_home",
+    "last_assignment_home",
+    "minimum_rest_home",
+    "minimum_rest_away",
+    "extended_recovery_rest",
+    "long_haul_recovery",
+    "consecutive_long_haul_recovery"
+  ],
+  "entities": [
+    {
+      "name": "crew_assignment",
+      "label": "CrewAssignment",
+      "plural": "crew_assignments"
+    }
+  ],
+  "facts": [
+    {
+      "name": "airport",
+      "label": "Airport",
+      "plural": "airports"
+    },
+    {
+      "name": "employee",
+      "label": "Employee",
+      "plural": "employees"
+    },
+    {
+      "name": "flight",
+      "label": "Flight",
+      "plural": "flights"
+    }
+  ]
+}

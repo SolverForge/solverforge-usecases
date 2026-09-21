@@ -6,7 +6,7 @@ This repo is the SolverForge use-case publication bundle. Keep each `uc-*`
 directory as a deployable SolverForge app that can be split and pushed to the
 matching Hugging Face Space named `solverforge-*`.
 
-`uc-fleet` and `uc-furnace` are repository-only. They are first-class, fully
+`uc-fleet`, `uc-flightcrew`, and `uc-furnace` are repository-only. They are first-class, fully
 runnable open-source use cases, but they have no hosted Spaces. Keep both out of
 the Hugging Face sync allowlist unless matching targets are created.
 
@@ -19,14 +19,16 @@ Space names, docs, app metadata, and UI labels should use `SolverForge` and the
 - `uc-deliveries` is the source for the open-source `solverforge-deliveries` app.
 - `uc-fleet` is the source for the open-source `solverforge-fleet` app
   (repository-only; no hosted Space).
+- `uc-flightcrew` is the source for the open-source `solverforge-flightcrew` app
+  (repository-only; no hosted Space).
 - `uc-fsr` is the source for the open-source `solverforge-fsr` app.
 - `uc-furnace` is the source for the open-source `solverforge-furnace` app
   (repository-only; no hosted Space).
 - `uc-hospital` is the source for the open-source `solverforge-hospital` app.
 - `uc-lessons` is the source for the open-source `solverforge-lessons` app.
 
-These six directories are the open-source root allowlist. Four of them are also
-published to Hugging Face Spaces; `uc-fleet` and `uc-furnace` are not. Do not
+These seven directories are the open-source root allowlist. Four of them are also
+published to Hugging Face Spaces; `uc-fleet`, `uc-flightcrew`, and `uc-furnace` are not. Do not
 add another `uc-*` directory without updating the README, sync workflow, release
 map, pre-commit path filter, and metadata verification script in the same change.
 
@@ -81,7 +83,7 @@ when present:
 - `make publish-usecases-dry-run` before publishing the current releases for
   all allowlisted apps; `make publish-usecases` pushes the tags separately so
   GitHub emits one Hugging Face sync event per hosted app. The repository-only
-  `uc-fleet` and `uc-furnace` tags are still pushed but trigger no Space sync.
+  Repository-only app tags are still pushed but trigger no Space sync.
 
 For root workflow or README-only edits, validate the YAML syntax and inspect the
 changed paths with `git diff --stat`. The root CI workflow is

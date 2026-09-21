@@ -48,6 +48,7 @@ test("all-app publication derives one valid current release tag per allowlisted 
     [
       "solverforge-deliveries",
       "solverforge-fleet",
+      "solverforge-flightcrew",
       "solverforge-fsr",
       "solverforge-furnace",
       "solverforge-hospital",

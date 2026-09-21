@@ -19,7 +19,7 @@ function main() {
   const parsed = parseReleaseTag(tagName);
   if (!parsed) {
     throw new Error(
-      `release tag must be one of solverforge-deliveries@x.y.z, solverforge-fleet@x.y.z, solverforge-fsr@x.y.z, solverforge-furnace@x.y.z, solverforge-hospital@x.y.z, solverforge-lessons@x.y.z; got '${tagName}'`,
+      `release tag must be one of solverforge-deliveries@x.y.z, solverforge-fleet@x.y.z, solverforge-flightcrew@x.y.z, solverforge-fsr@x.y.z, solverforge-furnace@x.y.z, solverforge-hospital@x.y.z, solverforge-lessons@x.y.z; got '${tagName}'`,
     );
   }
 
