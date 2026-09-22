@@ -3,8 +3,9 @@
 This repository is the SolverForge publication bundle for runnable use-case
 applications. Each `uc-*` directory is a self-contained SolverForge app that
 runs locally; the hosted use cases are also mirrored to a Hugging Face Space
-under the matching `solverforge-*` name. `uc-fleet`, `uc-flightcrew`, and `uc-furnace` are
-repository-only: they are fully runnable open-source apps with no hosted Space.
+under the matching `solverforge-*` name. `uc-fleet`, `uc-flightcrew`, `uc-furnace`,
+and `uc-orders` are repository-only: they are fully runnable open-source apps
+with no hosted Space.
 
 ## Product Surface
 
@@ -17,10 +18,12 @@ repository-only: they are fully runnable open-source apps with no hosted Space.
 | `uc-furnace`    | repository-only (no hosted Space)                                                            | Heat-treatment scheduling across furnaces, work orders, task operators, and shift rosters. |
 | `uc-hospital`   | [`solverforge-hospital`](https://huggingface.co/spaces/SolverForge/solverforge-hospital)     | Hospital workforce scheduling with skills, availability, preferences, and coverage.     |
 | `uc-lessons`    | [`solverforge-lessons`](https://huggingface.co/spaces/SolverForge/solverforge-lessons)       | Lesson scheduling with teachers, cohorts, timeslots, room types, and timetable quality. |
+| `uc-orders`     | repository-only (no hosted Space)                                                            | Warehouse order picking with trolley capacity, order fragmentation, and closed-route distance. |
 
 These open-source product examples are maintained directly in this bundle.
 Each hosted `uc-*` directory is the release source for its matching Space;
-`uc-fleet`, `uc-flightcrew`, and `uc-furnace` are released from this repository only.
+`uc-fleet`, `uc-flightcrew`, `uc-furnace`, and `uc-orders` are released from
+this repository only.
 
 ## Documentation Shape
 
@@ -101,6 +104,7 @@ solverforge-fsr@<version>
 solverforge-furnace@<version>
 solverforge-hospital@<version>
 solverforge-lessons@<version>
+solverforge-orders@<version>
 ```
 
 Preview or cut an app release from the bundle root:
@@ -165,10 +169,10 @@ uc-hospital -> <HF_ORGANIZATION>/solverforge-hospital
 uc-lessons -> <HF_ORGANIZATION>/solverforge-lessons
 ```
 
-`uc-fleet`, `uc-flightcrew`, and `uc-furnace` are intentionally excluded from the sync workflow.
-These apps are published from this repository only rather than to hosted Spaces.
-Add an app to the tag triggers and folder matrix only after its Hugging Face
-target exists.
+`uc-fleet`, `uc-flightcrew`, `uc-furnace`, and `uc-orders` are intentionally
+excluded from the sync workflow. These four apps are published from this
+repository only rather than to hosted Spaces. Add an app to the tag triggers
+and folder matrix only after its Hugging Face target exists.
 
 Required repository configuration:
 

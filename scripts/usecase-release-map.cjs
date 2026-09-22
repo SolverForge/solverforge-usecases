@@ -34,6 +34,11 @@ const APPS = {
     spaceName: "solverforge-lessons",
     displayName: "SolverForge Lessons",
   },
+  "uc-orders": {
+    packageName: "solverforge-orders",
+    spaceName: "solverforge-orders",
+    displayName: "SolverForge Orders",
+  },
 };
 
 function appFolders() {

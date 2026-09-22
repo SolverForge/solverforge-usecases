@@ -1,0 +1,23 @@
+{
+  "title": "SolverForge Orders",
+  "subtitle": "Warehouse picking routes · order-dedicated buckets · exact meter costs",
+  "constraints": [
+    "required_buckets",
+    "order_incidence",
+    "route_distance"
+  ],
+  "entities": [
+    {
+      "name": "trolley",
+      "label": "Trolley",
+      "plural": "trolleys"
+    }
+  ],
+  "facts": [
+    {
+      "name": "pick_step",
+      "label": "PickStep",
+      "plural": "pick_steps"
+    }
+  ]
+}

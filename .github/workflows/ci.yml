@@ -40,6 +40,7 @@ jobs:
             uc-furnace
             uc-hospital
             uc-lessons
+            uc-orders
 
       - name: Set up Node
         uses: actions/setup-node@v4

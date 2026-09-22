@@ -1,0 +1,60 @@
+scalar_groups = []
+conflict_repairs = []
+
+[app]
+name = "solverforge-orders"
+starter = "neutral-shell"
+shell = "web"
+cli_version = "3.1.0"
+
+[runtime]
+target = "solverforge 0.19.5"
+runtime_source = "crates.io: solverforge 0.19.5"
+ui_source = "crates.io: solverforge-ui 0.9.0"
+
+[demo]
+default_size = "STANDARD"
+available_sizes = [
+    "STANDARD",
+]
+
+[solution]
+name = "Plan"
+score = "HardSoftScore"
+scalar_groups_path = ""
+conflict_repairs_path = ""
+
+[[facts]]
+name = "pick_step"
+plural = "pick_steps"
+kind = "problem_fact"
+
+[[entities]]
+name = "trolley"
+plural = "trolleys"
+kind = "planning_entity"
+
+[[variables]]
+entity = "trolley"
+entity_plural = "trolleys"
+field = "step_order"
+kind = "list"
+range = ""
+elements = "pick_steps"
+allows_unassigned = false
+enabled = true
+
+[[constraints]]
+name = "order_incidence"
+module = "order_incidence"
+enabled = true
+
+[[constraints]]
+name = "required_buckets"
+module = "required_buckets"
+enabled = true
+
+[[constraints]]
+name = "route_distance"
+module = "route_distance"
+enabled = true

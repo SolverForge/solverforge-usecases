@@ -1,0 +1,56 @@
+environment_mode = "reproducible"
+random_seed = 37
+
+[termination]
+seconds_spent_limit = 30
+unimproved_seconds_spent_limit = 10
+
+[[phases]]
+type = "construction_heuristic"
+construction_heuristic_type = "list_cheapest_insertion"
+entity_class = "Trolley"
+variable_name = "step_order"
+
+[[phases]]
+type = "local_search"
+
+[phases.acceptor]
+type = "late_acceptance"
+late_acceptance_size = 400
+
+[phases.forager]
+type = "accepted_count"
+limit = 4
+
+[phases.move_selector]
+type = "union_move_selector"
+selection_order = "round_robin"
+
+[[phases.move_selector.selectors]]
+type = "list_change_move_selector"
+entity_class = "Trolley"
+variable_name = "step_order"
+
+[[phases.move_selector.selectors]]
+type = "list_swap_move_selector"
+entity_class = "Trolley"
+variable_name = "step_order"
+
+[[phases.move_selector.selectors]]
+type = "sublist_change_move_selector"
+min_sublist_size = 1
+max_sublist_size = 3
+entity_class = "Trolley"
+variable_name = "step_order"
+
+[[phases.move_selector.selectors]]
+type = "sublist_swap_move_selector"
+min_sublist_size = 1
+max_sublist_size = 3
+entity_class = "Trolley"
+variable_name = "step_order"
+
+[[phases.move_selector.selectors]]
+type = "list_reverse_move_selector"
+entity_class = "Trolley"
+variable_name = "step_order"

@@ -23,7 +23,7 @@ PROGRESS := ..
 # ============== Project Metadata ==============
 VERSION := bundle
 RUST_VERSION := 1.95+
-OPEN_SOURCE_APPS := uc-deliveries uc-fleet uc-flightcrew uc-fsr uc-furnace uc-hospital uc-lessons
+OPEN_SOURCE_APPS := uc-deliveries uc-fleet uc-flightcrew uc-fsr uc-furnace uc-hospital uc-lessons uc-orders
 APPS ?= $(OPEN_SOURCE_APPS)
 APP ?= uc-lessons
 PORT ?= 7860

@@ -53,6 +53,7 @@ test("all-app publication derives one valid current release tag per allowlisted 
       "solverforge-furnace",
       "solverforge-hospital",
       "solverforge-lessons",
+      "solverforge-orders",
     ],
   );
   assert.equal(tags.every((tag) => /@\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(tag)), true);

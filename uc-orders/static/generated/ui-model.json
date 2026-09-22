@@ -1,0 +1,38 @@
+{
+  "conflictRepairs": [],
+  "constraints": [
+    "order_incidence",
+    "required_buckets",
+    "route_distance"
+  ],
+  "entities": [
+    {
+      "label": "Trolley",
+      "name": "trolley",
+      "plural": "trolleys"
+    }
+  ],
+  "facts": [
+    {
+      "label": "Pick Step",
+      "name": "pick_step",
+      "plural": "pick_steps"
+    }
+  ],
+  "scalarGroups": [],
+  "views": [
+    {
+      "allowsUnassigned": false,
+      "countableRange": null,
+      "entity": "trolley",
+      "entityPlural": "trolleys",
+      "id": "trolley-step_order",
+      "kind": "list",
+      "label": "Trolley · step_order",
+      "listMetadata": {},
+      "scalarHooks": {},
+      "sourcePlural": "pick_steps",
+      "variableField": "step_order"
+    }
+  ]
+}
