@@ -2,6 +2,13 @@
 
 All notable changes to this use case are documented in this file.
 
+## 2.0.9 (2026-09-25)
+
+
+### Bug Fixes
+
+* **ui:** show hard/soft type in FSR score analysis e37d030
+
 ## 2.0.8 (2026-08-13)
 
 ### Maintenance
