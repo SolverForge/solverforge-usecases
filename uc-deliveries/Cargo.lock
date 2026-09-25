@@ -1592,7 +1592,7 @@ dependencies = [
 
 [[package]]
 name = "solverforge-deliveries"
-version = "2.0.7"
+version = "2.0.8"
 dependencies = [
  "axum",
  "http-body-util",
