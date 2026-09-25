@@ -2,6 +2,13 @@
 
 All notable changes to this use case are documented in this file.
 
+## 0.1.4 (2026-09-25)
+
+
+### Bug Fixes
+
+* **ui:** include dock_outage in the fleet constraint model 8591a32
+
 ## 0.1.3 (2026-09-25)
 
 
