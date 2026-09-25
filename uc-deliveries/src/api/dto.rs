@@ -30,6 +30,7 @@ pub struct PlanDto {
 #[serde(rename_all = "camelCase")]
 pub struct ConstraintAnalysisDto {
     pub name: String,
+    pub constraint_type: String,
     pub weight: String,
     pub score: String,
     pub match_count: usize,
@@ -230,6 +231,7 @@ pub fn analysis_response(analysis: &solverforge::ScoreAnalysis<HardSoftScore>) -
             .iter()
             .map(|constraint| ConstraintAnalysisDto {
                 name: constraint.name.clone(),
+                constraint_type: constraint_type(&constraint.name).to_string(),
                 weight: constraint.weight.to_string(),
                 score: constraint.score.to_string(),
                 match_count: constraint.match_count,
@@ -240,3 +242,14 @@ pub fn analysis_response(analysis: &solverforge::ScoreAnalysis<HardSoftScore>) -
 
 #[cfg(test)]
 mod tests;
+
+/// Classify a constraint as hard or soft from its analysis name.
+///
+/// The raw score weight does not distinguish the two once a rule is
+/// satisfied, so the browser needs the classification alongside the score.
+fn constraint_type(name: &str) -> &'static str {
+    match name {
+        "Total Travel Time" => "soft",
+        _ => "hard",
+    }
+}
