@@ -2,6 +2,7 @@
   "constraints": [
     "dock_capacity",
     "dock_compatibility",
+    "dock_outage",
     "inspection_training_precedence",
     "maximize_ready_days",
     "minimize_churn",
