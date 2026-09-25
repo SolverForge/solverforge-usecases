@@ -235,7 +235,9 @@ function openAnalysis() {
   solver.analyzeSnapshot()
     .then(function (analysis) {
       lastAnalysis = analysis;
-      analysisModal.setBody(buildAnalysisHtml(analysis));
+      var body = SF.el('div');
+      body.innerHTML = buildAnalysisHtml(analysis);
+      analysisModal.setBody(body);
       analysisModal.open();
     })
     .catch(function () { });
