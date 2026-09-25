@@ -18,7 +18,7 @@ var WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturda
 var WEEKDAY_SHORT = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 // Parse une heure au format "HH:MM:SS" ou "HH:MM" en minutes depuis minuit
-function parseTimeToMinutes(timeStr) {
+export function parseTimeToMinutes(timeStr) {
   if (!timeStr) return 0;
   var parts = timeStr.split(':');
   var hours = parseInt(parts[0], 10) || 0;
@@ -28,7 +28,7 @@ function parseTimeToMinutes(timeStr) {
 }
 
 // Convertit un timeslot en minutes absolues (depuis Lundi 00:00)
-function timeslotToMinutes(timeslot) {
+export function timeslotToMinutes(timeslot) {
   if (!timeslot) return { startMinute: 0, endMinute: SLOT_MINUTES };
   var dayIndex = DAY_MAP[timeslot.day_of_week];
   if (dayIndex == null) dayIndex = 0;
@@ -46,7 +46,7 @@ function timeslotToMinutes(timeslot) {
   };
 }
 
-function formatClock(totalMinutes) {
+export function formatClock(totalMinutes) {
   var minutesInDay = ((totalMinutes % 1440) + 1440) % 1440;
   var hours = Math.floor(minutesInDay / 60);
   var minutes = minutesInDay % 60;
