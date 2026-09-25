@@ -2,6 +2,13 @@
 
 All notable changes to this use case are documented in this file.
 
+## 2.0.9 (2026-09-25)
+
+
+### Bug Fixes
+
+* **ui:** render the lessons score-analysis table as markup 93e8118
+
 ## 2.0.8 (2026-09-25)
 
 ## 2.0.7 (2026-08-13)
