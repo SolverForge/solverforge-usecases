@@ -266,11 +266,12 @@
     var analysis = ctx.state.analysis.analysis || ctx.state.analysis;
     var constraints = analysis.constraints || [];
     ctx.analysisModal.setBody(SF.createTable({
-      columns: ['Constraint', 'Weight', 'Score', 'Matches'],
+      columns: ['Constraint', 'Type', 'Weight', 'Score', 'Matches'],
       rows: constraints.map(function (constraint) {
         return [
           constraint.name,
-          constraint.weight || Fleet.constraintType(constraint.name),
+          constraint.constraintType || Fleet.constraintType(constraint.name),
+          constraint.weight,
           constraint.score,
           constraint.matchCount != null ? constraint.matchCount : '-',
         ];
