@@ -2,6 +2,8 @@
 
 All notable changes to this use case are documented in this file.
 
+## 2.0.8 (2026-09-25)
+
 ## 2.0.7 (2026-08-13)
 
 ### Maintenance
