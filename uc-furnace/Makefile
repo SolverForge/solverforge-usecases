@@ -124,7 +124,10 @@ test-frontend-syntax: require-node
 		(printf "$(RED)$(CROSS) Frontend syntax checks failed$(RESET)\n" && exit 1)
 
 test-frontend: test-frontend-syntax
-	@printf "$(GREEN)$(CHECK) Frontend validation passed$(RESET)\n"
+	@printf "$(PROGRESS) Running frontend Node tests...\n"
+	@node --test tests/frontend/*.test.mjs && \
+		printf "$(GREEN)$(CHECK) Frontend tests passed$(RESET)\n" || \
+		(printf "$(RED)$(CROSS) Frontend tests failed$(RESET)\n" && exit 1)
 
 test-e2e: build-release require-node
 	@printf "$(PROGRESS) Running browser smoke test on port $(E2E_PORT)...\n"
