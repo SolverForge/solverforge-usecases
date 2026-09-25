@@ -8,8 +8,7 @@
   var backend = SF.createBackend({ baseUrl: '' });
   var statusBar = SF.createStatusBar({
     constraints: uiModel.constraints.map(function (name) {
-      var soft = name === 'first_assignment_home' || name === 'last_assignment_home';
-      return { name: name.replaceAll('_', ' '), type: soft ? 'soft' : 'hard' };
+      return { name: name.replaceAll('_', ' '), type: constraintType(name) };
     }),
   });
   var currentPlan = null;
@@ -92,6 +91,10 @@
     return response.json();
   }
 
+  function constraintType(name) {
+    return name === 'first_assignment_home' || name === 'last_assignment_home' ? 'soft' : 'hard';
+  }
+
   function showTab(id) {
     Object.keys(panels).forEach(function (key) { panels[key].style.display = key === id ? '' : 'none'; });
   }
@@ -126,9 +129,9 @@
     var payload = await solver.analyzeSnapshot();
     var analysis = payload.analysis || payload;
     analysisModal.setBody(SF.createTable({
-      columns: ['Constraint', 'Weight', 'Matches', 'Score'],
+      columns: ['Constraint', 'Type', 'Weight', 'Matches', 'Score'],
       rows: (analysis.constraints || []).map(function (row) {
-        return [row.name, row.weight, row.matchCount, row.score];
+        return [row.name, row.constraintType || constraintType(row.name), row.weight, row.matchCount, row.score];
       }),
     }));
     analysisModal.open();

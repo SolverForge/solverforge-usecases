@@ -46,6 +46,7 @@ impl schemars::JsonSchema for PlanDto {
 #[serde(rename_all = "camelCase")]
 pub struct ConstraintAnalysisDto {
     pub name: String,
+    pub constraint_type: String,
     pub weight: String,
     pub score: String,
     pub match_count: usize,
@@ -250,11 +251,25 @@ pub fn analysis_response(analysis: &solverforge::ScoreAnalysis<HardSoftScore>) -
             .iter()
             .map(|constraint| ConstraintAnalysisDto {
                 name: constraint.name.clone(),
+                constraint_type: constraint_type(&constraint.name).to_string(),
                 weight: constraint.weight.to_string(),
                 score: constraint.score.to_string(),
                 match_count: constraint.match_count,
             })
             .collect(),
+    }
+}
+
+/// Classify a constraint as hard or soft from its name.
+///
+/// `first_assignment_home` and `last_assignment_home` are the two home-base
+/// quality preferences; every other rule in this app is a hard feasibility
+/// requirement. The analysis DTO needs this because the raw score weight does
+/// not distinguish the two for a satisfied constraint.
+fn constraint_type(name: &str) -> &'static str {
+    match name {
+        "first_assignment_home" | "last_assignment_home" => "soft",
+        _ => "hard",
     }
 }
 
