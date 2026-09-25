@@ -85,7 +85,7 @@ run-release:
 	@printf "$(ARROW) Running release build on port $(PORT)...\n"
 	@PORT=$(PORT) cargo run --release --bin $(APP_NAME)
 
-test: test-rust test-frontend-syntax test-e2e
+test: test-rust test-frontend test-e2e
 	@printf "\n$(GREEN)$(BOLD)$(CHECK) Standard validation passed$(RESET)\n\n"
 
 test-rust:
@@ -95,6 +95,10 @@ test-rust:
 test-frontend-syntax: require-node
 	@printf "$(PROGRESS) Checking frontend module syntax...\n"
 	@find static -name '*.js' -print0 | xargs -0 -n1 node --check
+
+test-frontend: test-frontend-syntax
+	@printf "$(PROGRESS) Running frontend Node tests...\n"
+	@node --test tests/frontend/*.test.mjs
 
 test-e2e: build-release require-node
 	@printf "$(PROGRESS) Running Playwright browser tests...\n"

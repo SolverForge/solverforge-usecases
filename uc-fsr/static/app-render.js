@@ -178,10 +178,11 @@
 
       container.appendChild(SF.el('p', null, SF.el('strong', null, 'Score: '), String(analysis.score)));
       container.appendChild(SF.createTable({
-        columns: ['Constraint', 'Weight', 'Score', 'Matches'],
+        columns: ['Constraint', 'Type', 'Weight', 'Score', 'Matches'],
         rows: analysis.constraints.map(function (constraint) {
           return [
             constraint.name,
+            constraint.constraintType || constraint.type || '',
             constraint.weight,
             constraint.score,
             String(constraint.matchCount || 0),
