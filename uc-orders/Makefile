@@ -5,7 +5,7 @@ APP_NAME := solverforge-orders
 PORT ?= 7860
 PLAYWRIGHT ?= ../node_modules/.bin/playwright
 
-.PHONY: build build-release run run-release test test-rust test-frontend-syntax test-frontend test-e2e test-slow test-one fmt fmt-check clippy ci-local release-ci docker-build docker-run pre-release
+.PHONY: build build-release run run-release test test-rust test-frontend-syntax test-frontend test-e2e test-slow test-one fmt fmt-check clippy lint check ci-local release-ci docker-build docker-run pre-release
 
 build:
 	cargo build --bin $(APP_NAME)
@@ -48,6 +48,10 @@ fmt-check:
 
 clippy:
 	cargo clippy --all-targets -- -D warnings
+
+lint: fmt-check clippy test-frontend-syntax
+
+check: lint test
 
 docker-build:
 	docker build -f Dockerfile -t $(APP_NAME) .

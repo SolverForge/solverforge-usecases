@@ -120,8 +120,8 @@ async function openAnalysis() {
   const payload = await solver.analyzeSnapshot();
   const analysis = payload.analysis || payload;
   analysisModal.setBody(SF.createTable({
-    columns: ['Constraint', 'Weight', 'Matches', 'Score'],
-    rows: (analysis.constraints || []).map((row) => [row.name, row.weight, row.matchCount, row.score]),
+    columns: ['Constraint', 'Type', 'Weight', 'Matches', 'Score'],
+    rows: (analysis.constraints || []).map((row) => [row.name, row.constraintType || row.type || '', row.weight, row.matchCount, row.score]),
   }));
   analysisModal.open();
 }

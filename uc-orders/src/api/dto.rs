@@ -46,6 +46,7 @@ impl schemars::JsonSchema for PlanDto {
 #[serde(rename_all = "camelCase")]
 pub struct ConstraintAnalysisDto {
     pub name: String,
+    pub constraint_type: String,
     pub weight: String,
     pub score: String,
     pub match_count: usize,
@@ -248,6 +249,7 @@ pub fn analysis_response(analysis: &solverforge::ScoreAnalysis<HardSoftScore>) -
             .iter()
             .map(|constraint| ConstraintAnalysisDto {
                 name: constraint.name.clone(),
+                constraint_type: constraint_type(&constraint.name).to_string(),
                 weight: constraint.weight.to_string(),
                 score: constraint.score.to_string(),
                 match_count: constraint.match_count,
@@ -297,5 +299,16 @@ fn hex_nibble(value: u8) -> Option<u8> {
         b'a'..=b'f' => Some(value - b'a' + 10),
         b'A'..=b'F' => Some(value - b'A' + 10),
         _ => None,
+    }
+}
+
+/// Classify a constraint as hard or soft from its analysis name.
+///
+/// The raw score weight does not distinguish the two once a rule is
+/// satisfied, so the browser needs the classification alongside the score.
+fn constraint_type(name: &str) -> &'static str {
+    match name {
+        "order_incidence" | "route_distance" => "soft",
+        _ => "hard",
     }
 }
