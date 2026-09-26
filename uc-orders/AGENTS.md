@@ -9,11 +9,19 @@ SolverForge Orders and `solverforge-orders`.
 - `src/domain/` owns immutable pick steps, warehouse distance, trolley entities,
   route shadows, and the `Plan` solution.
 - `src/constraints/` owns one named hard or soft rule per file.
-- `src/data/data_seed.rs` owns the deterministic source-faithful `STANDARD` data.
-- `src/api/` and `src/solver/` retain REST, SSE, telemetry, and job lifecycle.
+- `src/data/data_seed.rs` owns the deterministic source-faithful `STANDARD` data
+  and the requested-size generator behind Generate New.
+- `src/api/` and `src/solver/` retain REST, SSE, telemetry, and job lifecycle,
+  including `POST /demo-data/generate`.
 - `static/app/orders-model.mjs` owns pure browser transforms;
-  `static/app/main.mjs` owns rendering and SolverForge lifecycle wiring.
+  `static/app/warehouse.mjs` owns the isometric canvas ported from the source;
+  `static/app/main.mjs` owns page layout and SolverForge lifecycle wiring.
 - `tests/` protects score deltas, transforms, browser lifecycle, and full solve.
+
+The browser surface is a deliberate port of the source single-page UI. Do not
+replace the canvas, legend, statistics, picking-plan cards, or dataset panel
+with a generic dashboard; keep the source layout and only adapt its data
+contract to the SolverForge plan shape.
 
 This app is repository-only. Do not add it to the Hugging Face sync allowlist
 until a matching Space exists. Do not create `CHANGELOG.md` manually and do not

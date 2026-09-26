@@ -73,6 +73,57 @@ pub fn generate(_: DemoData) -> Plan {
     Plan::new(pick_steps, trolleys)
 }
 
+/// Builds a deterministic picking plan of a requested size.
+///
+/// This backs the source application's "Generate New" control. Like the source,
+/// each order draws 1..=36 products with replacement and keeps at most one item
+/// per product. The sequence is a small deterministic generator rather than the
+/// source's Python Mersenne Twister, so only `STANDARD` reproduces the source
+/// dataset exactly; other sizes match its shape and semantics, not its bytes.
+pub fn generate_sized(orders_count: usize, trolleys_count: usize, bucket_count: i64) -> Plan {
+    let products = product_catalog();
+    let mut state = 37_u64;
+    let mut pick_steps = Vec::new();
+
+    for order_number in 1..=orders_count {
+        let requested = 1 + (next_random(&mut state) % products.len() as u64) as usize;
+        let mut chosen: Vec<usize> = Vec::new();
+        for _ in 0..requested {
+            let product_idx = (next_random(&mut state) % products.len() as u64) as usize;
+            if chosen.contains(&product_idx) {
+                continue;
+            }
+            chosen.push(product_idx);
+            let product = &products[product_idx];
+            let item_number = chosen.len();
+            pick_steps.push(PickStep::new(
+                format!("step-order-{order_number}-item-{item_number}"),
+                product.name,
+                product_idx.to_string(),
+                order_number.to_string(),
+                format!("order-{order_number}-item-{item_number}"),
+                product.volume_cm3,
+                WarehouseLocation::new(product.shelving_id, product.side, product.row),
+            ));
+        }
+    }
+
+    let depot = WarehouseLocation::new("(A,1)", Side::Left, 0);
+    let trolleys = (1..=trolleys_count)
+        .map(|number| Trolley::new(number.to_string(), bucket_count, 48_000, depot.clone()))
+        .collect();
+
+    Plan::new(pick_steps, trolleys)
+}
+
+/// Advances the small deterministic sequence used by [`generate_sized`].
+fn next_random(state: &mut u64) -> u64 {
+    *state = state
+        .wrapping_mul(6_364_136_223_846_793_005)
+        .wrapping_add(1_442_695_040_888_963_407);
+    (*state >> 33) & 0xffff_ffff
+}
+
 #[derive(Clone, Copy)]
 struct ProductSpec {
     name: &'static str,
@@ -226,5 +277,47 @@ mod tests {
             .trolleys
             .iter()
             .all(|trolley| trolley.bucket_count == 4 && trolley.bucket_capacity == 48_000));
+    }
+
+    #[test]
+    fn sized_generation_is_deterministic_and_matches_the_requested_shape() {
+        let first = generate_sized(12, 6, 3);
+        let second = generate_sized(12, 6, 3);
+
+        assert_eq!(first.trolleys.len(), 6);
+        assert!(first
+            .trolleys
+            .iter()
+            .all(|trolley| trolley.bucket_count == 3));
+        assert_eq!(
+            first
+                .pick_steps
+                .iter()
+                .map(|step| &step.order_id)
+                .collect::<HashSet<_>>()
+                .len(),
+            12
+        );
+        assert_eq!(
+            first
+                .pick_steps
+                .iter()
+                .map(|step| &step.id)
+                .collect::<HashSet<_>>()
+                .len(),
+            first.pick_steps.len()
+        );
+        assert_eq!(
+            first
+                .pick_steps
+                .iter()
+                .map(|step| &step.id)
+                .collect::<Vec<_>>(),
+            second
+                .pick_steps
+                .iter()
+                .map(|step| &step.id)
+                .collect::<Vec<_>>()
+        );
     }
 }

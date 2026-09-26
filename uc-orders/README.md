@@ -56,6 +56,13 @@ starts with round-robin routes only for visualization. This app starts lists
 empty so SolverForge's construction phase owns the initial exact assignment;
 all facts and optimization semantics remain unchanged.
 
+`POST /demo-data/generate` backs the source's Generate New control. It draws
+1..=36 products per order with replacement and keeps at most one item per
+product, matching the source generator's shape. It uses a small deterministic
+sequence rather than the source's Python Mersenne Twister, so only `STANDARD`
+reproduces the source dataset exactly; other sizes match its semantics, not its
+bytes.
+
 ## Constraints
 
 - Hard `required_buckets`: for each trolley, sum
@@ -74,15 +81,28 @@ the source UI's historical 100x display error is not reproduced.
 
 ## Browser Surface
 
-The shared `SF.*` component library provides the header, status, rail timeline,
-tables, API guide, modal, footer, solver controls, and lifecycle adapter. The
-app adds overview KPIs, trolley route cards, ordered route lanes, an explicit
-unassigned lane, and order/product/trolley data tables. Pure transforms live in
-`static/app/orders-model.mjs` and are covered by Node tests.
+The interface is a faithful port of the source application's single page. It
+keeps the shared `SF.*` header, status bar, score-analysis modal, toasts, and
+solver lifecycle, and reproduces the source's own surface:
+
+- an isometric warehouse canvas (30-degree projection, 5x3 shelving grid) with
+  aisle-routed trolley paths, numbered pickup markers, and trolleys animated
+  while a solve runs;
+- a trolley legend overlay with per-trolley colour and item count;
+- a statistics sidebar (orders, items, active trolleys, closed-route meters);
+- a picking-plan card per trolley with colour badge, item count, bucket-volume
+  capacity bar, and the ordered item list;
+- a Data panel with Orders / Trolleys / Buckets sliders and Generate New.
+
+The canvas is ported from the source `logisim-view.js` in
+`static/app/warehouse.mjs`; the pure plan-to-view transforms and warehouse
+distance live in `static/app/orders-model.mjs` and are covered by Node tests.
 
 ## REST API
 
 - `GET /health`, `/info`, `/demo-data`, `/demo-data/STANDARD`
+- `POST /demo-data/generate` with `{ ordersCount, trolleysCount, bucketCount }`
+  (5..=100 orders, 2..=15 trolleys, 2..=10 buckets)
 - `POST /jobs` and `/jobs/qualified`
 - `GET /jobs/{id}`, `/status`, `/snapshot`, `/analysis`, `/telemetry`, `/events`
 - `POST /jobs/{id}/pause`, `/resume`, `/cancel`

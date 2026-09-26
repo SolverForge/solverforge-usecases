@@ -1,10 +1,100 @@
-const TONES = ['emerald', 'blue', 'amber', 'rose', 'violet'];
-const STOP_MINUTES = 10;
+// Pure view transforms for the order-picking workspace.
+//
+// These functions turn a SolverForge plan payload into the shapes the
+// warehouse canvas, the statistics sidebar, and the picking-plan cards render.
+// They are DOM-free so they can be unit tested directly.
+
+// Trolley colours match the source application's palette so a trolley keeps the
+// same colour in the canvas, the legend, and its card.
+const TROLLEY_COLORS = [
+  '#ef4444',
+  '#3b82f6',
+  '#10b981',
+  '#f59e0b',
+  '#8b5cf6',
+  '#06b6d4',
+  '#ec4899',
+  '#84cc16',
+];
+
+export function trolleyColor(trolleyId) {
+  const index = (Number.parseInt(trolleyId, 10) - 1) % TROLLEY_COLORS.length;
+  return TROLLEY_COLORS[Number.isFinite(index) && index >= 0 ? index : 0];
+}
 
 export function clonePlan(plan) {
   return JSON.parse(JSON.stringify(plan));
 }
 
+/**
+ * Builds the canvas, sidebar, and card view model from a SolverForge plan.
+ *
+ * `trolley.stepOrder` holds indexes into `pickSteps`, so resolving a route means
+ * substituting those indexes with the immutable step records they point at.
+ */
+export function buildViewModel(plan) {
+  const steps = plan.pickSteps || [];
+  const trolleys = plan.trolleys || [];
+  const assigned = new Set();
+
+  const routes = trolleys.map((trolley) => {
+    const resolved = (trolley.stepOrder || [])
+      .map((index) => steps[index])
+      .filter((step) => step && step.id);
+    resolved.forEach((step) => assigned.add(step.id));
+
+    const orderVolumes = new Map();
+    let volumeCm3 = 0;
+    for (const step of resolved) {
+      orderVolumes.set(step.orderId, (orderVolumes.get(step.orderId) || 0) + step.volumeCm3);
+      volumeCm3 += step.volumeCm3;
+    }
+
+    const requiredBuckets = [...orderVolumes.values()].reduce(
+      (sum, volume) => sum + Math.ceil(volume / trolley.bucketCapacity),
+      0,
+    );
+    const maxCapacity = trolley.bucketCapacity * trolley.bucketCount;
+    const capacityPercent = maxCapacity > 0 ? Math.min(100, Math.round((volumeCm3 / maxCapacity) * 100)) : 0;
+
+    return {
+      id: trolley.id,
+      color: trolleyColor(trolley.id),
+      location: trolley.location,
+      bucketCount: trolley.bucketCount,
+      bucketCapacity: trolley.bucketCapacity,
+      steps: resolved,
+      itemCount: resolved.length,
+      volumeCm3,
+      capacityPercent,
+      capacityClass: capacityPercent > 90 ? 'high' : capacityPercent > 70 ? 'medium' : 'low',
+      requiredBuckets,
+      excessBuckets: Math.max(0, requiredBuckets - trolley.bucketCount),
+      orderCount: orderVolumes.size,
+      distanceMeters: trolley.routeDistanceMeters ?? closedRouteDistance(trolley.location, resolved),
+    };
+  });
+
+  const unassigned = steps.filter((step) => !assigned.has(step.id));
+
+  return {
+    orders: new Set(steps.map((step) => step.orderId)).size,
+    items: steps.length,
+    activeTrolleys: routes.filter((route) => route.steps.length > 0).length,
+    totalMeters: routes.reduce((sum, route) => sum + route.distanceMeters, 0),
+    trolleys: routes,
+    unassigned,
+  };
+}
+
+/**
+ * Distance in meters between two warehouse locations.
+ *
+ * This is the browser twin of `calculate_distance` in `src/domain/warehouse.rs`
+ * and covers the source's piecewise branches: same shelf/side, opposite sides,
+ * contiguous aisle faces, other shelves on one warehouse row, and shelves on
+ * different rows.
+ */
 export function warehouseDistance(start, end) {
   const a = shelfOrigin(start.shelvingId);
   const b = shelfOrigin(end.shelvingId);
@@ -22,110 +112,8 @@ export function warehouseDistance(start, end) {
   return Math.abs(ax - bx) + Math.abs(ay - by);
 }
 
-export function buildPlanModel(plan) {
-  const steps = plan.pickSteps || [];
-  const trolleys = plan.trolleys || [];
-  const assigned = new Set();
-  const routes = trolleys.map((trolley, trolleyIndex) => {
-    const routeSteps = (trolley.stepOrder || []).map((index) => {
-      assigned.add(index);
-      return { ...steps[index], index };
-    }).filter((step) => step.id);
-    const orderVolumes = new Map();
-    routeSteps.forEach((step) => orderVolumes.set(step.orderId, (orderVolumes.get(step.orderId) || 0) + step.volumeCm3));
-    const requiredBuckets = [...orderVolumes.values()].reduce((sum, volume) => sum + Math.ceil(volume / trolley.bucketCapacity), 0);
-    return {
-      ...trolley,
-      trolleyIndex,
-      routeSteps,
-      requiredBuckets,
-      excessBuckets: Math.max(0, requiredBuckets - trolley.bucketCount),
-      orderCount: orderVolumes.size,
-      distanceMeters: closedRouteDistance(trolley.location, routeSteps),
-    };
-  });
-  const unassigned = steps.map((step, index) => ({ ...step, index })).filter((step) => !assigned.has(step.index));
-  const orders = groupRows(steps, 'orderId').map(([id, rows]) => ({
-    id,
-    itemCount: rows.length,
-    volumeCm3: rows.reduce((sum, row) => sum + row.volumeCm3, 0),
-    trolleyCount: routes.filter((route) => route.routeSteps.some((step) => step.orderId === id)).length,
-  }));
-  const products = groupRows(steps, 'productId').map(([id, rows]) => ({
-    id,
-    name: rows[0].name,
-    volumeCm3: rows[0].volumeCm3,
-    location: formatLocation(rows[0].location),
-    picks: rows.length,
-  }));
-  return {
-    routes,
-    unassigned,
-    orders,
-    products,
-    kpis: {
-      orders: orders.length,
-      items: steps.length,
-      activeTrolleys: routes.filter((route) => route.routeSteps.length).length,
-      routeMeters: routes.reduce((sum, route) => sum + route.distanceMeters, 0),
-    },
-  };
-}
-
-export function buildRouteTimeline(model) {
-  const lanes = model.routes.map((route, index) => ({
-    id: `trolley-${route.id}`,
-    label: `Trolley ${route.id}`,
-    mode: 'detailed',
-    badges: route.excessBuckets ? [`${route.excessBuckets} excess buckets`] : [],
-    stats: [{ label: 'Stops', value: route.routeSteps.length }, { label: 'Meters', value: route.distanceMeters }],
-    items: route.routeSteps.map((step, position) => timelineItem(step, position, TONES[index % TONES.length])),
-  }));
-  if (model.unassigned.length) {
-    lanes.push({
-      id: 'unassigned',
-      label: 'Unassigned work',
-      mode: 'detailed',
-      badges: [`${model.unassigned.length} items`],
-      stats: [{ label: 'Needs route', value: model.unassigned.length }],
-      items: model.unassigned.map((step, position) => timelineItem(step, position, 'slate')),
-    });
-  }
-  const stopCount = Math.max(1, ...lanes.map((lane) => lane.items.length));
-  return {
-    title: 'Ordered picking routes',
-    subtitle: 'Each block is one immutable order item; sequence runs left to right from the depot.',
-    label: 'Trolley',
-    labelWidth: 250,
-    zoomPresets: [],
-    model: { axis: buildAxis(stopCount), lanes },
-  };
-}
-
 export function formatLocation(location) {
   return `${location.shelvingId} · ${location.side} · row ${location.row}`;
-}
-
-function timelineItem(step, position, tone) {
-  return {
-    id: step.id,
-    startMinute: position * STOP_MINUTES,
-    endMinute: (position + 1) * STOP_MINUTES,
-    label: step.name,
-    meta: `Order ${step.orderId} · ${formatLocation(step.location)}`,
-    tone,
-  };
-}
-
-function buildAxis(stopCount) {
-  const endMinute = stopCount * STOP_MINUTES;
-  return {
-    startMinute: 0,
-    endMinute,
-    days: [{ id: 'route', label: 'Pick sequence', subLabel: `${stopCount} positions`, startMinute: 0, endMinute }],
-    ticks: Array.from({ length: stopCount }, (_, index) => ({ id: `stop-${index}`, minute: index * STOP_MINUTES, label: String(index + 1) })),
-    initialViewport: { startMinute: 0, endMinute: Math.min(endMinute, 400) },
-  };
 }
 
 function closedRouteDistance(depot, steps) {
@@ -137,12 +125,6 @@ function closedRouteDistance(depot, steps) {
     previous = step.location;
   });
   return distance + warehouseDistance(previous, depot);
-}
-
-function groupRows(rows, key) {
-  const groups = new Map();
-  rows.forEach((row) => groups.set(row[key], [...(groups.get(row[key]) || []), row]));
-  return [...groups.entries()].sort((a, b) => Number(a[0]) - Number(b[0]));
 }
 
 function shelfOrigin(id) {

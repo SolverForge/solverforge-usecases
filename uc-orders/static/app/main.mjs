@@ -1,28 +1,35 @@
-import { buildPlanModel, buildRouteTimeline, clonePlan, formatLocation } from './orders-model.mjs';
+// Order Picking workspace.
+//
+// This reproduces the source application's single-page surface: a dataset
+// panel, the isometric warehouse canvas with its trolley legend, a statistics
+// sidebar, and the picking-plan cards. The solve lifecycle is delegated to the
+// shared SolverForge UI shell (`SF.createSolver`) so retained jobs, SSE, pause,
+// resume, cancel, and snapshot analysis stay on the stock contract.
+
+import { buildViewModel, clonePlan, formatLocation } from './orders-model.mjs';
+import { createWarehouse } from './warehouse.mjs';
 
 const app = document.getElementById('sf-app');
 const [config, uiModel] = await Promise.all([
   fetch('/sf-config.json').then(readJson),
   fetch('/generated/ui-model.json').then(readJson),
 ]);
+
 const backend = SF.createBackend({ baseUrl: '' });
 const statusBar = SF.createStatusBar({
-  constraints: uiModel.constraints.map((name) => ({ name: name.replaceAll('_', ' '), type: name === 'required_buckets' ? 'hard' : 'soft' })),
+  constraints: uiModel.constraints.map((name) => ({
+    name: name.replaceAll('_', ' '),
+    type: name === 'required_buckets' ? 'hard' : 'soft',
+  })),
 });
-let currentPlan;
-let timeline;
+
+let currentPlan = null;
+let datasetLabel = 'STANDARD';
 
 const header = SF.createHeader({
   logo: '/sf/img/ouroboros.svg',
   title: config.title,
   subtitle: config.subtitle,
-  tabs: [
-    { id: 'overview', label: 'Overview', icon: 'fa-gauge-high', active: true },
-    { id: 'routes', label: 'Routes / Picking Plan', icon: 'fa-route' },
-    { id: 'data', label: 'Warehouse / Data', icon: 'fa-warehouse' },
-    { id: 'api', label: 'REST API', icon: 'fa-code' },
-  ],
-  onTabChange: showPanel,
   actions: {
     onSolve: startSolve,
     onPause: () => solver.pause(),
@@ -35,32 +42,57 @@ app.appendChild(header);
 statusBar.bindHeader(header);
 app.appendChild(statusBar.el);
 
-const panels = {};
-['overview', 'routes', 'data', 'api'].forEach((id) => {
-  panels[id] = SF.el('main', { className: `sf-content orders-panel${id === 'overview' ? ' is-active' : ''}`, id: `panel-${id}` });
-  app.appendChild(panels[id]);
+const datasetSummary = SF.el('span', { className: 'orders-toolbar__summary' }, datasetLabel);
+const settings = buildSettingsPanel();
+const settingsToggle = SF.createButton({
+  text: 'Data',
+  icon: 'fa-sliders-h',
+  variant: 'default',
+  size: 'small',
+  onClick: toggleSettings,
 });
-panels.api.appendChild(SF.createApiGuide({ endpoints: [
-  { method: 'GET', path: '/demo-data', description: 'Discover deterministic datasets' },
-  { method: 'GET', path: '/demo-data/STANDARD', description: 'Load 145 order-item pick steps' },
-  { method: 'POST', path: '/jobs', description: 'Start a retained solve' },
-  { method: 'GET', path: '/jobs/{id}/status', description: 'Read lifecycle and telemetry' },
-  { method: 'GET', path: '/jobs/{id}/snapshot', description: 'Read the latest picking plan' },
-  { method: 'GET', path: '/jobs/{id}/analysis?snapshot_revision={n}', description: 'Analyze an exact scored snapshot' },
-  { method: 'POST', path: '/jobs/{id}/pause', description: 'Pause search' },
-  { method: 'POST', path: '/jobs/{id}/resume', description: 'Resume search' },
-  { method: 'POST', path: '/jobs/{id}/cancel', description: 'Stop and retain the best plan' },
-  { method: 'GET', path: '/jobs/{id}/events', description: 'Observe lifecycle events over SSE' },
-] }));
-app.appendChild(SF.createFooter({ version: '0.1.0', links: [{ label: 'SolverForge', url: 'https://www.solverforge.org' }] }));
+const toolbar = SF.el('div', { className: 'orders-toolbar' }, settingsToggle, datasetSummary);
 
-const analysisModal = SF.createModal({ title: 'Picking score analysis', width: '760px' });
+const statsGrid = SF.el('div', { className: 'orders-stats' });
+const warehouse = createWarehouse();
+const content = SF.el(
+  'div',
+  { className: 'orders-content' },
+  statsGrid,
+  SF.el('div', { className: 'orders-canvas' }, warehouse.el),
+);
+
+const cardsGrid = SF.el('div', { className: 'orders-cards' });
+const planSection = SF.el(
+  'section',
+  { className: 'orders-plan' },
+  SF.el('h2', null, SF.el('i', { className: 'fa-solid fa-tasks' }), 'Picking plan'),
+  cardsGrid,
+);
+
+const main = SF.el('div', { className: 'orders-main' }, toolbar, settings.panel, content, planSection);
+app.appendChild(main);
+app.appendChild(
+  SF.createFooter({
+    version: '0.1.0',
+    links: [{ label: 'SolverForge', url: 'https://www.solverforge.org' }],
+  }),
+);
+
+const analysisModal = SF.createModal({ title: 'Score analysis', width: '720px' });
+
 const solver = SF.createSolver({
   backend,
   statusBar,
-  onProgress: syncMarkers,
+  onProgress: (meta) => {
+    syncMarkers(meta);
+    applySolving(meta?.lifecycleState);
+  },
   onPauseRequested: syncMarkers,
-  onResumed: syncMarkers,
+  onResumed: (meta) => {
+    syncMarkers(meta);
+    applySolving('SOLVING');
+  },
   onSolution: acceptSnapshot,
   onPaused: acceptSnapshot,
   onCancelled: acceptSnapshot,
@@ -73,13 +105,19 @@ const solver = SF.createSolver({
   onError: (message) => SF.showError('Solver lifecycle failed', message),
 });
 
-try {
-  const catalog = await fetch('/demo-data').then(readJson);
-  currentPlan = await backend.getDemoData(catalog.defaultId);
-  render(currentPlan);
-} catch (error) {
-  app.dataset.bootstrapError = 'true';
-  panels.overview.appendChild(SF.el('p', { className: 'orders-error' }, `Demo data failed to load: ${error.message}`));
+await bootstrap();
+
+async function bootstrap() {
+  try {
+    const catalog = await fetch('/demo-data').then(readJson);
+    datasetLabel = catalog.defaultId;
+    datasetSummary.textContent = datasetLabel;
+    currentPlan = await backend.getDemoData(catalog.defaultId);
+    render(currentPlan);
+  } catch (error) {
+    app.dataset.bootstrapError = 'true';
+    main.prepend(SF.el('p', { className: 'orders-error' }, `Demo data failed to load: ${error.message}`));
+  }
 }
 
 function readJson(response) {
@@ -87,15 +125,13 @@ function readJson(response) {
   return response.json();
 }
 
-function showPanel(id) {
-  Object.entries(panels).forEach(([key, panel]) => panel.classList.toggle('is-active', key === id));
-}
-
 async function startSolve() {
   if (!currentPlan || solver.isRunning() || solver.getLifecycleState() === 'PAUSED') return;
   if (solver.getJobId() && solver.getLifecycleState() !== 'IDLE') await solver.delete();
+  applySolving('SOLVING');
   await solver.start(clonePlan(currentPlan));
   syncMarkers();
+  syncGenerateState();
 }
 
 function acceptSnapshot(snapshot, meta) {
@@ -104,84 +140,205 @@ function acceptSnapshot(snapshot, meta) {
     render(currentPlan);
   }
   syncMarkers(meta);
+  applySolving(meta?.lifecycleState || solver.getLifecycleState());
+  syncGenerateState();
 }
 
 function syncMarkers(meta) {
   const jobId = solver.getJobId();
   const revision = solver.getSnapshotRevision();
   const state = meta?.lifecycleState || solver.getLifecycleState();
-  if (jobId) app.dataset.jobId = String(jobId); else delete app.dataset.jobId;
-  if (revision != null) app.dataset.snapshotRevision = String(revision); else delete app.dataset.snapshotRevision;
-  if (state && state !== 'IDLE') app.dataset.lifecycleState = state; else delete app.dataset.lifecycleState;
+  if (jobId) app.dataset.jobId = String(jobId);
+  else delete app.dataset.jobId;
+  if (revision != null) app.dataset.snapshotRevision = String(revision);
+  else delete app.dataset.snapshotRevision;
+  if (state && state !== 'IDLE') app.dataset.lifecycleState = state;
+  else delete app.dataset.lifecycleState;
+}
+
+function applySolving(state) {
+  warehouse.setSolving(state === 'SOLVING' || state === 'STARTING' || state === 'PAUSE_REQUESTED');
+}
+
+function syncGenerateState() {
+  const busy = solver.isRunning();
+  settings.generate.disabled = busy;
 }
 
 async function openAnalysis() {
   if (!solver.getJobId()) return;
   const payload = await solver.analyzeSnapshot();
   const analysis = payload.analysis || payload;
-  analysisModal.setBody(SF.createTable({
-    columns: ['Constraint', 'Type', 'Weight', 'Matches', 'Score'],
-    rows: (analysis.constraints || []).map((row) => [row.name, row.constraintType || row.type || '', row.weight, row.matchCount, row.score]),
-  }));
+  const rows = (analysis.constraints || []).map((row) =>
+    SF.el(
+      'div',
+      { className: 'orders-constraint' },
+      SF.el('span', { className: 'orders-constraint__name' }, row.name),
+      SF.el(
+        'span',
+        { className: `orders-constraint__score is-${row.constraintType || row.type || 'hard'}` },
+        row.score,
+      ),
+    ),
+  );
+  analysisModal.setBody(SF.el('div', { className: 'orders-analysis' }, ...rows));
   analysisModal.open();
 }
 
 function render(plan) {
-  const model = buildPlanModel(plan);
-  renderOverview(model);
-  renderRoutes(model);
-  renderData(model);
+  const model = buildViewModel(plan);
+  renderStats(model);
+  warehouse.render(model);
+  renderCards(model);
 }
 
-function renderOverview(model) {
-  panels.overview.innerHTML = '';
-  panels.overview.appendChild(SF.el('section', { className: 'orders-hero' },
-    SF.el('div', null,
-      SF.el('p', { className: 'orders-eyebrow' }, 'Closed-route warehouse optimization'),
-      SF.el('h1', null, 'Every order item. One trolley. The shortest feasible walk.'),
-      SF.el('p', null, 'SolverForge assigns 145 immutable pick steps while respecting four order-dedicated buckets per trolley.'),
+function renderStats(model) {
+  statsGrid.textContent = '';
+  statsGrid.append(
+    statCard('fa-clipboard-list', model.orders, 'Orders'),
+    statCard('fa-cube', model.items, 'Items'),
+    statCard('fa-dolly', model.activeTrolleys, 'Active'),
+    statCard('fa-route', model.totalMeters, 'meters'),
+  );
+}
+
+function statCard(iconName, value, label) {
+  return SF.el(
+    'div',
+    { className: 'orders-stat' },
+    SF.el('div', { className: 'orders-stat__icon' }, SF.el('i', { className: `fa-solid ${iconName}` })),
+    SF.el(
+      'div',
+      { className: 'orders-stat__info' },
+      SF.el('span', { className: 'orders-stat__value' }, Number(value).toLocaleString()),
+      SF.el('span', { className: 'orders-stat__label' }, label),
     ),
-    SF.el('div', { className: 'orders-depot' }, SF.el('span', null, 'DEPOT'), SF.el('strong', null, '(A,1) LEFT · row 0')),
-  ));
-  panels.overview.appendChild(SF.el('section', { className: 'orders-kpis' },
-    kpi('Orders', model.kpis.orders), kpi('Pick items', model.kpis.items),
-    kpi('Active trolleys', model.kpis.activeTrolleys), kpi('Closed-route meters', model.kpis.routeMeters),
-  ));
-  const cards = SF.el('section', { className: 'orders-route-grid', 'aria-label': 'Trolley route cards' });
-  model.routes.forEach((route) => cards.appendChild(routeCard(route)));
-  panels.overview.appendChild(cards);
-  if (model.unassigned.length) panels.overview.appendChild(SF.el('p', { className: 'orders-unassigned' }, `${model.unassigned.length} pick steps are unassigned. Start Solve to construct complete routes.`));
+  );
 }
 
-function renderRoutes(model) {
-  const config = buildRouteTimeline(model);
-  if (!timeline) timeline = SF.rail.createTimeline(config); else timeline.setModel(config.model);
-  panels.routes.innerHTML = '';
-  panels.routes.appendChild(SF.createTable({ columns: ['Items', 'Assigned', 'Unassigned', 'Distance unit'], rows: [[model.kpis.items, model.kpis.items - model.unassigned.length, model.unassigned.length, 'meters']] }));
-  panels.routes.appendChild(timeline.el);
+function renderCards(model) {
+  cardsGrid.textContent = '';
+  for (const trolley of model.trolleys) {
+    const body = trolley.itemCount
+      ? SF.el(
+          'div',
+          { className: 'orders-card__items' },
+          ...trolley.steps.map((step, index) =>
+            SF.el(
+              'div',
+              { className: 'orders-card__item', title: `${step.name} · ${formatLocation(step.location)}` },
+              SF.el('span', { className: 'orders-card__item-number' }, String(index + 1)),
+              step.name.length > 15 ? `${step.name.slice(0, 15)}…` : step.name,
+            ),
+          ),
+        )
+      : SF.el('div', { className: 'orders-card__empty' }, 'No items assigned');
+
+    cardsGrid.appendChild(
+      SF.el(
+        'article',
+        { className: 'orders-card', dataset: { trolleyId: trolley.id } },
+        SF.el(
+          'div',
+          { className: 'orders-card__header' },
+          SF.el('span', { className: 'orders-card__badge', style: { background: trolley.color } }),
+          SF.el(
+            'div',
+            { className: 'orders-card__info' },
+            SF.el('div', { className: 'orders-card__title' }, `Trolley ${trolley.id}`),
+            SF.el('div', { className: 'orders-card__stats' }, `${trolley.itemCount} items`),
+          ),
+          SF.el(
+            'div',
+            { className: 'orders-card__capacity', title: `${trolley.capacityPercent}% of bucket volume` },
+            SF.el('div', {
+              className: `orders-card__capacity-fill is-${trolley.capacityClass}`,
+              style: { width: `${trolley.capacityPercent}%` },
+            }),
+          ),
+        ),
+        body,
+      ),
+    );
+  }
 }
 
-function renderData(model) {
-  panels.data.innerHTML = '';
-  panels.data.appendChild(sectionTable('Orders', ['Order', 'Items', 'Volume cm³', 'Trolleys'], model.orders.map((row) => [row.id, row.itemCount, row.volumeCm3, row.trolleyCount])));
-  panels.data.appendChild(sectionTable('Products', ['Product', 'Name', 'Volume cm³', 'Location', 'Picks'], model.products.map((row) => [row.id, row.name, row.volumeCm3, row.location, row.picks])));
-  panels.data.appendChild(sectionTable('Trolleys', ['Trolley', 'Buckets', 'Capacity / bucket', 'Depot', 'Stops'], model.routes.map((route) => [route.id, route.bucketCount, route.bucketCapacity, formatLocation(route.location), route.routeSteps.length])));
+function buildSettingsPanel() {
+  const orders = slider({ label: 'Orders', icon: 'fa-shopping-cart', min: 10, max: 100, value: 40 });
+  const trolleys = slider({ label: 'Trolleys', icon: 'fa-dolly', min: 3, max: 15, value: 8 });
+  const buckets = slider({ label: 'Buckets', icon: 'fa-box', min: 2, max: 10, value: 6 });
+
+  const generate = SF.createButton({
+    text: 'Generate New',
+    icon: 'fa-sync-alt',
+    variant: 'primary',
+    onClick: () => generateNewData(orders.input, trolleys.input, buckets.input, generate),
+  });
+
+  const panel = SF.el(
+    'div',
+    { className: 'orders-settings', hidden: 'hidden' },
+    SF.el('div', { className: 'orders-settings__grid' },
+      orders.row,
+      trolleys.row,
+      buckets.row,
+      SF.el('div', { className: 'orders-settings__action' }, generate)),
+  );
+
+  return { panel, generate };
 }
 
-function kpi(label, value) {
-  return SF.el('div', { className: 'orders-kpi' }, SF.el('span', null, label), SF.el('strong', null, Number(value).toLocaleString()));
+function slider({ label, icon, min, max, value }) {
+  const badge = SF.el('span', { className: 'orders-setting__badge' }, String(value));
+  const input = SF.el('input', {
+    className: 'orders-setting__range',
+    type: 'range',
+    min: String(min),
+    max: String(max),
+    value: String(value),
+    onInput: (event) => {
+      badge.textContent = event.target.value;
+    },
+  });
+  const row = SF.el(
+    'div',
+    { className: 'orders-setting' },
+    SF.el('label', null, SF.el('i', { className: `fa-solid ${icon}` }), label, badge),
+    input,
+  );
+  return { row, input };
 }
 
-function routeCard(route) {
-  const status = route.excessBuckets ? `${route.excessBuckets} excess` : 'capacity ready';
-  return SF.el('article', { className: `orders-route-card${route.excessBuckets ? ' is-over' : ''}` },
-    SF.el('header', null, SF.el('h2', null, `Trolley ${route.id}`), SF.el('span', null, status)),
-    SF.el('div', { className: 'orders-route-card__metrics' },
-      SF.el('strong', null, `${route.routeSteps.length} stops`), SF.el('strong', null, `${route.distanceMeters} m`),
-      SF.el('strong', null, `${route.requiredBuckets}/${route.bucketCount} buckets`)),
-    SF.el('p', null, route.routeSteps.length ? `${route.orderCount} orders on this closed route` : 'Awaiting construction'));
+function toggleSettings() {
+  settings.panel.toggleAttribute('hidden');
 }
 
-function sectionTable(title, columns, rows) {
-  return SF.el('section', { className: 'orders-data-section' }, SF.el('h2', null, title), SF.createTable({ columns, rows }));
+async function generateNewData(ordersInput, trolleysInput, bucketsInput, button) {
+  const body = {
+    ordersCount: Number(ordersInput.value),
+    trolleysCount: Number(trolleysInput.value),
+    bucketCount: Number(bucketsInput.value),
+  };
+
+  button.disabled = true;
+  button.classList.add('is-loading');
+  try {
+    const response = await fetch('/demo-data/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const plan = await response.json();
+    datasetLabel = `${body.ordersCount} orders · ${body.trolleysCount} trolleys · ${body.bucketCount} buckets`;
+    datasetSummary.textContent = datasetLabel;
+    render(plan);
+    settings.panel.setAttribute('hidden', 'hidden');
+    SF.showToast({ variant: 'success', message: 'Generated new picking data.' });
+  } catch (error) {
+    SF.showError('Could not generate data', error.message);
+  } finally {
+    button.disabled = false;
+    button.classList.remove('is-loading');
+  }
 }

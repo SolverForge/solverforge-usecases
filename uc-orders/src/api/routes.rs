@@ -12,7 +12,7 @@ use super::dto::{
     PlanDto, QualifiedJobRequestDto,
 };
 use super::sse;
-use crate::data::{generate, DemoData};
+use crate::data::{generate, generate_sized, DemoData};
 use crate::solver::SolverService;
 
 /// Shared application state.
@@ -40,6 +40,7 @@ pub fn router(state: Arc<AppState>) -> Router {
         .route("/health", get(health))
         .route("/info", get(info))
         .route("/demo-data", get(list_demo_data))
+        .route("/demo-data/generate", post(generate_demo_data))
         .route("/demo-data/{id}", get(get_demo_data))
         .route("/jobs", post(create_job))
         .route("/jobs/qualified", post(create_qualified_job))
@@ -100,6 +101,52 @@ async fn list_demo_data() -> Json<DemoDataCatalogResponse> {
 async fn get_demo_data(Path(id): Path<String>) -> Result<Json<PlanDto>, StatusCode> {
     let demo = id.parse::<DemoData>().map_err(|_| StatusCode::NOT_FOUND)?;
     let plan = generate(demo);
+    Ok(Json(PlanDto::from_plan(&plan)))
+}
+
+/// Request body for the source application's "Generate New" control.
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct GenerateDemoDataRequest {
+    #[serde(default = "default_orders_count")]
+    orders_count: usize,
+    #[serde(default = "default_trolleys_count")]
+    trolleys_count: usize,
+    #[serde(default = "default_bucket_count")]
+    bucket_count: i64,
+}
+
+fn default_orders_count() -> usize {
+    40
+}
+
+fn default_trolleys_count() -> usize {
+    8
+}
+
+fn default_bucket_count() -> i64 {
+    6
+}
+
+/// Builds a deterministic plan of a requested size.
+///
+/// The accepted ranges match the source REST API, not the narrower front-end
+/// sliders: 5..=100 orders, 2..=15 trolleys, and 2..=10 buckets.
+async fn generate_demo_data(
+    Json(request): Json<GenerateDemoDataRequest>,
+) -> Result<Json<PlanDto>, StatusCode> {
+    if !(5..=100).contains(&request.orders_count)
+        || !(2..=15).contains(&request.trolleys_count)
+        || !(2..=10).contains(&request.bucket_count)
+    {
+        return Err(StatusCode::BAD_REQUEST);
+    }
+
+    let plan = generate_sized(
+        request.orders_count,
+        request.trolleys_count,
+        request.bucket_count,
+    );
     Ok(Json(PlanDto::from_plan(&plan)))
 }
 
