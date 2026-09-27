@@ -2,6 +2,13 @@
 
 All notable changes to this use case are documented in this file.
 
+## 2.0.10 (2026-09-27)
+
+
+### Bug Fixes
+
+* **fsr:** target SolverForge 0.19.7 and solverforge-ui 0.9.0 2568778
+
 ## 2.0.9 (2026-09-25)
 
 
