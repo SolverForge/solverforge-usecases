@@ -2,6 +2,13 @@
 
 All notable changes to this use case are documented in this file.
 
+## 0.1.5 (2026-09-27)
+
+
+### Bug Fixes
+
+* **fleet:** target SolverForge 0.19.7 and solverforge-ui 0.9.0 1c9ae81
+
 ## 0.1.4 (2026-09-25)
 
 
