@@ -8,12 +8,12 @@ license = "Apache-2.0"
 publish = false
 
 [dependencies]
-solverforge = { version = "0.19.4", features = [
+solverforge = { version = "0.19.7", features = [
   "serde",
   "console",
   "verbose-logging",
 ] }
-solverforge-ui = "0.6.5"
+solverforge-ui = "0.9.0"
 rand = "0.10.1"
 
 axum = "0.8.9"
