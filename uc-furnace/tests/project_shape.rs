@@ -82,8 +82,8 @@ fn source_tree_keeps_the_canonical_cli_entry_files() {
     assert!(main_rs.contains(".fallback_service(ServeDir::new(\"static\"))"));
 
     assert!(cargo_toml.contains("rust-version = \"1.95\""));
-    assert!(cargo_toml.contains("solverforge = { version = \"0.19.4\""));
-    assert!(cargo_toml.contains("solverforge-ui = \"0.6.5\""));
+    assert!(cargo_toml.contains("solverforge = { version = \"0.19.7\""));
+    assert!(cargo_toml.contains("solverforge-ui = \"0.9.0\""));
     assert!(!cargo_toml.contains("[patch"));
 
     let source_root = fs::read_to_string(project_path("src/domain/mod.rs")).expect("domain mod");
