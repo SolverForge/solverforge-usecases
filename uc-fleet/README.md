@@ -42,9 +42,9 @@ local command surface.
 
 - Package and release binary: `solverforge-fleet` `0.1.0`
 - Rust: `1.95`
-- SolverForge runtime: `solverforge` and `solverforge-core` `0.19.4`, locked
+- SolverForge runtime: `solverforge` and `solverforge-core` `0.19.7`, locked
   across the whole `solverforge-*` family
-- Browser UI assets: `solverforge-ui` `0.6.5`
+- Browser UI assets: `solverforge-ui` `0.9.0`
 - Scaffold metadata: `solverforge-cli` `2.2.2` in `solverforge.app.toml`
 - HTTP runtime: Axum `0.8.9`, Tokio `1.52.3`, and tower-http `0.6.10`
 

@@ -12,9 +12,9 @@ name = "solverforge-fleet"
 path = "src/main.rs"
 
 [dependencies]
-solverforge = { version = "0.19.4", features = ["serde", "console", "verbose-logging"] }
-solverforge-core = "0.19.4"
-solverforge-ui = "0.6.5"
+solverforge = { version = "0.19.7", features = ["serde", "console", "verbose-logging"] }
+solverforge-core = "0.19.7"
+solverforge-ui = "0.9.0"
 # Web server
 axum = "0.8.9"
 tokio = { version = "1.52.3", features = ["full"] }

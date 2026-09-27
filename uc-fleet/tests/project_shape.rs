@@ -56,14 +56,14 @@ fn package_metadata_and_repository_only_packaging_stay_aligned() {
         lockfile_package_version(&lockfile)
     );
     assert!(cargo.contains("rust-version = \"1.95\""));
-    assert!(cargo.contains("solverforge = { version = \"0.19.4\""));
-    assert!(cargo.contains("solverforge-core = \"0.19.4\""));
-    assert!(cargo.contains("solverforge-ui = \"0.6.5\""));
+    assert!(cargo.contains("solverforge = { version = \"0.19.7\""));
+    assert!(cargo.contains("solverforge-core = \"0.19.7\""));
+    assert!(cargo.contains("solverforge-ui = \"0.9.0\""));
     assert!(!cargo.contains("[patch"));
 
     assert!(app.contains("name = \"solverforge-fleet\""));
     assert!(app.contains("cli_version = \"2.2.2\""));
-    assert!(app.contains("target = \"solverforge 0.19.4\""));
+    assert!(app.contains("target = \"solverforge 0.19.7\""));
     assert!(dockerfile.contains("FROM rust:1.95-alpine AS builder"));
     assert!(dockerfile.contains("release/solverforge-fleet"));
     assert!(makefile.contains("APP_NAME := solverforge-fleet"));
