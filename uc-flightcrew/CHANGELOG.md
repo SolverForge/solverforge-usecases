@@ -2,6 +2,13 @@
 
 All notable changes to this use case are documented in this file.
 
+## 0.1.2 (2026-09-27)
+
+
+### Bug Fixes
+
+* **flightcrew:** target SolverForge 0.19.7 bbb8b77
+
 ## 0.1.1 (2026-09-25)
 
 
