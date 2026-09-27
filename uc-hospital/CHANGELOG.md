@@ -2,6 +2,13 @@
 
 All notable changes to this use case are documented in this file.
 
+## 2.0.8 (2026-09-27)
+
+
+### Bug Fixes
+
+* **hospital:** target SolverForge 0.19.7 and solverforge-ui 0.9.0 6b9d3aa
+
 ## 2.0.7 (2026-08-13)
 
 ### Maintenance
