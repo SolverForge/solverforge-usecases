@@ -33,7 +33,7 @@ header retains pause, resume, stop, telemetry, and exact snapshot analysis.
 ![SolverForge Orders solved overview](docs/screenshot.png)
 
 Package and binary: `solverforge-orders` 0.1.0. The app requires Rust 1.95 and
-uses `solverforge` 0.21.0 plus `solverforge-ui` 0.9.0 under Apache-2.0.
+uses `solverforge` 0.21.2 plus `solverforge-ui` 0.9.0 under Apache-2.0.
 
 ## Planning Model
 
