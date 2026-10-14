@@ -128,7 +128,7 @@ UI helper.
 ├── solver.toml
 │   Embedded solver policy. This is the runtime source of truth for search.
 ├── solverforge.app.toml
-│   App metadata, model surface, and the `solverforge 0.19.7` runtime target.
+│   App metadata, model surface, and the `solverforge 0.21.0` runtime target.
 ├── Dockerfile
 │   Container build for running the app outside the dev checkout.
 ├── Makefile
