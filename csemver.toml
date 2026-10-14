@@ -1,0 +1,41 @@
+# csemver.toml — native release configuration for the use-case bundle.
+#
+# This bundle releases eight uc-* apps independently, so the release wrapper
+# (scripts/release-usecase.mjs) renders this template per app and runs csemver
+# with the app directory as cwd: `path = "."` scopes commit collection to that
+# app's tree, tagPrefix matches the app-scoped tag contract
+# `solverforge-<app>@<version>`, and packageFiles/bumpFiles point at that
+# app's manifest and lockfile relative to the app directory. The rendered
+# uc-<app>/csemver.toml is written from this template on each release run.
+#
+# Migration note: this replaces scripts/release-usecase.cjs's
+# commit-and-tag-version invocation (scripts/cargo-*-updater.cjs JavaScript
+# updaters, writerOpts.headerPartial, --prepared/--first-release skip maps).
+# csemver reads only csemver.toml; the per-app render substitutes @APP,
+# @PACKAGE and the compare/commit URL formats for each app.
+
+header = """# Changelog
+
+All notable changes to this use case are documented in this file."""
+
+path = "."
+tagPrefix = "@PKG@"
+releaseCommitMessageFormat = "chore(@PACKAGE): release {{currentTag}}"
+commitUrlFormat = "https://github.com/SolverForge/solverforge-usecases/commit/{{hash}}"
+compareUrlFormat = "https://github.com/SolverForge/solverforge-usecases/compare/@PKG@{{previousTag}}...@PKG@{{currentTag}}"
+
+packageFiles = [
+  # App manifest version — the single version read.
+  { filename = "Cargo.toml", type = "toml" },
+]
+
+bumpFiles = [
+  # App manifest version.
+  { filename = "Cargo.toml", type = "toml" },
+  # The app's own [package] block in Cargo.lock; the anchored multiline ERE
+  # keeps the match inside that block ( REG_NEWLINE makes $ / ^ line anchors
+  # work, and the [[:space:]] run swallows the single newline between the
+  # name and version lines). Dependency crates stay at their registry
+  # versions; the release bump only moves the app's own package record.
+  { filename = "Cargo.lock", type = 'regex', pattern = 'name = "@PACKAGE"$[[:space:]]^version = "([^"]*)"', versionGroup = 1 },
+]

@@ -2,7 +2,7 @@
 const { execFileSync, spawnSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
-const cargoUpdater = require("./cargo-package-version-updater.cjs");
+const { readCargoPackageVersion } = require("./cargo-version-readers.cjs");
 const { appFolders, metadataForFolder, parseReleaseTag } = require("./usecase-release-map.cjs");
 
 function usage() {
@@ -126,7 +126,7 @@ function releaseTagsForAllApps() {
   return appFolders().map((folder) => {
     const metadata = metadataForFolder(folder);
     const cargoPath = `${folder}/Cargo.toml`;
-    const version = cargoUpdater.readVersion(fs.readFileSync(cargoPath, "utf8"));
+    const version = readCargoPackageVersion(fs.readFileSync(cargoPath, "utf8"));
     return `${metadata.packageName}@${version}`;
   });
 }

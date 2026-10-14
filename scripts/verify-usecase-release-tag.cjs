@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 const fs = require("fs");
 const { parseReleaseTag } = require("./usecase-release-map.cjs");
-const cargoUpdater = require("./cargo-package-version-updater.cjs");
-const cargoLockUpdater = require("./cargo-lock-package-version-updater.cjs");
+const { readCargoPackageVersion, readCargoLockPackageVersion } = require("./cargo-version-readers.cjs");
 
 function writeGithubOutput(values) {
   const outputPath = process.env.GITHUB_OUTPUT;
@@ -26,7 +25,7 @@ function main() {
   const cargoPath = `${parsed.folder}/Cargo.toml`;
   const cargoLockPath = `${parsed.folder}/Cargo.lock`;
   const changelogPath = `${parsed.folder}/CHANGELOG.md`;
-  const cargoVersion = cargoUpdater.readVersion(fs.readFileSync(cargoPath, "utf8"));
+  const cargoVersion = readCargoPackageVersion(fs.readFileSync(cargoPath, "utf8"));
   if (cargoVersion !== parsed.version) {
     throw new Error(`${cargoPath} version is ${cargoVersion}, but tag ${tagName} declares ${parsed.version}`);
   }
@@ -35,7 +34,7 @@ function main() {
     throw new Error(`${cargoLockPath} is required for app-scoped releases`);
   }
 
-  const cargoLockVersion = cargoLockUpdater.forPackage(parsed.packageName).readVersion(fs.readFileSync(cargoLockPath, "utf8"));
+  const cargoLockVersion = readCargoLockPackageVersion(fs.readFileSync(cargoLockPath, "utf8"), parsed.packageName);
   if (cargoLockVersion !== parsed.version) {
     throw new Error(`${cargoLockPath} version for ${parsed.packageName} is ${cargoLockVersion}, but tag ${tagName} declares ${parsed.version}`);
   }
