@@ -1,6 +1,14 @@
 # Changelog
 
 All notable changes to this use case are documented in this file.
+## [0.1.7](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-fleet@solverforge-fleet@0.1.6...solverforge-fleet@solverforge-fleet@0.1.7) (2026-10-15)
+
+
+### Bug Fixes
+
+* **runtime:** target SolverForge 0.21.3 across the bundle ([9a87be4](https://github.com/SolverForge/solverforge-usecases/commit/9a87be40f5797a8c95d8b33b6af392497457a99a))
+
+
 ## [0.1.6](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-fleet@solverforge-fleet@0.1.5...solverforge-fleet@solverforge-fleet@0.1.6) (2026-10-14)
 
 
