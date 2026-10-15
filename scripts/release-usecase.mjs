@@ -65,6 +65,20 @@ function assertCleanWorktree() {
   }
 }
 
+// A detached HEAD (e.g. left behind by checking out a release tag to inspect
+// it) makes csemver's release commits unreachable from any branch; publishing
+// then needs a hand repair and a force-free fast-forward. Refuse instead.
+function assertOnBranch() {
+  const branch = execFileSync("git", ["branch", "--show-current"], {
+    encoding: "utf8",
+  }).trim();
+  if (!branch) {
+    throw new Error(
+      "release-usecase refuses a detached HEAD; checkout the release branch first (committing from detached HEAD strands the release commits)",
+    );
+  }
+}
+
 // csemver has no --prepared mode: reproduce the old skip map (bump, changelog,
 // and commit skipped, tag only) and verify the already-prepared surfaces by
 // hand first, exactly as verify-usecase-release-tag.cjs does.
@@ -158,6 +172,7 @@ async function main() {
   }
 
   if (!args.dryRun) assertCleanWorktree();
+  assertOnBranch();
   if (args.prepared) {
     const version = verifyPrepared(args.app, packageName);
     console.error(`prepared release for ${packageName}@${version} verified`);
