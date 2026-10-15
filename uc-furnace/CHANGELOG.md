@@ -1,6 +1,14 @@
 # Changelog
 
 All notable changes to this use case are documented in this file.
+## [2.0.4](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-furnace@solverforge-furnace@2.0.3...solverforge-furnace@solverforge-furnace@2.0.4) (2026-10-15)
+
+
+### Bug Fixes
+
+* **runtime:** target SolverForge 0.21.3 across the bundle ([9a87be4](https://github.com/SolverForge/solverforge-usecases/commit/9a87be40f5797a8c95d8b33b6af392497457a99a))
+
+
 ## [2.0.3](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-furnace@solverforge-furnace@2.0.2...solverforge-furnace@solverforge-furnace@2.0.3) (2026-10-14)
 
 
