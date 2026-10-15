@@ -12,7 +12,7 @@ name = "solverforge-furnace"
 path = "src/main.rs"
 
 [dependencies]
-solverforge = { version = "0.21.2", features = [
+solverforge = { version = "0.21.3", features = [
   "serde",
   "console",
   "verbose-logging",

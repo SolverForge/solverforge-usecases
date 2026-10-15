@@ -56,7 +56,7 @@ make help
 - Package: `solverforge-furnace`; version is declared in `Cargo.toml`
 - Release binary: `solverforge-furnace`
 - Rust: `1.95`
-- SolverForge runtime: `solverforge. `0.21.2`
+- SolverForge runtime: `solverforge. `0.21.3`
 - Browser UI assets: `solverforge-ui` `0.9.0`
 - Scaffold metadata: `solverforge-cli` `2.2.2` in `solverforge.app.toml`
 

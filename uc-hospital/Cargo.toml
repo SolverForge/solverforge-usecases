@@ -8,7 +8,7 @@ license = "Apache-2.0"
 publish = false
 
 [dependencies]
-solverforge = { version = "0.21.2", features = [
+solverforge = { version = "0.21.3", features = [
   "serde",
   "console",
   "verbose-logging",
