@@ -11,7 +11,7 @@ name = "solverforge_deliveries"
 path = "src/main.rs"
 
 [dependencies]
-solverforge = { version = "0.21.3", features = [
+solverforge = { version = "0.22.0", features = [
   "serde",
   "console",
   "verbose-logging",

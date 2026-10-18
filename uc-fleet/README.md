@@ -42,7 +42,7 @@ local command surface.
 
 - Package and release binary: `solverforge-fleet` `0.1.0`
 - Rust: `1.95`
-- SolverForge runtime: `solverforge` and `solverforge-core` `0.21.3`, locked
+- SolverForge runtime: `solverforge` and `solverforge-core` `0.22.0`, locked
   across the whole `solverforge-*` family
 - Browser UI assets: `solverforge-ui` `0.9.0`
 - Scaffold metadata: `solverforge-cli` `2.2.2` in `solverforge.app.toml`
