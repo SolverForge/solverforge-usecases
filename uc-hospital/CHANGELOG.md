@@ -1,6 +1,14 @@
 # Changelog
 
 All notable changes to this use case are documented in this file.
+## [2.0.11](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-hospital@solverforge-hospital@2.0.10...solverforge-hospital@solverforge-hospital@2.0.11) (2026-10-18)
+
+
+### Bug Fixes
+
+* **runtime:** target SolverForge 0.22.0 across the bundle ([36303f3](https://github.com/SolverForge/solverforge-usecases/commit/36303f3f059b78e5618f61ebb7c920c80c5c115f))
+
+
 ## [2.0.10](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-hospital@solverforge-hospital@2.0.9...solverforge-hospital@solverforge-hospital@2.0.10) (2026-10-15)
 
 
