@@ -132,7 +132,7 @@ test-frontend: test-frontend-syntax
 test-e2e: build-release require-node
 	@printf "$(PROGRESS) Running browser smoke test on port $(E2E_PORT)...\n"
 	@log=$$(mktemp); \
-	PORT=$(E2E_PORT) target/release/$(APP_NAME) >"$$log" 2>&1 & \
+	PORT=$(E2E_PORT) "$${CARGO_TARGET_DIR:-target}/release/$(APP_NAME)" >"$$log" 2>&1 & \
 	pid=$$!; \
 	trap 'kill $$pid >/dev/null 2>&1 || true; rm -f "$$log"' EXIT INT TERM; \
 	i=0; \
