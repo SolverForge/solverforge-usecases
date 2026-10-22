@@ -22,7 +22,7 @@ module.exports = {
     },
   },
   webServer: {
-    command: `PORT=${port} ${path.join(rootDir, 'target/release/solverforge_fsr')}`,
+    command: `PORT=${port} ${JSON.stringify(path.resolve(rootDir, process.env.CARGO_TARGET_DIR || 'target', 'release/solverforge_fsr'))}`,
     cwd: rootDir,
     url: `${baseURL}/health`,
     timeout: 20_000,

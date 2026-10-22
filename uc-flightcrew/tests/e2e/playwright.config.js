@@ -12,7 +12,7 @@ module.exports = {
     launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE || '/usr/bin/chromium', args: ['--no-sandbox'] },
   },
   webServer: {
-    command: `PORT=7867 ${path.join(rootDir, 'target/release/solverforge-flightcrew')}`,
+    command: `PORT=7867 ${JSON.stringify(path.resolve(rootDir, process.env.CARGO_TARGET_DIR || 'target', 'release/solverforge-flightcrew'))}`,
     cwd: rootDir,
     url: 'http://127.0.0.1:7867/health',
     reuseExistingServer: false,

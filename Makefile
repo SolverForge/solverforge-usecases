@@ -146,6 +146,7 @@ test-e2e: banner require-node
 
 test-release-tools: require-node
 	@npm run test:release-tools
+	@node --test scripts/playwright-target.test.cjs
 
 test-one:
 	@test -n "$(TEST)" || (printf "$(RED)$(CROSS) TEST=name is required$(RESET)\n" && exit 1)
