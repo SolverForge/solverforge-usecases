@@ -1,6 +1,23 @@
 # Changelog
 
 All notable changes to this use case are documented in this file.
+## [0.2.0](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-orders@0.1.5...solverforge-orders@0.2.0) (2026-10-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* **telemetry:** telemetry responses replace the `phase` object with a `phases` array.
+
+### Features
+
+* **telemetry:** report per-phase solve telemetry on SolverForge 0.23.0 ([372c300](https://github.com/SolverForge/solverforge-usecases/commit/372c30052272948daa5045bbefcb2c394352cf1f))
+
+
+### Bug Fixes
+
+* **e2e:** honor Cargo target directory in browser servers ([556cc7a](https://github.com/SolverForge/solverforge-usecases/commit/556cc7aedeff3eaaa821917f72f4f596c98eb52a))
+
+
 ## [0.1.5](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-orders@solverforge-orders@0.1.4...solverforge-orders@solverforge-orders@0.1.5) (2026-10-18)
 
 
