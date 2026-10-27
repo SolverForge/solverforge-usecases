@@ -1,6 +1,15 @@
 # Changelog
 
 All notable changes to this use case are documented in this file.
+## [2.0.6](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-furnace@2.0.5...solverforge-furnace@2.0.6) (2026-10-27)
+
+
+### Bug Fixes
+
+* **e2e:** follow shared Cargo targets in remaining smoke servers ([10ba224](https://github.com/SolverForge/solverforge-usecases/commit/10ba2242ad374f410edb68c0429d437095249660))
+* **runtime:** target SolverForge 0.23.0 across the bundle ([836d2b9](https://github.com/SolverForge/solverforge-usecases/commit/836d2b9d5b3d6ede6f69f2e6b6fc2920121314cb))
+
+
 ## [2.0.5](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-furnace@solverforge-furnace@2.0.4...solverforge-furnace@solverforge-furnace@2.0.5) (2026-10-18)
 
 
