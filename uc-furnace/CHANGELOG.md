@@ -1,6 +1,14 @@
 # Changelog
 
 All notable changes to this use case are documented in this file.
+## [2.0.7](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-furnace@2.0.6...solverforge-furnace@2.0.7) (2026-10-27)
+
+
+### Bug Fixes
+
+* **furnace:** keep the schedule-task provider within one cancel window ([6d3df8a](https://github.com/SolverForge/solverforge-usecases/commit/6d3df8ae2677939395e1c856e08dcb61dd1f8d36))
+
+
 ## [2.0.6](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-furnace@2.0.5...solverforge-furnace@2.0.6) (2026-10-27)
 
 
