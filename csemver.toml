@@ -22,7 +22,7 @@ path = "."
 tagPrefix = "@PKG@"
 releaseCommitMessageFormat = "chore(@PACKAGE): release {{currentTag}}"
 commitUrlFormat = "https://github.com/SolverForge/solverforge-usecases/commit/{{hash}}"
-compareUrlFormat = "https://github.com/SolverForge/solverforge-usecases/compare/@PKG@{{previousTag}}...@PKG@{{currentTag}}"
+compareUrlFormat = "https://github.com/SolverForge/solverforge-usecases/compare/{{previousTag}}...{{currentTag}}"
 
 packageFiles = [
   # App manifest version — the single version read.

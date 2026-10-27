@@ -102,7 +102,7 @@ function verifyPrepared(app, packageName) {
     );
   }
 
-  const heading = readFileSync(changelog, "utf8").match(/^## (\d+\.\d+\.\d+)/m);
+  const heading = readFileSync(changelog, "utf8").match(/^## \[?(\d+\.\d+\.\d+)/m);
   if (!heading || heading[1] !== version) {
     throw new Error(
       `${changelog} is missing a ## ${version} heading for the prepared version`,

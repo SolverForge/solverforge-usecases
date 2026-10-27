@@ -125,8 +125,8 @@ make release-usecase APP=uc-hospital PREPARED=1
 Prepared mode verifies the three release surfaces and creates only the
 annotated app-prefixed tag. Do not combine `PREPARED=1` with `RELEASE_AS`.
 
-The release wrapper uses `commit-and-tag-version` with an app path filter,
-the app changelog, the app `Cargo.toml`, the app `Cargo.lock`, and an
+The release wrapper renders `csemver.toml` per app and runs csemver inside the
+app directory, so it releases with that app's path filter, the app changelog, the app `Cargo.toml`, the app `Cargo.lock`, and an
 app-prefixed tag. The split app Makefiles stay in place because each published
 `uc-*` directory becomes the root of a standalone Hugging Face Space after
 subtree splitting.

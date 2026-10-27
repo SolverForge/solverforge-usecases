@@ -3,12 +3,11 @@
   "private": true,
   "scripts": {
     "publish:usecases": "node scripts/publish-usecases.cjs",
-    "release:usecase": "node scripts/release-usecase.cjs",
+    "release:usecase": "node scripts/release-usecase.mjs",
     "test:release-tools": "node --test scripts/*.test.cjs",
     "verify:release-tag": "node scripts/verify-usecase-release-tag.cjs"
   },
   "devDependencies": {
-    "commit-and-tag-version": "^12.7.3",
     "playwright": "^1.60.0"
   }
 }
