@@ -1,6 +1,15 @@
 # Changelog
 
 All notable changes to this use case are documented in this file.
+## [2.0.12](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-hospital@2.0.11...solverforge-hospital@2.0.12) (2026-10-27)
+
+
+### Bug Fixes
+
+* **e2e:** honor Cargo target directory in browser servers ([556cc7a](https://github.com/SolverForge/solverforge-usecases/commit/556cc7aedeff3eaaa821917f72f4f596c98eb52a))
+* **runtime:** target SolverForge 0.23.0 across the bundle ([836d2b9](https://github.com/SolverForge/solverforge-usecases/commit/836d2b9d5b3d6ede6f69f2e6b6fc2920121314cb))
+
+
 ## [2.0.11](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-hospital@solverforge-hospital@2.0.10...solverforge-hospital@solverforge-hospital@2.0.11) (2026-10-18)
 
 
