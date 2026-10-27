@@ -1619,7 +1619,7 @@ dependencies = [
 
 [[package]]
 name = "solverforge-flightcrew"
-version = "0.1.5"
+version = "0.2.0"
 dependencies = [
  "axum",
  "parking_lot",
