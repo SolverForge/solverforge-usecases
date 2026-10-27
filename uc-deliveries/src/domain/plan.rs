@@ -162,7 +162,9 @@ impl Plan {
     pub(crate) fn test_solve_with_config(plan: Self, config: &solverforge::SolverConfig) -> Self {
         solverforge::__internal::try_run_solver_with_config_and_search(
             plan,
-            crate::constraints::create_constraints(),
+            // The runtime takes a constructor, not a built constraint set, so it
+            // can build an identical set for every parallel evaluator replica.
+            (|_: &Self| crate::constraints::create_constraints()) as fn(&Self) -> _,
             Self::descriptor(),
             Self::entity_count,
             solverforge::SolverRuntime::detached(),

@@ -111,7 +111,7 @@ It shows how to combine:
 │   polish.
 ├── solverforge.app.toml
 │   App metadata, demo IDs, model facts/entities/variables, the 30-constraint
-│   manifest, and the `solverforge 0.22.0` runtime target.
+│   manifest, and the `solverforge 0.23.0` runtime target.
 ├── Makefile
 │   Local build, validation, inline browser smoke, and Space/Docker commands.
 ├── Dockerfile
