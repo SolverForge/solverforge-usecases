@@ -16,6 +16,8 @@ use crate::solver::conflict_repair::assignment_value_is_hard_clean;
 mod schedule_task;
 
 pub(crate) use schedule_task::furnace_schedule_task_assignment_candidates;
+#[cfg(test)]
+pub(crate) use schedule_task::schedule_task_values_for_assignment;
 
 pub(crate) fn groups() -> Vec<ScalarGroup<Plan>> {
     let assignments = Plan::assignments();

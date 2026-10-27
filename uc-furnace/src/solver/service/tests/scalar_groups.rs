@@ -249,6 +249,38 @@ fn schedule_task_provider_emits_atomic_schedule_and_task_candidate() {
     );
 }
 
+#[test]
+fn schedule_task_values_are_the_best_order_keys_with_stable_ties() {
+    let mut plan = build_demo_problem();
+    for assignment in &mut plan.assignments {
+        assignment.assignment = assignment.compatible_assignments.first().copied();
+    }
+
+    for assignment_index in [0, plan.assignments.len() / 2, plan.assignments.len() - 1] {
+        let assignment = &plan.assignments[assignment_index];
+        // Reference: a comparison sort is stable, so equal keys stay in
+        // compatible_assignments order before the cut to the limit.
+        let mut expected = assignment
+            .compatible_assignments
+            .iter()
+            .copied()
+            .filter(|value| assignment.assignment != Some(*value))
+            .filter(|value| assignment_value_is_hard_clean(&plan, assignment_index, *value))
+            .collect::<Vec<_>>();
+        expected.sort_by_key(|value| {
+            furnace_assignment_local_search_value_order_key(&plan, assignment, *value)
+        });
+        expected.truncate(4);
+        assert!(!expected.is_empty());
+
+        assert_eq!(
+            scalar_groups::schedule_task_values_for_assignment(&plan, assignment_index, 4),
+            expected,
+            "assignment {assignment_index}"
+        );
+    }
+}
+
 fn assert_at_most_one_candidate_per_slot(candidates: &[ScalarCandidate<Plan>]) {
     let mut seen = std::collections::HashSet::new();
     for candidate in candidates {

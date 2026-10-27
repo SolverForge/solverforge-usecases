@@ -19,8 +19,8 @@ pub(crate) fn furnace_schedule_task_assignment_candidates(
     let mut per_assignment = Vec::new();
 
     for assignment_index in 0..plan.assignments.len() {
-        let mut values = schedule_task_values_for_assignment(plan, assignment_index);
-        values.truncate(values_per_assignment);
+        let values =
+            schedule_task_values_for_assignment(plan, assignment_index, values_per_assignment);
         per_assignment.push((assignment_index, values));
     }
 
@@ -47,7 +47,21 @@ pub(crate) fn furnace_schedule_task_assignment_candidates(
     candidates
 }
 
-fn schedule_task_values_for_assignment(plan: &Plan, assignment_index: usize) -> Vec<usize> {
+/// Returns the `limit` best hard-clean alternative slots for one assignment,
+/// best local-search order key first; equal keys keep their
+/// `compatible_assignments` order.
+///
+/// The provider runs inside a single candidate pull, which the solver cannot
+/// interrupt, so its cost bounds how quickly a cancel or time limit takes
+/// effect. The order key rescans the furnace schedule, and an assignment has
+/// thousands of clean slots, so each key is computed once per value rather
+/// than once per comparison. The cached sort is stable, which keeps the tie
+/// order.
+pub(crate) fn schedule_task_values_for_assignment(
+    plan: &Plan,
+    assignment_index: usize,
+    limit: usize,
+) -> Vec<usize> {
     let assignment = &plan.assignments[assignment_index];
     let mut values = assignment
         .compatible_assignments
@@ -56,9 +70,10 @@ fn schedule_task_values_for_assignment(plan: &Plan, assignment_index: usize) -> 
         .filter(|value| assignment.assignment != Some(*value))
         .filter(|value| assignment_value_is_hard_clean(plan, assignment_index, *value))
         .collect::<Vec<_>>();
-    values.sort_by_key(|value| {
+    values.sort_by_cached_key(|value| {
         furnace_assignment_local_search_value_order_key(plan, assignment, *value)
     });
+    values.truncate(limit);
     values
 }
 

@@ -551,7 +551,8 @@ fn replacement_roster_indices(
         }
         candidates.push(index);
     }
-    candidates.sort_by_key(|index| {
+    // Each key rescans the operator's roster, so compute it once per candidate.
+    candidates.sort_by_cached_key(|index| {
         let assignment = &plan.operator_shift_assignments[*index];
         (
             visible_shift_count_with_edits(plan, assignment.operator_idx, &[]),
@@ -612,7 +613,8 @@ fn task_reassignment_operator_indices(
         }
         operators.push(operator);
     }
-    operators.sort_by_key(|operator| {
+    // Each key rescans the operator's roster, so compute it once per operator.
+    operators.sort_by_cached_key(|operator| {
         (
             visible_shift_count_with_edits(plan, *operator, &[]),
             night_count_with_edits(plan, *operator, &[]),
