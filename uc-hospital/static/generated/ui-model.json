@@ -1,80 +1,50 @@
 {
+  "conflictRepairs": [],
+  "constraints": [
+    "assigned_shift",
+    "balance_assignments",
+    "desired_day",
+    "minimum_rest",
+    "one_shift_per_day",
+    "overlapping_shift",
+    "required_skill",
+    "unavailable_employee",
+    "undesired_day"
+  ],
   "entities": [
     {
+      "label": "Shift",
       "name": "shift",
-      "plural": "shifts",
-      "label": "Shifts"
+      "plural": "shifts"
     }
   ],
   "facts": [
     {
+      "label": "Employee",
       "name": "employee",
-      "plural": "employees",
-      "label": "Employees"
-    }
-  ],
-  "constraints": [
-    {
-      "name": "Assigned shift",
-      "type": "hard"
-    },
-    {
-      "name": "Required skill",
-      "type": "hard"
-    },
-    {
-      "name": "Overlapping shift",
-      "type": "hard"
-    },
-    {
-      "name": "At least 10 hours between 2 shifts",
-      "type": "hard"
-    },
-    {
-      "name": "One shift per day",
-      "type": "hard"
-    },
-    {
-      "name": "Unavailable employee",
-      "type": "hard"
-    },
-    {
-      "name": "Undesired day for employee",
-      "type": "soft"
-    },
-    {
-      "name": "Desired day for employee",
-      "type": "soft"
-    },
-    {
-      "name": "Balance employee assignments",
-      "type": "soft"
-    }
-  ],
-  "views": [
-    {
-      "id": "by-location",
-      "kind": "schedule-by-location",
-      "label": "By location",
-      "entity": "shift",
-      "entityPlural": "shifts",
-      "sourcePlural": "employees",
-      "variableField": "employeeIdx",
-      "allowsUnassigned": true,
-      "scalarHooks": {}
-    },
-    {
-      "id": "by-employee",
-      "kind": "schedule-by-employee",
-      "label": "By employee",
-      "entity": "shift",
-      "entityPlural": "shifts",
-      "sourcePlural": "employees",
-      "variableField": "employeeIdx",
-      "allowsUnassigned": true,
-      "scalarHooks": {}
+      "plural": "employees"
     }
   ],
   "scalarGroups": [],
-  "conflictRepairs": []
+  "views": [
+    {
+      "allowsUnassigned": true,
+      "countableRange": null,
+      "entity": "shift",
+      "entityPlural": "shifts",
+      "id": "shift-employee_idx",
+      "kind": "scalar",
+      "label": "Shift · employee_idx",
+      "listMetadata": {},
+      "scalarHooks": {
+        "candidateValues": "shift_employee_candidates",
+        "nearbyEntityCandidates": "shift_nearby_shift_candidates",
+        "nearbyEntityDistanceMeter": "shift_to_shift_nearby_distance",
+        "nearbyValueCandidates": "shift_nearby_employee_candidates",
+        "nearbyValueDistanceMeter": "shift_to_employee_nearby_distance"
+      },
+      "sourcePlural": "employees",
+      "variableField": "employee_idx"
+    }
+  ]
 }

@@ -94,6 +94,12 @@ Soft constraints:
 - Desired days are rewarded.
 - Assignments are balanced across employees.
 
+Each constraint is named after its module in `src/constraints/`, for example
+`minimum_rest`. `solverforge check` verifies that contract, and
+`/jobs/{id}/analysis` reports the id as each constraint's `name`. The browser
+shows the readable labels from `static/app/app-model.json`, such as "At least
+10 hours between 2 shifts".
+
 ## REST API
 
 - `GET /health`

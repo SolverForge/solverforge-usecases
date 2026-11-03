@@ -29,5 +29,5 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardSoftDecimalScore> {
                     .count() as i64,
             )
         })
-        .named("Undesired day for employee")
+        .named("undesired_day")
 }

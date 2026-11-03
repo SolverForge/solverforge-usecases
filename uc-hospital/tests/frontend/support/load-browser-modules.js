@@ -150,12 +150,16 @@ async function loadFullApp(options = {}) {
   const uiModel = options.uiModel || JSON.parse(
     fs.readFileSync(path.resolve(ROOT, 'static/generated/ui-model.json'), 'utf8'),
   );
+  const appModel = options.appModel || JSON.parse(
+    fs.readFileSync(path.resolve(ROOT, 'static/app/app-model.json'), 'utf8'),
+  );
   const demoData = options.demoData || { employees: [], shifts: [] };
 
   return withBrowserEnv({
     fetch: async (url) => {
       if (url === '/sf-config.json') return createJsonResponse(sfConfig);
       if (url === '/generated/ui-model.json') return createJsonResponse(uiModel);
+      if (url === '/app/app-model.json') return createJsonResponse(appModel);
       if (url === '/demo-data') return createJsonResponse([String(sfConfig.defaultDemoId || 'LARGE')]);
       if (url === `/demo-data/${String(sfConfig.defaultDemoId || 'LARGE')}`) return createJsonResponse(demoData);
       throw new Error(`unexpected fetch ${url}`);

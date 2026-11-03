@@ -1,0 +1,77 @@
+{
+  "collections": {
+    "shifts": "Shifts",
+    "employees": "Employees"
+  },
+  "constraints": [
+    {
+      "id": "assigned_shift",
+      "label": "Assigned shift",
+      "type": "hard"
+    },
+    {
+      "id": "required_skill",
+      "label": "Required skill",
+      "type": "hard"
+    },
+    {
+      "id": "overlapping_shift",
+      "label": "Overlapping shift",
+      "type": "hard"
+    },
+    {
+      "id": "minimum_rest",
+      "label": "At least 10 hours between 2 shifts",
+      "type": "hard"
+    },
+    {
+      "id": "one_shift_per_day",
+      "label": "One shift per day",
+      "type": "hard"
+    },
+    {
+      "id": "unavailable_employee",
+      "label": "Unavailable employee",
+      "type": "hard"
+    },
+    {
+      "id": "undesired_day",
+      "label": "Undesired day for employee",
+      "type": "soft"
+    },
+    {
+      "id": "desired_day",
+      "label": "Desired day for employee",
+      "type": "soft"
+    },
+    {
+      "id": "balance_assignments",
+      "label": "Balance employee assignments",
+      "type": "soft"
+    }
+  ],
+  "views": [
+    {
+      "id": "by-location",
+      "kind": "schedule-by-location",
+      "label": "By location",
+      "entity": "shift",
+      "entityPlural": "shifts",
+      "sourcePlural": "employees",
+      "variableField": "employeeIdx",
+      "allowsUnassigned": true,
+      "scalarHooks": {}
+    },
+    {
+      "id": "by-employee",
+      "kind": "schedule-by-employee",
+      "label": "By employee",
+      "entity": "shift",
+      "entityPlural": "shifts",
+      "sourcePlural": "employees",
+      "variableField": "employeeIdx",
+      "allowsUnassigned": true,
+      "scalarHooks": {}
+    }
+  ]
+}

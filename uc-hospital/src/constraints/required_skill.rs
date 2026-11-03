@@ -20,5 +20,5 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardSoftDecimalScore> {
             !employee.skills.contains(&shift.required_skill)
         })
         .penalize(HardSoftDecimalScore::of_hard_scaled(10 * SCORE_SCALE))
-        .named("Required skill")
+        .named("required_skill")
 }

@@ -34,5 +34,5 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardSoftDecimalScore> {
                 (600 - gap_minutes) * STRUCTURAL_MINUTE_HARD_UNITS * SCORE_SCALE,
             )
         }))
-        .named("At least 10 hours between 2 shifts")
+        .named("minimum_rest")
 }

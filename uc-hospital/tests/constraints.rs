@@ -45,7 +45,7 @@ fn self_joins_count_each_pair_once() {
     let analyses = constraints.evaluate_detailed(&schedule);
     let overlap = analyses
         .into_iter()
-        .find(|analysis| analysis.constraint_ref.name == "Overlapping shift")
+        .find(|analysis| analysis.constraint_ref.name == "overlapping_shift")
         .unwrap();
 
     assert_eq!(overlap.matches.len(), 1);
@@ -99,7 +99,7 @@ fn overnight_shift_penalizes_unavailable_end_date() {
     let analyses = constraints.evaluate_detailed(&schedule);
     let unavailable = analyses
         .into_iter()
-        .find(|analysis| analysis.constraint_ref.name == "Unavailable employee")
+        .find(|analysis| analysis.constraint_ref.name == "unavailable_employee")
         .unwrap();
 
     assert_eq!(
@@ -137,7 +137,7 @@ fn overnight_shift_rewards_desired_end_date() {
     let analyses = constraints.evaluate_detailed(&schedule);
     let desired = analyses
         .into_iter()
-        .find(|analysis| analysis.constraint_ref.name == "Desired day for employee")
+        .find(|analysis| analysis.constraint_ref.name == "desired_day")
         .unwrap();
 
     assert_eq!(desired.score.soft_score(), HardSoftDecimalScore::of_soft(1));
@@ -154,7 +154,7 @@ fn employee_joined_analysis_reports_required_skill_match() {
     let analyses = constraints.evaluate_detailed(&schedule);
     let required_skill = analyses
         .into_iter()
-        .find(|analysis| analysis.constraint_ref.name == "Required skill")
+        .find(|analysis| analysis.constraint_ref.name == "required_skill")
         .unwrap();
 
     assert_eq!(required_skill.matches.len(), 1);
@@ -177,7 +177,7 @@ fn overnight_and_next_day_shift_violate_one_shift_per_day() {
     let analyses = constraints.evaluate_detailed(&schedule);
     let one_per_day = analyses
         .into_iter()
-        .find(|analysis| analysis.constraint_ref.name == "One shift per day")
+        .find(|analysis| analysis.constraint_ref.name == "one_shift_per_day")
         .unwrap();
 
     assert_eq!(one_per_day.matches.len(), 1);
@@ -226,7 +226,7 @@ fn one_shift_per_day_does_not_cross_employee_boundaries() {
     let analyses = constraints.evaluate_detailed(&schedule);
     let one_per_day = analyses
         .into_iter()
-        .find(|analysis| analysis.constraint_ref.name == "One shift per day")
+        .find(|analysis| analysis.constraint_ref.name == "one_shift_per_day")
         .unwrap();
 
     assert!(one_per_day.matches.is_empty());

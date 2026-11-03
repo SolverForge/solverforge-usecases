@@ -1,6 +1,7 @@
 import { buildAnalysisBody } from './schedule/analysis-modal.mjs';
 import { createAppShell } from './shell/app-shell.mjs';
 import { createAppState } from './shell/app-state.mjs';
+import { withConstraintLabels } from './shell/app-model.mjs';
 import { loadAppConfig } from './shell/config-loader.mjs';
 import { renderDataTables } from './shell/data-panel.mjs';
 import { createSolverController } from './shell/solver-controller.mjs';
@@ -19,7 +20,10 @@ export async function bootApp(root = globalThis) {
 
   const { config, uiModel, backend, demoId } = await loadAppConfig(root);
   const state = createAppState(uiModel.views[0].id);
-  const statusBar = sf.createStatusBar({ constraints: uiModel.constraints });
+  const statusBar = withConstraintLabels(
+    sf.createStatusBar({ constraints: uiModel.constraints }),
+    uiModel.constraints,
+  );
   const shell = createAppShell({
     root,
     sf,

@@ -1,3 +1,5 @@
+import { buildBrowserModel } from './app-model.mjs';
+
 // Lightweight JSON fetch helper used during browser boot.
 async function requestJson(root, path, options = undefined) {
   const fetchFn = root.fetch || globalThis.fetch;
@@ -21,30 +23,44 @@ function validateConfig(config) {
   }
 }
 
-// Guards the generated UI model before the app tries to render from it.
+// Guards the CLI-generated UI model before the app reads collections and constraint ids from it.
 function validateUiModel(uiModel) {
   const valid = uiModel
     && Array.isArray(uiModel.constraints)
-    && Array.isArray(uiModel.views)
     && Array.isArray(uiModel.entities)
     && Array.isArray(uiModel.facts);
   if (!valid) {
-    throw new Error('generated/ui-model.json must define constraints, views, entities, and facts arrays');
+    throw new Error('generated/ui-model.json must define constraints, entities, and facts arrays');
   }
-  if (!uiModel.views.length) {
-    throw new Error('generated/ui-model.json must define at least one view');
+}
+
+// Guards the app-owned labels, constraint catalog, and schedule views.
+function validateAppModel(appModel) {
+  const valid = appModel
+    && appModel.collections
+    && typeof appModel.collections === 'object'
+    && Array.isArray(appModel.constraints)
+    && Array.isArray(appModel.views);
+  if (!valid) {
+    throw new Error('app/app-model.json must define collections, constraints, and views');
+  }
+  if (!appModel.views.length) {
+    throw new Error('app/app-model.json must define at least one view');
   }
 }
 
 // Loads every browser-boot dependency and returns the assembled boot context.
 export async function loadAppConfig(root = globalThis) {
-  const [config, uiModel] = await Promise.all([
+  const [config, generatedUiModel, appModel] = await Promise.all([
     requestJson(root, '/sf-config.json'),
     requestJson(root, '/generated/ui-model.json'),
+    requestJson(root, '/app/app-model.json'),
   ]);
 
   validateConfig(config);
-  validateUiModel(uiModel);
+  validateUiModel(generatedUiModel);
+  validateAppModel(appModel);
+  const uiModel = buildBrowserModel(generatedUiModel, appModel);
 
   const backend = root.SF.createBackend({ type: 'axum', baseUrl: '' });
   const availableDemoIds = await backend.listDemoData();

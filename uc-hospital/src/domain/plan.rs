@@ -5,7 +5,10 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 use solverforge::prelude::*;
 
-use super::{CareHub, Employee};
+use super::CareHub;
+// @solverforge:begin solution-imports
+use super::Employee;
+// @solverforge:end solution-imports
 
 /// Work item that the solver must assign to exactly one employee or leave open.
 ///
@@ -28,6 +31,7 @@ pub struct Shift {
     pub required_skill: String,
     #[serde(skip)]
     pub touched_dates: Vec<NaiveDate>,
+    // @solverforge:begin entity-variables
     // SolverForge mutates this scalar slot. The value is an index into
     // `Plan.employees`; `Employee.id` remains transport identity for API/UI use.
     #[planning_variable(
@@ -40,6 +44,7 @@ pub struct Shift {
         nearby_entity_distance_meter = "shift_to_shift_nearby_distance"
     )]
     pub employee_idx: Option<usize>,
+    // @solverforge:end entity-variables
 }
 
 impl Shift {
@@ -61,7 +66,9 @@ impl Shift {
             location,
             required_skill: required_skill.into(),
             touched_dates: Vec::new(),
+            // @solverforge:begin entity-variable-init
             employee_idx: None,
+            // @solverforge:end entity-variable-init
         }
     }
 
@@ -84,10 +91,12 @@ impl Shift {
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Plan {
+    // @solverforge:begin solution-collections
     #[problem_fact_collection]
     pub employees: Vec<Employee>,
     #[planning_entity_collection]
     pub shifts: Vec<Shift>,
+    // @solverforge:end solution-collections
     #[planning_score]
     pub score: Option<HardSoftDecimalScore>,
     #[serde(skip)]
@@ -98,10 +107,18 @@ pub struct Plan {
 
 impl Plan {
     /// Builds a plan and immediately restores all derived runtime helpers.
-    pub fn new(employees: Vec<Employee>, shifts: Vec<Shift>) -> Self {
+    #[rustfmt::skip]
+    pub fn new(
+        // @solverforge:begin solution-constructor-params
+        employees: Vec<Employee>,
+        shifts: Vec<Shift>,
+        // @solverforge:end solution-constructor-params
+    ) -> Self {
         let mut schedule = Self {
+            // @solverforge:begin solution-constructor-init
             employees,
             shifts,
+            // @solverforge:end solution-constructor-init
             score: None,
             employee_indices: Vec::new(),
             shift_indices: Vec::new(),

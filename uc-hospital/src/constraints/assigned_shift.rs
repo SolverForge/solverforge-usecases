@@ -10,5 +10,5 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardSoftDecimalScore> {
         .shifts()
         .unassigned()
         .penalize(HardSoftDecimalScore::of_hard_scaled(SCORE_SCALE))
-        .named("Assigned shift")
+        .named("assigned_shift")
 }

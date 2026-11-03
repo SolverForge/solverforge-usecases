@@ -164,12 +164,17 @@ UI helper.
 │   ├── sf-config.json
 │   │   Runtime UI config for the stock frontend shell.
 │   ├── generated/ui-model.json
-│   │   Generated view metadata used by `solverforge-ui`.
+│   │   CLI-owned model metadata: collections and constraint ids.
+│   │   `solverforge generate` and `solverforge destroy` rewrite it.
 │   └── app/
+│       ├── app-model.json
+│       │   App-owned constraint labels, hard/soft types, collection
+│       │   headings, and the two schedule views.
 │       ├── main.mjs
 │       │   Browser boot and wiring.
 │       ├── shell/
-│       │   App shell, state, solver controls, and panels.
+│       │   App shell, state, solver controls, panels, and the
+│       │   `app-model.mjs` merge of the generated and app-owned models.
 │       ├── schedule/
 │       │   Hospital-specific grouping, presentation, and rail rendering.
 │       └── views/registry.mjs

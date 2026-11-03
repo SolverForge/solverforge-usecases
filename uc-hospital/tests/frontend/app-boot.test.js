@@ -71,6 +71,13 @@ test('terminal Solve is exposed by the stock header and restarts through cleanup
           constraints: [],
           entities: [],
           facts: [],
+          views: [],
+        });
+      }
+      if (url === '/app/app-model.json') {
+        return createJsonResponse({
+          collections: {},
+          constraints: [],
           views: [{ id: 'schedule', label: 'Schedule', kind: 'timeline-by-location' }],
         });
       }

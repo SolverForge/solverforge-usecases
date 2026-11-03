@@ -1,3 +1,6 @@
+scalar_groups = []
+conflict_repairs = []
+
 [app]
 name = "SolverForge Hospital"
 starter = "neutral-shell"
@@ -16,6 +19,8 @@ available_sizes = ["LARGE"]
 [solution]
 name = "Plan"
 score = "HardSoftDecimalScore"
+scalar_groups_path = ""
+conflict_repairs_path = ""
 
 [[facts]]
 name = "employee"
@@ -35,6 +40,11 @@ kind = "scalar"
 range = "employees"
 elements = ""
 allows_unassigned = true
+candidate_values = "shift_employee_candidates"
+nearby_value_candidates = "shift_nearby_employee_candidates"
+nearby_entity_candidates = "shift_nearby_shift_candidates"
+nearby_value_distance_meter = "shift_to_employee_nearby_distance"
+nearby_entity_distance_meter = "shift_to_shift_nearby_distance"
 enabled = true
 
 [[constraints]]
@@ -43,13 +53,13 @@ module = "assigned_shift"
 enabled = true
 
 [[constraints]]
-name = "required_skill"
-module = "required_skill"
+name = "balance_assignments"
+module = "balance_assignments"
 enabled = true
 
 [[constraints]]
-name = "overlapping_shift"
-module = "overlapping_shift"
+name = "desired_day"
+module = "desired_day"
 enabled = true
 
 [[constraints]]
@@ -63,6 +73,16 @@ module = "one_shift_per_day"
 enabled = true
 
 [[constraints]]
+name = "overlapping_shift"
+module = "overlapping_shift"
+enabled = true
+
+[[constraints]]
+name = "required_skill"
+module = "required_skill"
+enabled = true
+
+[[constraints]]
 name = "unavailable_employee"
 module = "unavailable_employee"
 enabled = true
@@ -70,14 +90,4 @@ enabled = true
 [[constraints]]
 name = "undesired_day"
 module = "undesired_day"
-enabled = true
-
-[[constraints]]
-name = "desired_day"
-module = "desired_day"
-enabled = true
-
-[[constraints]]
-name = "balance_assignments"
-module = "balance_assignments"
 enabled = true

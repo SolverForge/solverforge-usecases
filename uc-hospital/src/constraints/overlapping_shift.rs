@@ -24,5 +24,5 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardSoftDecimalScore> {
                 overlap_minutes * STRUCTURAL_MINUTE_HARD_UNITS * SCORE_SCALE,
             )
         }))
-        .named("Overlapping shift")
+        .named("overlapping_shift")
 }

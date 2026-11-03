@@ -17,5 +17,5 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardSoftDecimalScore> {
                     .any(|date| b.touched_dates().contains(date))
         })
         .penalize(HardSoftDecimalScore::of_hard_scaled(20 * SCORE_SCALE))
-        .named("One shift per day")
+        .named("one_shift_per_day")
 }

@@ -1,15 +1,17 @@
+import { humanizeConstraintId } from '../shell/app-model.mjs';
+
 // Accept either the raw analysis body or the `/analysis` wrapper returned by the backend.
 function normalizeAnalysis(analysis) {
   return analysis && analysis.analysis ? analysis.analysis : analysis;
 }
 
-// Lets the modal recover constraint type labels even when the backend response omits them.
-function constraintTypeLookup(constraints) {
-  return new Map((constraints || []).map((constraint) => [constraint.name, constraint.type]));
+// Maps analysis constraint ids to the readable label and hard/soft type from the browser model.
+function constraintLookup(constraints) {
+  return new Map((constraints || []).map((constraint) => [constraint.id, constraint]));
 }
 
 // Renders one analysis table into the modal container.
-function appendAnalysisSection(document, container, title, analysis, constraintTypes) {
+function appendAnalysisSection(document, container, title, analysis, constraintsById) {
   const analysisBody = normalizeAnalysis(analysis);
   if (!analysisBody || !Array.isArray(analysisBody.constraints)) return;
 
@@ -43,10 +45,12 @@ function appendAnalysisSection(document, container, title, analysis, constraintT
 
   const tbody = document.createElement('tbody');
   analysisBody.constraints.forEach((constraint) => {
+    const known = constraintsById.get(constraint.name);
     const row = document.createElement('tr');
+    row.dataset.constraintId = String(constraint.name || '');
     [
-      constraint.name || '',
-      constraint.constraintType || constraint.type || constraintTypes.get(constraint.name) || '',
+      known ? known.name : humanizeConstraintId(constraint.name),
+      constraint.constraintType || constraint.type || (known && known.type) || '',
       constraint.score || '',
       String(constraint.matchCount != null ? constraint.matchCount : 0),
     ].forEach((value) => {
@@ -63,7 +67,7 @@ function appendAnalysisSection(document, container, title, analysis, constraintT
 // Builds DOM content instead of raw HTML so tests can verify escaping and structure.
 export function buildAnalysisBody(document, analysis, constraints = []) {
   const analysisBody = normalizeAnalysis(analysis);
-  const constraintTypes = constraintTypeLookup(constraints);
+  const constraintsById = constraintLookup(constraints);
   const container = document.createElement('div');
 
   if (!analysisBody || !Array.isArray(analysisBody.constraints)) {
@@ -73,7 +77,7 @@ export function buildAnalysisBody(document, analysis, constraints = []) {
     return container;
   }
 
-  appendAnalysisSection(document, container, 'Current retained snapshot', analysisBody, constraintTypes);
+  appendAnalysisSection(document, container, 'Current retained snapshot', analysisBody, constraintsById);
 
   return container;
 }

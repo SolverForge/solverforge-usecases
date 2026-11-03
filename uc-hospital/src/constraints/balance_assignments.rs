@@ -8,5 +8,5 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardSoftDecimalScore> {
         .shifts()
         .balance(|shift: &Shift| shift.employee_idx)
         .penalize(HardSoftDecimalScore::one_soft())
-        .named("Balance employee assignments")
+        .named("balance_assignments")
 }
