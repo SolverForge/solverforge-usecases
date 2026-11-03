@@ -166,6 +166,14 @@ make ci-local
 tests. `make ci-local` adds formatting, clippy, release build, and Docker image
 build.
 
+The first `POST /jobs` downloads the Bergamo road network from the public
+Overpass API (overpass-api.de) and caches it in `.osm_cache/`; later jobs and
+restarts reuse the cache. That first solve therefore needs outbound HTTPS. A
+failed download returns `503` with a JSON body `{"error": "routing data
+unavailable: ..."}` that names the cause, and a failed `GET /jobs/{id}/routes`
+geometry build returns its status with a `route geometry unavailable: ...`
+body. `make test` stays offline.
+
 ## Hugging Face Space Deployment
 
 This repo is Docker-Space ready. The Space reads the README front matter,
@@ -202,8 +210,8 @@ make space-run
    retained score analysis counts only real duplicate groups.
 8. `src/solver/service.rs`
    Retained-job orchestration over `SolverManager<FieldServicePlan>`.
-9. `src/api/routes.rs`, `src/api/dto.rs`, `src/api/route_geometry.rs`, and
-   `src/api/sse.rs`
+9. `src/api/routes.rs`, `src/api/dto.rs`, `src/api/route_geometry.rs`,
+   `src/api/errors.rs`, and `src/api/sse.rs`
    HTTP routes, transport DTOs, route geometry, and live-event streaming.
 10. `static/app.js` and `static/app-*.js`
     Browser lifecycle, dataset loading, route rendering, maps, tables, and API

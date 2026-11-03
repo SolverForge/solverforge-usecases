@@ -4,24 +4,9 @@
 //! browser asks for drawable road geometry only for retained snapshots, and this
 //! module converts those route legs into per-segment DTOs.
 
-use axum::http::StatusCode;
-
 use super::route_dto::{RouteGeometryStatus, RouteSegmentDto, TechnicianRouteGeometryDto};
 use crate::data::{load_network, DemoDataError};
 use crate::domain::{FieldServicePlan, TravelLeg};
-
-pub(super) fn status_from_routing_error(error: solverforge_maps::RoutingError) -> StatusCode {
-    eprintln!("Bergamo route geometry failed: {error}");
-    match error {
-        solverforge_maps::RoutingError::InvalidCoordinate { .. } => StatusCode::BAD_REQUEST,
-        solverforge_maps::RoutingError::Cancelled => StatusCode::REQUEST_TIMEOUT,
-        solverforge_maps::RoutingError::Network(_)
-        | solverforge_maps::RoutingError::Parse(_)
-        | solverforge_maps::RoutingError::Io(_)
-        | solverforge_maps::RoutingError::SnapFailed { .. }
-        | solverforge_maps::RoutingError::NoPath { .. } => StatusCode::BAD_GATEWAY,
-    }
-}
 
 pub(super) async fn build_route_geometry(
     plan: &FieldServicePlan,

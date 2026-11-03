@@ -4,6 +4,7 @@
 //! geometry adapts road-network output, and `SolverService` owns retained jobs.
 
 mod dto;
+mod errors;
 mod route_dto;
 mod route_geometry;
 mod routes;

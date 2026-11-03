@@ -13,10 +13,11 @@ use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
 use super::dto::{analysis_response, JobAnalysisDto, JobSnapshotDto, JobSummaryDto, PlanDto};
+use super::errors::{route_geometry_failed, routing_data_unavailable, ApiError};
 use super::route_dto::JobRoutesDto;
-use super::route_geometry::{build_route_geometry, status_from_routing_error};
+use super::route_geometry::build_route_geometry;
 use super::sse;
-use crate::data::{generate, prepare_routing, DemoData, DemoDataError};
+use crate::data::{generate, prepare_routing, DemoData};
 use crate::solver::SolverService;
 
 /// Shared application state.
@@ -100,9 +101,9 @@ async fn list_demo_data() -> Json<DemoDataCatalogResponse> {
     })
 }
 
-async fn get_demo_data(Path(id): Path<String>) -> Result<Json<PlanDto>, StatusCode> {
+async fn get_demo_data(Path(id): Path<String>) -> Result<Json<PlanDto>, ApiError> {
     let demo = id.parse::<DemoData>().map_err(|_| StatusCode::NOT_FOUND)?;
-    let plan = generate(demo).await.map_err(status_from_demo_data_error)?;
+    let plan = generate(demo).await.map_err(routing_data_unavailable)?;
     Ok(Json(PlanDto::from_plan(&plan)))
 }
 
@@ -115,11 +116,13 @@ struct CreateJobResponse {
 async fn create_job(
     State(state): State<Arc<AppState>>,
     Json(dto): Json<PlanDto>,
-) -> Result<Json<CreateJobResponse>, StatusCode> {
+) -> Result<Json<CreateJobResponse>, ApiError> {
     let mut plan = dto.to_domain().map_err(|_| StatusCode::BAD_REQUEST)?;
+    // The first job downloads the Bergamo road network from overpass-api.de;
+    // a failed download returns 503 with the cause in the JSON body.
     prepare_routing(&mut plan)
         .await
-        .map_err(status_from_demo_data_error)?;
+        .map_err(routing_data_unavailable)?;
     let id = state
         .solver
         .start_job(plan)
@@ -183,7 +186,7 @@ async fn get_routes(
     State(state): State<Arc<AppState>>,
     Path(id): Path<String>,
     Query(query): Query<SnapshotQuery>,
-) -> Result<Json<JobRoutesDto>, StatusCode> {
+) -> Result<Json<JobRoutesDto>, ApiError> {
     let job_id = parse_job_id(&id)?;
     let snapshot = state
         .solver
@@ -191,7 +194,7 @@ async fn get_routes(
         .map_err(status_from_solver_error)?;
     let routes = build_route_geometry(&snapshot.solution)
         .await
-        .map_err(status_from_routing_error)?;
+        .map_err(route_geometry_failed)?;
     Ok(Json(JobRoutesDto::new(
         job_id,
         snapshot.snapshot_revision,
@@ -243,9 +246,4 @@ fn status_from_solver_error(error: solverforge::SolverManagerError) -> StatusCod
         solverforge::SolverManagerError::NoSnapshotAvailable { .. } => StatusCode::CONFLICT,
         solverforge::SolverManagerError::SnapshotNotFound { .. } => StatusCode::NOT_FOUND,
     }
-}
-
-fn status_from_demo_data_error(error: DemoDataError) -> StatusCode {
-    eprintln!("{error}");
-    StatusCode::SERVICE_UNAVAILABLE
 }

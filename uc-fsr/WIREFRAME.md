@@ -68,8 +68,11 @@ It shows how to combine:
 7. `src/api/routes.rs` deserializes the `PlanDto`; domain deserialization and
    `FieldServicePlan::normalize()` restore transient service-visit indexes and
    route shadow fields before routing preparation.
-8. `prepare_routing()` loads or fetches the Bergamo road network, computes the
-   full travel matrix, and replaces seed legs with road-network legs.
+8. `prepare_routing()` loads the Bergamo road network from `.osm_cache/` or
+   fetches it from the public Overpass API, computes the full travel matrix,
+   and replaces seed legs with road-network legs. A failed fetch becomes a
+   `503` whose JSON body `{"error": "routing data unavailable: ..."}` names the
+   cause (`src/api/errors.rs`).
 9. `SolverService` starts a retained solve through
    `SolverManager<FieldServicePlan>`.
 10. Solver events are converted by `src/solver/event_payload.rs` into
