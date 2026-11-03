@@ -5,10 +5,10 @@ use solverforge::IncrementalConstraint;
 
 /// HARD: cumulative parts consumption cannot exceed arrived supply.
 pub fn constraint() -> impl IncrementalConstraint<Plan, HardSoftScore> {
-    support::FleetConstraint::new(
-        "parts_availability",
+    support::FleetConstraint::scored(
         true,
         support::score_parts_availability,
         support::count_parts_availability,
     )
+    .named("parts_availability")
 }

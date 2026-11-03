@@ -5,10 +5,10 @@ use solverforge::IncrementalConstraint;
 
 /// SOFT: penalize use of the allowed low-priority deferral lever.
 pub fn constraint() -> impl IncrementalConstraint<Plan, HardSoftScore> {
-    support::FleetConstraint::new(
-        "minimize_deferral",
+    support::FleetConstraint::scored(
         false,
         support::score_minimize_deferral,
         support::count_deferrals,
     )
+    .named("minimize_deferral")
 }

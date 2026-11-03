@@ -5,10 +5,10 @@ use solverforge::IncrementalConstraint;
 
 /// SOFT: penalize daily demand above regular capacity but within overtime capacity.
 pub fn constraint() -> impl IncrementalConstraint<Plan, HardSoftScore> {
-    support::FleetConstraint::new(
-        "minimize_overtime",
+    support::FleetConstraint::scored(
         false,
         support::score_minimize_overtime,
         support::count_overtime,
     )
+    .named("minimize_overtime")
 }

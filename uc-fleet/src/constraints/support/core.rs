@@ -17,20 +17,43 @@ pub struct FleetConstraint {
 
 impl SingleConstraint for FleetConstraint {}
 
+/// Scoring functions for a fleet rule that still needs its constraint id.
+///
+/// `FleetConstraint::scored(...)` returns this value and `.named("<id>")`
+/// finishes it, mirroring the `.named(...)` step that ends a SolverForge
+/// constraint stream. The id is the constraint module name: score analysis,
+/// the browser, and `solverforge check` all identify the rule by it.
+pub struct UnnamedFleetConstraint {
+    hard: bool,
+    score: fn(&Plan) -> HardSoftScore,
+    matches: fn(&Plan) -> usize,
+}
+
+impl UnnamedFleetConstraint {
+    /// Attaches the constraint id reported by score analysis.
+    pub fn named(self, name: &'static str) -> FleetConstraint {
+        FleetConstraint {
+            name,
+            constraint_ref: ConstraintRef::new("", name),
+            hard: self.hard,
+            score: self.score,
+            matches: self.matches,
+            current_score: None,
+        }
+    }
+}
+
 impl FleetConstraint {
-    pub fn new(
-        name: &'static str,
+    /// Starts a full-recompute fleet rule; finish it with `.named("<id>")`.
+    pub fn scored(
         hard: bool,
         score: fn(&Plan) -> HardSoftScore,
         matches: fn(&Plan) -> usize,
-    ) -> Self {
-        Self {
-            name,
-            constraint_ref: ConstraintRef::new("", name),
+    ) -> UnnamedFleetConstraint {
+        UnnamedFleetConstraint {
             hard,
             score,
             matches,
-            current_score: None,
         }
     }
 

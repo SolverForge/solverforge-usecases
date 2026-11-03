@@ -5,10 +5,6 @@ use solverforge::IncrementalConstraint;
 
 /// SOFT: penalize movement away from baseline assignments during repair solves.
 pub fn constraint() -> impl IncrementalConstraint<Plan, HardSoftScore> {
-    support::FleetConstraint::new(
-        "minimize_churn",
-        false,
-        support::score_minimize_churn,
-        support::count_churn,
-    )
+    support::FleetConstraint::scored(false, support::score_minimize_churn, support::count_churn)
+        .named("minimize_churn")
 }
