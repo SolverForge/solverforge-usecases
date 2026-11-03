@@ -212,6 +212,8 @@ Supporting modules are split by responsibility:
   Vehicle and delivery rail models.
 - `static/app/models/formatters.mjs`
   Labels, icons, tones, clocks, and durations.
+- `static/app/models/constraint-labels.mjs`
+  Readable labels for the constraint ids that score analysis reports.
 - `static/app/ui/layout.mjs`
   Page shell and stock SolverForge UI component composition.
 - `static/app/ui/overview.mjs`

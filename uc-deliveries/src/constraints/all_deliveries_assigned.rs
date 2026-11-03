@@ -24,5 +24,5 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardSoftScore> {
         .penalize(hard_weight(|_: &Delivery| {
             HardSoftScore::of(UNASSIGNED_DELIVERY_HARD_PENALTY, 0)
         }))
-        .named("All Deliveries Assigned")
+        .named("all_deliveries_assigned")
 }

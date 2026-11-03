@@ -249,7 +249,7 @@ mod tests;
 /// satisfied, so the browser needs the classification alongside the score.
 fn constraint_type(name: &str) -> &'static str {
     match name {
-        "Total Travel Time" => "soft",
+        "total_travel_time" => "soft",
         _ => "hard",
     }
 }

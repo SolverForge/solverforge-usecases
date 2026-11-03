@@ -87,6 +87,11 @@ Soft constraints:
 
 - Total travel time is minimized.
 
+Each constraint is named after its module in `src/constraints/`, for example
+`vehicle_capacity`. `solverforge check` verifies that contract, and
+`/jobs/{id}/analysis` reports the id as each constraint's `name`. The browser
+shows the readable labels from `static/app/models/constraint-labels.mjs`.
+
 ## REST API
 
 - `GET /health`

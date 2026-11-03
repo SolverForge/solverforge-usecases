@@ -1,7 +1,9 @@
 import {
   clonePlan,
+  labelConstraint,
   refreshPlan,
   refreshServerPlan,
+  withConstraintLabels,
 } from './models.mjs';
 import { fetchJson, showError } from './ui/components.mjs';
 import { renderData } from './ui/data-tables.mjs';
@@ -31,14 +33,14 @@ export async function boot() {
   let activeTab = 'overview';
   let mapLocationSignature = null;
 
-  const statusBar = SF.createStatusBar({
+  const statusBar = withConstraintLabels(SF.createStatusBar({
     constraints: [
-      'all_deliveries_assigned',
-      'vehicle_capacity',
-      'delivery_time_windows',
-      'total_travel_time',
-    ],
-  });
+      { name: 'all_deliveries_assigned', type: 'hard' },
+      { name: 'vehicle_capacity', type: 'hard' },
+      { name: 'delivery_time_windows', type: 'hard' },
+      { name: 'total_travel_time', type: 'soft' },
+    ].map(labelConstraint),
+  }));
 
   const layout = createLayout({
     app,

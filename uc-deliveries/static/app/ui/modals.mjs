@@ -1,3 +1,5 @@
+import { constraintLabel } from '../models.mjs';
+
 export function buildRecommendationBody(payload, onApply) {
   const container = SF.el('div', { className: 'deliveries-modal-list' });
   if (!payload.candidates.length) {
@@ -51,7 +53,7 @@ export function buildAnalysisBody(analysis) {
       SF.el(
         'tr',
         null,
-        SF.el('td', null, constraint.name),
+        SF.el('td', null, constraintLabel(constraint.name)),
         SF.el('td', null, constraint.constraintType || constraint.type || ''),
         SF.el('td', null, String(constraint.weightMultiplier)),
         SF.el('td', null, constraint.score),

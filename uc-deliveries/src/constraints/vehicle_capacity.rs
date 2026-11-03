@@ -12,5 +12,5 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardSoftScore> {
         .penalize(hard_weight(|vehicle: &Vehicle| {
             HardSoftScore::of(vehicle.capacity_overage(), 0)
         }))
-        .named("Vehicle Capacity")
+        .named("vehicle_capacity")
 }

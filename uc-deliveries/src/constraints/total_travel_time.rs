@@ -7,5 +7,5 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardSoftScore> {
     ConstraintFactory::<Plan, HardSoftScore>::new()
         .vehicles()
         .penalize(|vehicle: &Vehicle| HardSoftScore::of(0, vehicle.total_travel_seconds()))
-        .named("Total Travel Time")
+        .named("total_travel_time")
 }

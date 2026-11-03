@@ -12,5 +12,5 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardSoftScore> {
         .penalize(hard_weight(|vehicle: &Vehicle| {
             HardSoftScore::of(vehicle.time_window_violation_seconds(), 0)
         }))
-        .named("Delivery Time Windows")
+        .named("delivery_time_windows")
 }

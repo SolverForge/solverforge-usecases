@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 
 import {
   buildDeliveryTimelineModel,
+  constraintLabel,
+  withConstraintLabels,
   buildVehicleTimelineModel,
   refreshPlan,
   refreshServerPlan,
@@ -139,4 +141,15 @@ test('route highlight style is keyed by vehicle id, not color reuse', () => {
     opacity: 0.2,
     weight: 2,
   });
+});
+
+test('constraint ids from score analysis render as readable labels', () => {
+  assert.equal(constraintLabel('all_deliveries_assigned'), 'All Deliveries Assigned');
+  assert.equal(constraintLabel('total_travel_time'), 'Total Travel Time');
+  assert.equal(constraintLabel('home_hub_match'), 'Home Hub Match');
+
+  const painted = [];
+  const statusBar = withConstraintLabels({ colorDotsFromAnalysis: (constraints) => painted.push(constraints) });
+  statusBar.colorDotsFromAnalysis([{ name: 'vehicle_capacity', type: 'hard', score: '0hard/0soft' }]);
+  assert.deepEqual(painted, [[{ name: 'Vehicle Capacity', type: 'hard', score: '0hard/0soft' }]]);
 });

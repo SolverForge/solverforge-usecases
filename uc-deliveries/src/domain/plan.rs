@@ -11,9 +11,11 @@ use serde::{Deserialize, Serialize};
 use solverforge::cvrp::ProblemData;
 use solverforge::prelude::*;
 
-// @solverforge:begin solution-imports
 use super::route_metrics::preview_for_plan;
-use super::{Delivery, PlanViewState, RoutingMode, Vehicle};
+use super::{PlanViewState, RoutingMode};
+// @solverforge:begin solution-imports
+use super::Delivery;
+use super::Vehicle;
 // @solverforge:end solution-imports
 
 #[planning_solution(
@@ -50,13 +52,22 @@ pub struct Plan {
 
 impl Plan {
     /// Builds a normalized plan from facts and route-owning vehicles.
-    pub fn new(name: impl Into<String>, deliveries: Vec<Delivery>, vehicles: Vec<Vehicle>) -> Self {
+    #[rustfmt::skip]
+    pub fn new(
+        name: impl Into<String>,
+        // @solverforge:begin solution-constructor-params
+        deliveries: Vec<Delivery>,
+        vehicles: Vec<Vehicle>,
+        // @solverforge:end solution-constructor-params
+    ) -> Self {
         let mut plan = Self {
             name: name.into(),
             routing_mode: RoutingMode::default(),
             view_state: PlanViewState::default(),
+            // @solverforge:begin solution-constructor-init
             deliveries,
             vehicles,
+            // @solverforge:end solution-constructor-init
             score: None,
             prepared_problem_data: Vec::new(),
         };
