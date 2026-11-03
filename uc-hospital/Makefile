@@ -186,7 +186,7 @@ test-slow: banner
 	@printf "$(CYAN)$(BOLD)║     Slow Acceptance Solve            ║$(RESET)\n"
 	@printf "$(CYAN)$(BOLD)╚══════════════════════════════════════╝$(RESET)\n\n"
 	@printf "$(ARROW) $(BOLD)Running large demo acceptance solve...$(RESET)\n"
-	@cargo test large_demo_solves_to_feasible_terminal_state -- --ignored --nocapture && \
+	@cargo test --release large_demo_solves_to_feasible_terminal_state -- --ignored --nocapture && \
 		printf "\n$(GREEN)$(CHECK) Slow acceptance solve passed$(RESET)\n\n" || \
 		(printf "\n$(RED)$(CROSS) Slow acceptance solve failed$(RESET)\n\n" && exit 1)
 

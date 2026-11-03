@@ -142,5 +142,6 @@ make ci-local
 
 `make test` covers Rust rules and distance branches, frontend transforms, and a
 real Playwright lifecycle smoke. `make test-slow` requires the deterministic
-demo to terminate at zero hard with every step assigned once. `make ci-local`
-also runs formatting, Clippy, release build, and Docker build.
+demo to terminate at zero hard with every step assigned once; it builds in the
+release profile, because the solve runs against a wall-clock limit.
+`make ci-local` also runs formatting, Clippy, release build, and Docker build.

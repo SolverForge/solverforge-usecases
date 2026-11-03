@@ -60,7 +60,7 @@ test-e2e: require-playwright build-release
 	$(PLAYWRIGHT) test --config tests/e2e/playwright.config.js
 
 test-slow:
-	cargo test standard_demo_solves_to_zero_hard_with_every_step_assigned_once -- --ignored --nocapture
+	cargo test --release standard_demo_solves_to_zero_hard_with_every_step_assigned_once -- --ignored --nocapture
 
 test-one:
 	cargo test $(TEST) -- --nocapture

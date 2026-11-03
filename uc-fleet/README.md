@@ -195,7 +195,8 @@ make test-slow
 browser smoke against the release binary. `make ci-local` adds
 formatting, clippy, a release build, and the Docker image build. `make
 pre-release` adds the ignored full `BASELINE_FULL` solve, which must terminate
-completed with a zero hard score.
+completed with a zero hard score. `make test-slow` builds that solve in the
+release profile, because it runs against a wall-clock limit.
 
 ## Deployment
 

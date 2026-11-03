@@ -41,7 +41,8 @@ Keep the canonical solution name `Plan` and the public demo id `STANDARD`.
 - `make test-e2e` runs the real browser smoke.
 - `make ci-local` runs formatting, clippy, release build, standard tests, and
   the Space Docker image build.
-- `make test-slow` runs the ignored `STANDARD` acceptance solve.
+- `make test-slow` runs the ignored `STANDARD` acceptance solve in the release
+  profile.
 - `make pre-release` runs `ci-local` plus the slow acceptance solve.
 - `cargo test` runs Rust unit tests.
 - `PORT=7861 cargo run --bin solverforge-furnace` runs the app on an alternate

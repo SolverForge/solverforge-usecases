@@ -46,7 +46,8 @@ is deliberately equivalent to the source `HardSoftDecimalScore` here.
 - `make install-e2e` installs the Playwright version pinned in `package.json`
   (and Playwright's Chromium when no system Chromium exists).
 - `make test` runs Rust, frontend, and Playwright tests.
-- `make test-slow` requires zero hard score and exact-once assignment.
+- `make test-slow` requires zero hard score and exact-once assignment; it runs
+  in the release profile because the solve has a wall-clock limit.
 - `make ci-local` adds formatting, Clippy, release, and Docker validation.
 - `solverforge check` validates managed model metadata and generated UI model.
 

@@ -101,7 +101,8 @@ make ci-local
 ```
 
 `make test` covers Rust rules, JavaScript transforms, and the real Playwright
-browser flow. `make test-slow` executes the full 30-second solve and requires a
+browser flow. `make test-slow` executes the full 30-second solve in the release
+profile, because the solve runs against a wall-clock limit, and requires a
 zero-hard terminal score. `make ci-local` also checks formatting, Clippy, the
 release build, and the Docker image.
 

@@ -195,6 +195,8 @@ make test-slow
 `make test` runs Rust tests, frontend syntax checks, and a Playwright browser
 smoke. `make ci-local` adds formatting, clippy, release build, and Docker image
 build. `make pre-release` runs `ci-local` plus the slow acceptance solve.
+`make test-slow` builds the acceptance solve in the release profile, because
+the solve runs against a wall-clock limit.
 
 ## Deployment
 

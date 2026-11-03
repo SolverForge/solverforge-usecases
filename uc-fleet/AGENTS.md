@@ -29,7 +29,8 @@ Keep the solution name `Plan`. Public demo IDs are `BASELINE`,
 - `make install-e2e` installs the Playwright version pinned in `package.json`
   (and Playwright's Chromium when no system Chromium exists).
 - `make test-e2e` runs the browser smoke against the release binary.
-- `make test-slow` runs the ignored full `BASELINE_FULL` acceptance solve.
+- `make test-slow` runs the ignored full `BASELINE_FULL` acceptance solve in the
+  release profile.
 - `make ci-local` runs formatting, clippy, release build, standard tests, and Docker build.
 - `make pre-release` runs `ci-local` plus the slow acceptance solve.
 - `PORT=7861 cargo run --bin solverforge-fleet` uses an alternate port.

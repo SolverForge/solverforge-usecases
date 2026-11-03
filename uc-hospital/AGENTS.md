@@ -28,14 +28,15 @@ This project depends on the published `solverforge` and `solverforge-ui` crates.
 - `make test-e2e` — run the real browser Playwright smoke.
 - `make ci-local` — run the Space-oriented local CI pipeline: fmt, clippy,
   release build, standard tests, and Docker image build.
-- `make test-slow` — run the ignored large-demo acceptance solve.
+- `make test-slow` — run the ignored large-demo acceptance solve in the release
+  profile; the solve has a 30-second wall-clock limit.
 - `make pre-release` — run `make ci-local` plus the slow acceptance solve.
 - `make space-build` — build the Docker image used by the Docker-based Space
   deployment path.
 - `cargo run --release --bin solverforge-hospital` — run the app locally on
   `:7860`.
 - `cargo test` — run Rust unit and integration tests.
-- `cargo test large_demo_solves_to_feasible_terminal_state -- --ignored --nocapture`
+- `cargo test --release large_demo_solves_to_feasible_terminal_state -- --ignored --nocapture`
   — slow end-to-end solver acceptance test.
 - `find static/app -name '*.mjs' -print0 | xargs -0 -n1 node --check` —
   syntax-check frontend modules.
