@@ -17,7 +17,7 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardMediumSoftScore> {
         ))
         .filter(|lesson: &Lesson, room: &Room| lesson.required_room_kind != room.kind)
         .penalize(|_: &Lesson, _: &Room| HardMediumSoftScore::of_soft(1))
-        .named("Room Kind")
+        .named("room_kind")
 }
 
 #[cfg(test)]

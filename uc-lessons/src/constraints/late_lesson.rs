@@ -18,7 +18,7 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardMediumSoftScore> {
         ))
         .filter(|_lesson: &Lesson, timeslot: &Timeslot| is_late_slot(timeslot.start_time))
         .penalize(|_: &Lesson, _: &Timeslot| HardMediumSoftScore::of_soft(1))
-        .named("Avoid Late Lessons")
+        .named("late_lesson")
 }
 
 fn is_late_slot(start_time: NaiveTime) -> bool {

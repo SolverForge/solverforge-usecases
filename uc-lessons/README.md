@@ -104,6 +104,11 @@ Soft constraints:
 - Lessons should avoid late-day slots when possible.
 - The same subject should not repeat twice in one day for a cohort.
 
+Each constraint is named after its module in `src/constraints/`, for example
+`room_capacity`. `solverforge check` verifies that contract, and
+`/jobs/{id}/analysis` reports the id as each constraint's `name`. The browser
+shows the readable labels from `static/constraints.js`.
+
 ## REST API
 
 - `GET /health`

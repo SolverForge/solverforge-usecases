@@ -2,6 +2,7 @@
 
 // biome-ignore-all lint: don't lint
 import { renderByGroup, renderByRoom, renderByTeacher } from './views.js?v=20260514d';
+import { buildStatusBarConstraints, constraintLabel, withConstraintLabels } from './constraints.js?v=20260514d';
 
 'use strict';
 
@@ -14,10 +15,10 @@ var uiModel = await fetch('/generated/ui-model.json').then(function (response) {
 var app = document.getElementById('sf-app');
 app.className = 'sf-app solverforge-lessons-app';
 var backend = SF.createBackend({ baseUrl: '' });
-var statusBar = SF.createStatusBar({
+var statusBar = withConstraintLabels(SF.createStatusBar({
   constraints: buildStatusBarConstraints(uiModel.constraints || config.constraints || []),
   onConstraintClick: function () { openAnalysis(); },
-});
+}));
 var currentPlan = null;
 var lastAnalysis = null;
 var bootstrapError = null;
@@ -241,30 +242,6 @@ function openAnalysis() {
       analysisModal.open();
     })
     .catch(function () { });
-}
-
-function buildStatusBarConstraints(constraints) {
-  var scoreLevels = {
-    assign_timeslot: 'medium',
-    assign_room: 'medium',
-    teacher_availability: 'hard',
-    group_availability: 'hard',
-    room_kind: 'soft',
-    room_capacity: 'hard',
-    no_group_conflict: 'hard',
-    no_room_conflict: 'hard',
-    no_teacher_conflict: 'hard',
-    late_lesson: 'soft',
-    repeated_subject_day: 'soft',
-  };
-
-  return (constraints || []).map(function (constraint) {
-    var name = typeof constraint === 'string' ? constraint : constraint.name;
-    return {
-      name: title((name || '').replace(/_/g, ' ')),
-      type: scoreLevels[name] || 'hard',
-    };
-  });
 }
 
 function renderAll(data) {
@@ -859,7 +836,7 @@ function buildAnalysisHtml(analysis) {
   html += '<table class="sf-table"><thead><tr><th>Constraint</th><th>Type</th><th>Score</th><th>Matches</th></tr></thead><tbody>';
   analysis.constraints.forEach(function (constraint) {
     var matchCount = constraint.matchCount != null ? constraint.matchCount : (constraint.matches ? constraint.matches.length : 0);
-    html += '<tr><td>' + SF.escHtml(constraint.name) + '</td><td>' + SF.escHtml(constraint.constraintType || constraint.type || '') + '</td><td>' + SF.escHtml(constraint.score) + '</td><td>' + matchCount + '</td></tr>';
+    html += '<tr><td>' + SF.escHtml(constraintLabel(constraint.name)) + '</td><td>' + SF.escHtml(constraint.constraintType || constraint.type || '') + '</td><td>' + SF.escHtml(constraint.score) + '</td><td>' + matchCount + '</td></tr>';
   });
   html += '</tbody></table>';
   return html;

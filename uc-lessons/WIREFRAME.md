@@ -117,6 +117,8 @@ It shows how to combine:
     ├── generated/ui-model.json
     ├── app.js
     │   Browser controller, solver lifecycle, and REST API guide.
+    ├── constraints.js
+    │   Readable labels and score levels for analysis constraint ids.
     └── views.js
         Timetable view rendering for group, room, and teacher perspectives.
 ```

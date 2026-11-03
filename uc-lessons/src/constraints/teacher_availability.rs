@@ -27,7 +27,7 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardMediumSoftScore> {
         .penalize(hard_weight(|_: &Lesson, _: &Teacher| {
             HardMediumSoftScore::of_hard(1)
         }))
-        .named("Teacher Availability")
+        .named("teacher_availability")
 }
 
 #[cfg(test)]

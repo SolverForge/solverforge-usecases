@@ -35,7 +35,7 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardMediumSoftScore> {
                 && a.subject == b.subject
         })
         .penalize(|_: &LessonDay, _: &LessonDay| HardMediumSoftScore::of_soft(1))
-        .named("Avoid Repeated Subject Day")
+        .named("repeated_subject_day")
 }
 
 #[cfg(test)]

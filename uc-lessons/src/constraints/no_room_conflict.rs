@@ -50,7 +50,7 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardMediumSoftScore> {
         .penalize(hard_weight(
             |_: &AssignedLessonSlot, _: &AssignedLessonSlot| HardMediumSoftScore::of_hard(1),
         ))
-        .named("No Room Conflict")
+        .named("no_room_conflict")
 }
 
 #[cfg(test)]

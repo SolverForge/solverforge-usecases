@@ -8,7 +8,7 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardMediumSoftScore> {
         .for_each(Plan::lessons())
         .filter(|lesson: &Lesson| lesson.timeslot_idx.is_none())
         .penalize(|_: &Lesson| HardMediumSoftScore::of_medium(1))
-        .named("Assign Timeslot")
+        .named("assign_timeslot")
 }
 
 #[cfg(test)]
