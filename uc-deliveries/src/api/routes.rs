@@ -18,7 +18,7 @@ use super::dto::{
     DeliveryInsertionResponseDto, JobAnalysisDto, JobRoutesDto, JobSnapshotDto, JobSummaryDto,
     PlanDto,
 };
-use super::errors::{parse_job_id, status_from_routing_error, status_from_solver_error};
+use super::errors::{parse_job_id, routing_error, status_from_solver_error, ApiError};
 use super::sse;
 use crate::data::{generate, DemoData};
 use crate::domain::{build_routes_snapshot, prepare_plan, rank_delivery_insertions};
@@ -117,13 +117,11 @@ struct CreateJobResponse {
 async fn create_job(
     State(state): State<Arc<AppState>>,
     Json(dto): Json<PlanDto>,
-) -> Result<Json<CreateJobResponse>, StatusCode> {
+) -> Result<Json<CreateJobResponse>, ApiError> {
     let mut plan = dto.to_domain().map_err(|_| StatusCode::BAD_REQUEST)?;
     // Route matrices and shadow variables must be ready before SolverForge
     // starts construction, because the list-variable hooks read them directly.
-    prepare_plan(&mut plan)
-        .await
-        .map_err(status_from_routing_error)?;
+    prepare_plan(&mut plan).await.map_err(routing_error)?;
     let id = state
         .solver
         .start_job(plan)
@@ -191,7 +189,7 @@ async fn get_routes(
     State(state): State<Arc<AppState>>,
     Path(id): Path<String>,
     Query(query): Query<SnapshotQuery>,
-) -> Result<Json<JobRoutesDto>, StatusCode> {
+) -> Result<Json<JobRoutesDto>, ApiError> {
     let job_id = parse_job_id(&id)?;
     let mut snapshot = state
         .solver
@@ -207,11 +205,11 @@ async fn get_routes(
         // transient routing cache is absent, rebuild it before drawing routes.
         prepare_plan(&mut snapshot.solution)
             .await
-            .map_err(status_from_routing_error)?;
+            .map_err(routing_error)?;
     }
     let routes = build_routes_snapshot(&snapshot.solution)
         .await
-        .map_err(status_from_routing_error)?;
+        .map_err(routing_error)?;
     Ok(Json(JobRoutesDto::new(
         job_id,
         snapshot.snapshot_revision,
@@ -258,26 +256,24 @@ async fn delete_job(
 /// Ranks candidate vehicle/position insertions for one delivery.
 async fn recommend_delivery_insertions(
     Json(request): Json<DeliveryInsertionRequestDto>,
-) -> Result<Json<DeliveryInsertionResponseDto>, StatusCode> {
+) -> Result<Json<DeliveryInsertionResponseDto>, ApiError> {
     let mut plan = request
         .plan
         .to_domain()
         .map_err(|_| StatusCode::BAD_REQUEST)?;
     if request.delivery_id >= plan.deliveries.len() {
-        return Err(StatusCode::BAD_REQUEST);
+        return Err(StatusCode::BAD_REQUEST.into());
     }
     // Candidate scoring uses the same prepared data as real solving so the
     // modal preview matches the constraints and route metrics.
-    prepare_plan(&mut plan)
-        .await
-        .map_err(status_from_routing_error)?;
+    prepare_plan(&mut plan).await.map_err(routing_error)?;
     let candidates = rank_delivery_insertions(
         &plan,
         request.delivery_id,
         request.limit.unwrap_or(8).min(24),
     )
     .await
-    .map_err(status_from_routing_error)?
+    .map_err(routing_error)?
     .into_iter()
     .map(DeliveryInsertionCandidateDto::from_candidate)
     .collect();

@@ -65,8 +65,12 @@ It shows how to combine:
    `POST /jobs`.
 7. `src/api/routes.rs` deserializes the `PlanDto`, rebuilds a `Plan`, and calls
    `prepare_plan()`.
-8. `prepare_plan()` builds road-network routing matrices and attaches
-   `PreparedVehicleRouting` to each vehicle.
+8. `prepare_plan()` builds road-network routing matrices, loading the city's
+   OpenStreetMap network from `.osm_cache/` or the public Overpass API, and
+   attaches `PreparedVehicleRouting` to each vehicle. A routing failure becomes
+   a status (`502` for a failed download) whose JSON body
+   `{"error": "routing data unavailable: ..."}` names the cause
+   (`src/api/errors.rs`).
 9. `SolverService` starts a retained solve through `SolverManager<Plan>`.
 10. Solver events are converted by `src/solver/service/runtime_payload.rs` into
     UI-facing JSON.

@@ -165,6 +165,15 @@ make test-live-road
 tests. `make ci-local` adds formatting, clippy, release build, and Docker image
 build. `make pre-release` runs `ci-local` plus the live road-network smoke.
 
+`POST /jobs`, `GET /jobs/{id}/routes`, and the insertion recommender build
+road-network routing from OpenStreetMap data that the app downloads from the
+public Overpass API (overpass-api.de) the first time a city is routed, then
+caches in `.osm_cache/`. The first solve therefore needs outbound HTTPS. A
+failed download returns `502` with a JSON body `{"error": "routing data
+unavailable: ..."}` that names the cause. `make test` posts only empty plans
+and skips the env-gated road-network tests, so it stays offline;
+`make test-live-road` needs the network.
+
 ## Hugging Face Space Deployment
 
 This repo is Docker-Space ready. The Space reads the README front matter,
