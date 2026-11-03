@@ -183,7 +183,7 @@
           return [
             constraint.name,
             constraint.constraintType || constraint.type || '',
-            constraint.weight,
+            String(constraint.weightMultiplier),
             constraint.score,
             String(constraint.matchCount || 0),
           ];

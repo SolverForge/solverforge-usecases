@@ -53,7 +53,7 @@ export function buildAnalysisBody(analysis) {
         null,
         SF.el('td', null, constraint.name),
         SF.el('td', null, constraint.constraintType || constraint.type || ''),
-        SF.el('td', null, constraint.weight),
+        SF.el('td', null, String(constraint.weightMultiplier)),
         SF.el('td', null, constraint.score),
         SF.el('td', null, String(constraint.matchCount)),
       ),

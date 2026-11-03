@@ -75,7 +75,7 @@ function buildConstraintDetailHtml(detail) {
   var constraint = detail.constraint;
   var html = '<p><strong>Score:</strong> ' + SF.escHtml(detail.score) + '</p>';
   html += '<p><strong>Constraint:</strong> ' + SF.escHtml(constraint.name) + ' (' + SF.escHtml(constraint.type || constraint.constraintType || '') + ')</p>';
-  html += '<p><strong>Weight:</strong> ' + SF.escHtml(constraint.weight) + ' · <strong>Matches:</strong> ' + String(constraint.matchCount) + '</p>';
+  html += '<p><strong>Weight:</strong> ' + SF.escHtml(String(constraint.weightMultiplier)) + ' · <strong>Matches:</strong> ' + String(constraint.matchCount) + '</p>';
   if (!constraint.matches.length) {
     html += '<p>No matches recorded for this snapshot.</p>';
     return html;

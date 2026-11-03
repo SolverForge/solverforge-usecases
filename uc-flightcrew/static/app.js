@@ -131,7 +131,7 @@
     analysisModal.setBody(SF.createTable({
       columns: ['Constraint', 'Type', 'Weight', 'Matches', 'Score'],
       rows: (analysis.constraints || []).map(function (row) {
-        return [row.name, row.constraintType || constraintType(row.name), row.weight, row.matchCount, row.score];
+        return [row.name, row.constraintType || constraintType(row.name), row.weightMultiplier, row.matchCount, row.score];
       }),
     }));
     analysisModal.open();

@@ -30,7 +30,7 @@ pub struct PlanDto {
 #[serde(rename_all = "camelCase")]
 pub struct ConstraintAnalysisDto {
     pub name: String,
-    pub weight: String,
+    pub weight_multiplier: u32,
     pub score: String,
     pub match_count: usize,
 }
@@ -205,7 +205,7 @@ pub fn analysis_response(
             .iter()
             .map(|constraint| ConstraintAnalysisDto {
                 name: constraint.name.clone(),
-                weight: constraint.weight_multiplier.to_string(),
+                weight_multiplier: constraint.weight_multiplier,
                 score: constraint.score.to_string(),
                 match_count: constraint.match_count,
             })

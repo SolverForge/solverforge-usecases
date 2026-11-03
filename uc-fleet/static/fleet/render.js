@@ -271,7 +271,7 @@
         return [
           constraint.name,
           constraint.constraintType || Fleet.constraintType(constraint.name),
-          constraint.weight,
+          constraint.weightMultiplier,
           constraint.score,
           constraint.matchCount != null ? constraint.matchCount : '-',
         ];
