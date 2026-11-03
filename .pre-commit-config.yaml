@@ -4,6 +4,10 @@ repos:
     hooks:
     -   id: check-yaml
     -   id: end-of-file-fixer
+        # solverforge-cli writes these files without a final newline on every
+        # generate/destroy; keeping its bytes lets a CLI round trip leave a
+        # clean git status.
+        exclude: ^uc-[a-z]+/static/(generated/ui-model\.json|sf-config\.json)$
     -   id: trailing-whitespace
     -   id: check-merge-conflict
     -   id: check-added-large-files
