@@ -1584,9 +1584,9 @@ dependencies = [
 
 [[package]]
 name = "solverforge-maps"
-version = "2.1.4"
+version = "2.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e31f816d221238ba3ade93315e6a605486b53d9ec26527477d165b507ece6a88"
+checksum = "98da90be84f5ddc6790211f995096ab77e3ec9ad409819191433d9d510dc0210"
 dependencies = [
  "rayon",
  "reqwest",
