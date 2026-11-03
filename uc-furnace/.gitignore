@@ -22,3 +22,6 @@ playwright-report/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 PRD.md
+
+# Browser-test dependencies installed by `make install-e2e`
+node_modules/

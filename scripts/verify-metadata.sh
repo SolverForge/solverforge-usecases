@@ -33,6 +33,10 @@ required_files=(
   WIREFRAME.md
   Cargo.toml
   Dockerfile
+  .dockerignore
+  .gitignore
+  package.json
+  package-lock.json
   solverforge.app.toml
   static/sf-config.json
   docs/screenshot.png
@@ -61,6 +65,27 @@ while IFS= read -r dir; do
     exit 1
   fi
 done < <(find . -maxdepth 1 -type d -name 'uc-*' -printf '%f\n' | sort)
+
+# Each app ships its own browser-test tooling so a standalone clone (a Space
+# checkout) runs `make install-e2e && make test`. The app lockfiles pin the
+# Playwright version the bundle root lockfile resolves, and node_modules never
+# enters an image or a Space.
+root_playwright="$(node -p "require('./package-lock.json').packages['node_modules/playwright'].version")"
+for dir in "${open_source_dirs[@]}"; do
+  app_pin="$(node -p "require('./$dir/package.json').devDependencies.playwright")"
+  app_lock="$(node -p "require('./$dir/package-lock.json').packages['node_modules/playwright'].version")"
+  if [[ "$app_pin" != "$root_playwright" || "$app_lock" != "$root_playwright" ]]; then
+    printf '%s pins playwright %s (lock %s); the bundle root lock resolves %s\n' \
+      "$dir" "$app_pin" "$app_lock" "$root_playwright" >&2
+    exit 1
+  fi
+  for ignore in .gitignore .dockerignore; do
+    rg -qx 'node_modules/?' "$dir/$ignore" || {
+      printf '%s/%s must ignore node_modules/\n' "$dir" "$ignore" >&2
+      exit 1
+    }
+  done
+done
 
 for index in "${!open_source_dirs[@]}"; do
   dir="${open_source_dirs[$index]}"

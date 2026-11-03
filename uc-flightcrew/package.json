@@ -1,0 +1,8 @@
+{
+  "name": "solverforge-flightcrew",
+  "private": true,
+  "description": "Browser-test tooling for solverforge-flightcrew; the app itself is a Rust binary.",
+  "devDependencies": {
+    "playwright": "1.60.0"
+  }
+}

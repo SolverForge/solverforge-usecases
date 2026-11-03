@@ -43,6 +43,8 @@ is deliberately equivalent to the source `HardSoftDecimalScore` here.
 ## Commands
 
 - `make run-release` runs the app on `:7860`.
+- `make install-e2e` installs the Playwright version pinned in `package.json`
+  (and Playwright's Chromium when no system Chromium exists).
 - `make test` runs Rust, frontend, and Playwright tests.
 - `make test-slow` requires zero hard score and exact-once assignment.
 - `make ci-local` adds formatting, Clippy, release, and Docker validation.

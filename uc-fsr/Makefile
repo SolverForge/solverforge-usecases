@@ -27,9 +27,16 @@ PORT ?= 7860
 DOCKER_IMAGE ?= $(PACKAGE_NAME)
 DOCKER_CONTEXT ?= .
 DOCKERFILE_PATH := Dockerfile
-PLAYWRIGHT ?= ../node_modules/.bin/playwright
+# Browser-test tooling. Playwright resolves from this app's own node_modules
+# (`make install-e2e`), then from the bundle root's node_modules when the app
+# sits inside the solverforge-usecases repository.
+PLAYWRIGHT ?= $(firstword $(wildcard node_modules/.bin/playwright ../node_modules/.bin/playwright))
+# Chromium: an explicit PLAYWRIGHT_CHROMIUM_EXECUTABLE wins, then the system
+# /usr/bin/chromium; an empty value selects Playwright's bundled Chromium.
+PLAYWRIGHT_CHROMIUM_EXECUTABLE ?= $(wildcard /usr/bin/chromium)
+export PLAYWRIGHT_CHROMIUM_EXECUTABLE
 
-.PHONY: help doctor build build-release run run-release test test-rust \
+.PHONY: install-e2e require-playwright help doctor build build-release run run-release test test-rust \
         test-frontend-syntax test-e2e lint fmt fmt-check clippy check ci-local \
         space-ci space-build space-run docker-build docker-run pre-release \
         release-ci release-info version clean watch require-node require-docker
@@ -100,7 +107,24 @@ test-frontend: test-frontend-syntax
 	@printf "$(PROGRESS) Running frontend Node tests...\n"
 	@node --test tests/frontend/*.test.mjs
 
-test-e2e: build-release require-node
+install-e2e: require-node
+	@printf "$(PROGRESS) Installing the pinned Playwright package from package-lock.json...\n"
+	@npm ci --no-audit --no-fund
+	@if [ -n "$(PLAYWRIGHT_CHROMIUM_EXECUTABLE)" ]; then \
+		printf "$(GREEN)$(CHECK) Browser tests use Chromium at %s$(RESET)\n" "$(PLAYWRIGHT_CHROMIUM_EXECUTABLE)"; \
+	else \
+		printf "$(PROGRESS) No system Chromium found; installing Playwright's bundled Chromium...\n"; \
+		node_modules/.bin/playwright install chromium; \
+	fi
+	@printf "$(GREEN)$(CHECK) Browser test dependencies installed$(RESET)\n"
+
+require-playwright: require-node
+	@if [ -z "$(PLAYWRIGHT)" ]; then \
+		printf "$(RED)$(CROSS) Playwright is not installed: run make install-e2e first$(RESET)\n"; \
+		exit 1; \
+	fi
+
+test-e2e: require-playwright build-release
 	@printf "$(PROGRESS) Running Playwright browser tests...\n"
 	@$(PLAYWRIGHT) test --config tests/e2e/playwright.config.js
 
@@ -200,6 +224,7 @@ help:
 	@/bin/echo -e ""
 	@/bin/echo -e "$(CYAN)$(BOLD)Other:$(RESET)"
 	@/bin/echo -e "  $(GREEN)make doctor$(RESET)         - Check local cargo/rustc/node readiness"
+	@/bin/echo -e "  $(GREEN)make install-e2e$(RESET)    - Install the pinned Playwright package and a browser"
 	@/bin/echo -e "  $(GREEN)make fmt$(RESET)            - Format Rust code"
 	@/bin/echo -e "  $(GREEN)make release-info$(RESET)   - Show package version and app-scoped release tag"
 	@/bin/echo -e "  $(GREEN)make version$(RESET)        - Show version and default port"

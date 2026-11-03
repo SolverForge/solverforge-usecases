@@ -52,6 +52,14 @@ demo IDs, solver policy, dependency versions, app labels, or visible UI
 structure, update the matching README, AGENTS, WIREFRAME, app metadata,
 `static/sf-config.json`, and screenshot in the same patch.
 
+Every app must also work as a standalone clone (the Hugging Face sync pushes
+each `uc-*` directory as a Space root). Each app carries its own
+`package.json` and `package-lock.json` pinned to the root lockfile's Playwright
+version, a `make install-e2e` target, and `.gitignore`/`.dockerignore` entries
+for `node_modules/`; app Makefiles and configs never reach outside the app
+directory except to fall back to the root `node_modules/`.
+`scripts/verify-metadata.sh` enforces the pin and the ignore entries.
+
 Use app-prefixed release tags in this bundle. Bare `vX.Y.Z` tags are ambiguous;
 the release tag for a use case is `solverforge-<app>@<version>`, matching the
 version in that app's `Cargo.toml`, that app's `Cargo.lock`, and a heading in

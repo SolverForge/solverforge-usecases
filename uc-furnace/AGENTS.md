@@ -36,6 +36,8 @@ Keep the canonical solution name `Plan` and the public demo id `STANDARD`.
 - `make help` shows the supported command surface.
 - `make run-release` runs the app locally on `:7860`.
 - `make test` runs Rust tests, frontend syntax checks, and the Playwright smoke.
+- `make install-e2e` installs the Playwright version pinned in `package.json`
+  (and Playwright's Chromium when no system Chromium exists).
 - `make test-e2e` runs the real browser smoke.
 - `make ci-local` runs formatting, clippy, release build, standard tests, and
   the Space Docker image build.

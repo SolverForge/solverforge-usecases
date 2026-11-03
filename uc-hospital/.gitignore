@@ -25,3 +25,6 @@ PRD.md
 
 # OSM routing cache
 .osm_cache/
+
+# Browser-test dependencies installed by `make install-e2e`
+node_modules/

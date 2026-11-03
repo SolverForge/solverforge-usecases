@@ -3,3 +3,6 @@
 **/*.rs.bk
 test-results/
 playwright-report/
+
+# Browser-test dependencies installed by `make install-e2e`
+node_modules/

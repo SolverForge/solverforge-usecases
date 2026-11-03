@@ -75,8 +75,14 @@ make ci-local
 ```
 
 The root `make install-e2e` target installs the Node and browser dependencies
-used by Playwright checks. Each app still serves browser assets from its
-declared `solverforge-ui` Cargo crate.
+used by Playwright checks for every app. Each app also carries its own
+`package.json` and `package-lock.json`, pinned to the Playwright version the
+root lockfile resolves, and its own `make install-e2e`, so a standalone clone
+such as a Hugging Face Space checkout runs `make install-e2e && make test`
+without this repository. App Makefiles resolve Playwright from the app's
+`node_modules/` first, then from the repository root, and name
+`make install-e2e` when neither exists. Each app still serves browser assets
+from its declared `solverforge-ui` Cargo crate.
 Prefer the app's `Makefile` when present; otherwise use the app README and
 standard Cargo commands.
 

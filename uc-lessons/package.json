@@ -1,0 +1,8 @@
+{
+  "name": "solverforge-lessons",
+  "private": true,
+  "description": "Browser-test tooling for solverforge-lessons; the app itself is a Rust binary.",
+  "devDependencies": {
+    "playwright": "1.60.0"
+  }
+}

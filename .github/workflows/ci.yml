@@ -124,7 +124,6 @@ jobs:
 
       - name: Run bundle CI
         env:
-          CHROMIUM_PATH: /usr/bin/chromium
           PLAYWRIGHT_CHROMIUM_EXECUTABLE: /usr/bin/chromium
         run: |
           export PATH="${CARGO_HOME:-$HOME/.cargo}/bin:$PATH"

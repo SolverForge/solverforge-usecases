@@ -28,12 +28,20 @@ RELEASE_TAG := $(PACKAGE_NAME)@$(VERSION)
 RUST_VERSION := 1.95+
 PORT ?= 7860
 E2E_PORT ?= 7960
+# Browser-test tooling. Playwright resolves from this app's own node_modules
+# (`make install-e2e`), then from the bundle root's node_modules when the app
+# sits inside the solverforge-usecases repository.
+PLAYWRIGHT ?= $(firstword $(wildcard node_modules/.bin/playwright ../node_modules/.bin/playwright))
+# Chromium: an explicit PLAYWRIGHT_CHROMIUM_EXECUTABLE wins, then the system
+# /usr/bin/chromium; an empty value selects Playwright's bundled Chromium.
+PLAYWRIGHT_CHROMIUM_EXECUTABLE ?= $(wildcard /usr/bin/chromium)
+export PLAYWRIGHT_CHROMIUM_EXECUTABLE
 DOCKER_IMAGE ?= $(PACKAGE_NAME)
 DOCKER_CONTEXT ?= .
 DOCKERFILE_PATH := Dockerfile
 
 # ============== Phony Targets ==============
-.PHONY: banner help doctor build build-release run run-release test test-rust \
+.PHONY: install-e2e require-playwright banner help doctor build build-release run run-release test test-rust \
         test-frontend-syntax test-frontend test-e2e test-slow test-one lint fmt \
         fmt-check clippy check ci-local space-ci space-build space-run docker-build \
         docker-run pre-release release-ci release-info version clean watch require-node require-docker
@@ -129,7 +137,24 @@ test-frontend: test-frontend-syntax
 		printf "$(GREEN)$(CHECK) Frontend tests passed$(RESET)\n" || \
 		(printf "$(RED)$(CROSS) Frontend tests failed$(RESET)\n" && exit 1)
 
-test-e2e: build-release require-node
+install-e2e: require-node
+	@printf "$(PROGRESS) Installing the pinned Playwright package from package-lock.json...\n"
+	@npm ci --no-audit --no-fund
+	@if [ -n "$(PLAYWRIGHT_CHROMIUM_EXECUTABLE)" ]; then \
+		printf "$(GREEN)$(CHECK) Browser tests use Chromium at %s$(RESET)\n" "$(PLAYWRIGHT_CHROMIUM_EXECUTABLE)"; \
+	else \
+		printf "$(PROGRESS) No system Chromium found; installing Playwright's bundled Chromium...\n"; \
+		node_modules/.bin/playwright install chromium; \
+	fi
+	@printf "$(GREEN)$(CHECK) Browser test dependencies installed$(RESET)\n"
+
+require-playwright: require-node
+	@if [ -z "$(PLAYWRIGHT)" ]; then \
+		printf "$(RED)$(CROSS) Playwright is not installed: run make install-e2e first$(RESET)\n"; \
+		exit 1; \
+	fi
+
+test-e2e: require-playwright build-release
 	@printf "$(PROGRESS) Running browser smoke test on port $(E2E_PORT)...\n"
 	@log=$$(mktemp); \
 	PORT=$(E2E_PORT) "$${CARGO_TARGET_DIR:-target}/release/$(APP_NAME)" >"$$log" 2>&1 & \
@@ -145,7 +170,7 @@ test-e2e: build-release require-node
 		fi; \
 		sleep 0.2; \
 	done; \
-		node --input-type=module -e 'import { chromium } from "playwright"; const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || "/usr/bin/chromium", headless: true }); const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, colorScheme: "light" }); await page.goto("http://127.0.0.1:$(E2E_PORT)/", { waitUntil: "networkidle", timeout: 30000 }); await page.getByText("Cohort Timetables", { exact: true }).waitFor({ timeout: 30000 }); const body = await page.locator("body").innerText(); if (!body.includes("SolverForge Lessons")) throw new Error("missing product title"); if (!body.includes("Cohort Timetables")) throw new Error("missing cohort timetable view"); if (body.includes("1W") || body.includes("2W") || body.includes("4W")) throw new Error("fixed lesson timetable should not render zoom presets"); if (body.includes("Room null") || body.includes("| null")) throw new Error("rendered null assignment text"); const nullAttrs = await page.locator("[role=\"null\"], [aria-label=\"null\"], [tabindex=\"null\"]").count(); if (nullAttrs !== 0) throw new Error(`found ${nullAttrs} null accessibility attributes`); await browser.close();'; \
+		node --input-type=module -e 'import { chromium } from "playwright"; const browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE || undefined, headless: true }); const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, colorScheme: "light" }); await page.goto("http://127.0.0.1:$(E2E_PORT)/", { waitUntil: "networkidle", timeout: 30000 }); await page.getByText("Cohort Timetables", { exact: true }).waitFor({ timeout: 30000 }); const body = await page.locator("body").innerText(); if (!body.includes("SolverForge Lessons")) throw new Error("missing product title"); if (!body.includes("Cohort Timetables")) throw new Error("missing cohort timetable view"); if (body.includes("1W") || body.includes("2W") || body.includes("4W")) throw new Error("fixed lesson timetable should not render zoom presets"); if (body.includes("Room null") || body.includes("| null")) throw new Error("rendered null assignment text"); const nullAttrs = await page.locator("[role=\"null\"], [aria-label=\"null\"], [tabindex=\"null\"]").count(); if (nullAttrs !== 0) throw new Error(`found ${nullAttrs} null accessibility attributes`); await browser.close();'; \
 	kill $$pid >/dev/null 2>&1 || true; \
 	printf "$(GREEN)$(CHECK) Browser smoke test passed$(RESET)\n"
 
@@ -254,6 +279,7 @@ watch:
 help: banner
 	@printf "$(CYAN)$(BOLD)Environment:$(RESET)\n"
 	@printf "  $(GREEN)make doctor$(RESET)         - Check local cargo/rustc/node readiness\n"
+	@printf "  $(GREEN)make install-e2e$(RESET)    - Install the pinned Playwright package and a browser\n"
 	@printf "\n$(CYAN)$(BOLD)Build & Run:$(RESET)\n"
 	@printf "  $(GREEN)make build$(RESET)          - Build the app in debug mode\n"
 	@printf "  $(GREEN)make build-release$(RESET)  - Build the app in release mode\n"

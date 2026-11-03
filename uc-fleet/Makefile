@@ -25,11 +25,19 @@ RELEASE_TAG := $(PACKAGE_NAME)@$(VERSION)
 RUST_VERSION := 1.95+
 PORT ?= 7860
 E2E_PORT ?= 7961
+# Browser-test tooling. Playwright resolves from this app's own node_modules
+# (`make install-e2e`), then from the bundle root's node_modules when the app
+# sits inside the solverforge-usecases repository.
+PLAYWRIGHT ?= $(firstword $(wildcard node_modules/.bin/playwright ../node_modules/.bin/playwright))
+# Chromium: an explicit PLAYWRIGHT_CHROMIUM_EXECUTABLE wins, then the system
+# /usr/bin/chromium; an empty value selects Playwright's bundled Chromium.
+PLAYWRIGHT_CHROMIUM_EXECUTABLE ?= $(wildcard /usr/bin/chromium)
+export PLAYWRIGHT_CHROMIUM_EXECUTABLE
 DOCKER_IMAGE ?= $(PACKAGE_NAME)
 DOCKER_CONTEXT ?= .
 DOCKERFILE_PATH := Dockerfile
 
-.PHONY: banner help doctor build build-release run run-release test test-rust \
+.PHONY: install-e2e require-playwright banner help doctor build build-release run run-release test test-rust \
         test-frontend-syntax test-frontend test-e2e test-slow test-one lint fmt \
         fmt-check clippy check ci-local docker-build docker-run pre-release \
         release-ci release-info version clean watch require-node require-docker
@@ -92,7 +100,24 @@ test-frontend: test-frontend-syntax
 	@node --test tests/frontend/*.test.js
 	@printf "$(GREEN)$(CHECK) Frontend Node tests passed$(RESET)\n"
 
-test-e2e: build-release require-node
+install-e2e: require-node
+	@printf "$(PROGRESS) Installing the pinned Playwright package from package-lock.json...\n"
+	@npm ci --no-audit --no-fund
+	@if [ -n "$(PLAYWRIGHT_CHROMIUM_EXECUTABLE)" ]; then \
+		printf "$(GREEN)$(CHECK) Browser tests use Chromium at %s$(RESET)\n" "$(PLAYWRIGHT_CHROMIUM_EXECUTABLE)"; \
+	else \
+		printf "$(PROGRESS) No system Chromium found; installing Playwright's bundled Chromium...\n"; \
+		node_modules/.bin/playwright install chromium; \
+	fi
+	@printf "$(GREEN)$(CHECK) Browser test dependencies installed$(RESET)\n"
+
+require-playwright: require-node
+	@if [ -z "$(PLAYWRIGHT)" ]; then \
+		printf "$(RED)$(CROSS) Playwright is not installed: run make install-e2e first$(RESET)\n"; \
+		exit 1; \
+	fi
+
+test-e2e: require-playwright build-release
 	@printf "$(PROGRESS) Running browser smoke on port $(E2E_PORT)...\n"
 	@log=$$(mktemp); \
 	PORT=$(E2E_PORT) "$${CARGO_TARGET_DIR:-target}/release/$(APP_NAME)" >"$$log" 2>&1 & \
@@ -104,7 +129,7 @@ test-e2e: build-release require-node
 		if [ $$i -ge 100 ]; then cat "$$log"; exit 1; fi; \
 		sleep 0.2; \
 	done; \
-	node --input-type=module -e 'import { chromium } from "playwright"; const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || "/usr/bin/chromium", headless: true }); const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, colorScheme: "light" }); const errors = []; page.on("pageerror", error => errors.push(error.message)); page.on("console", message => { if (message.type() === "error") errors.push(message.text()); }); await page.goto("http://127.0.0.1:$(E2E_PORT)/", { waitUntil: "networkidle", timeout: 30000 }); await page.locator("#sf-app").waitFor({ state: "visible", timeout: 30000 }); 	await page.getByText("Vessel schedule", { exact: true }).waitFor({ timeout: 30000 }); const terms = ["solverforge fleet", "vessel schedule", "dock occupancy", "unassigned", "disruptions"]; try { await page.waitForFunction(expected => expected.every(text => document.body.textContent.toLowerCase().includes(text)), terms, { timeout: 30000 }); } catch { const visible = (await page.locator("body").innerText()).replaceAll("\n", " ").slice(0, 500); throw new Error("workspace did not render: " + errors.join(" | ") + " visible=" + visible); } const body = (await page.locator("body").innerText()).toLowerCase(); if (body.includes("undefined")) throw new Error("rendered undefined text"); const nullAttrs = await page.locator("[role=\"null\"], [aria-label=\"null\"], [tabindex=\"null\"]").count(); if (nullAttrs !== 0) throw new Error("found " + nullAttrs + " null accessibility attributes"); await browser.close();'; \
+	node --input-type=module -e 'import { chromium } from "playwright"; const browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE || undefined, headless: true }); const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, colorScheme: "light" }); const errors = []; page.on("pageerror", error => errors.push(error.message)); page.on("console", message => { if (message.type() === "error") errors.push(message.text()); }); await page.goto("http://127.0.0.1:$(E2E_PORT)/", { waitUntil: "networkidle", timeout: 30000 }); await page.locator("#sf-app").waitFor({ state: "visible", timeout: 30000 }); 	await page.getByText("Vessel schedule", { exact: true }).waitFor({ timeout: 30000 }); const terms = ["solverforge fleet", "vessel schedule", "dock occupancy", "unassigned", "disruptions"]; try { await page.waitForFunction(expected => expected.every(text => document.body.textContent.toLowerCase().includes(text)), terms, { timeout: 30000 }); } catch { const visible = (await page.locator("body").innerText()).replaceAll("\n", " ").slice(0, 500); throw new Error("workspace did not render: " + errors.join(" | ") + " visible=" + visible); } const body = (await page.locator("body").innerText()).toLowerCase(); if (body.includes("undefined")) throw new Error("rendered undefined text"); const nullAttrs = await page.locator("[role=\"null\"], [aria-label=\"null\"], [tabindex=\"null\"]").count(); if (nullAttrs !== 0) throw new Error("found " + nullAttrs + " null accessibility attributes"); await browser.close();'; \
 	kill $$pid >/dev/null 2>&1 || true
 	@printf "$(GREEN)$(CHECK) Browser smoke passed$(RESET)\n"
 
@@ -168,7 +193,7 @@ watch:
 	@PORT=$(PORT) cargo watch -x "run --bin $(APP_NAME)"
 
 help: banner
-	@printf "$(CYAN)Environment$(RESET)\n  make doctor\n"
+	@printf "$(CYAN)Environment$(RESET)\n  make doctor\n  make install-e2e\n"
 	@printf "$(CYAN)Build and run$(RESET)\n  make build\n  make build-release\n  make run\n  make run-release\n"
 	@printf "$(CYAN)Validation$(RESET)\n  make test\n  make test-rust\n  make test-frontend\n  make test-e2e\n  make test-slow\n  make test-one TEST=name\n  make lint\n  make ci-local\n  make pre-release\n"
 	@printf "$(CYAN)Docker$(RESET)\n  make docker-build\n  make docker-run\n"

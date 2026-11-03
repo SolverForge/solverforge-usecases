@@ -3,3 +3,4 @@ target/
 test-results/
 playwright-report/
 *.rs.bk
+node_modules/

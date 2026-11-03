@@ -36,6 +36,8 @@ module or responsibility when a file approaches that size.
 - `make doctor` checks local `cargo`, `rustc`, `node`, and `docker` readiness.
 - `make run` runs the debug server on `PORT` (default `7860`).
 - `make build-release` builds `solverforge_fsr` in release mode.
+- `make install-e2e` installs the Playwright version pinned in `package.json`
+  (and Playwright's Chromium when no system Chromium exists).
 - `make test` runs Rust tests, frontend JavaScript syntax checks, and the
   Playwright browser smoke.
 - `make lint` runs `cargo fmt --check`, clippy with warnings denied, and JS syntax checks.

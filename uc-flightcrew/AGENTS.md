@@ -21,6 +21,8 @@ Keep the canonical demo ID `STANDARD` and the solution name `Plan`.
 ## Commands
 
 - `make run-release` runs the app on `:7860`.
+- `make install-e2e` installs the Playwright version pinned in `package.json`
+  (and Playwright's Chromium when no system Chromium exists).
 - `make test` runs Rust, frontend, and Playwright tests.
 - `make test-slow` requires the standard demo to reach zero hard score.
 - `make ci-local` runs formatting, Clippy, release build, tests, and Docker.

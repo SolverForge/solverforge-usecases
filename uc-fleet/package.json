@@ -1,0 +1,8 @@
+{
+  "name": "solverforge-fleet",
+  "private": true,
+  "description": "Browser-test tooling for solverforge-fleet; the app itself is a Rust binary.",
+  "devDependencies": {
+    "playwright": "1.60.0"
+  }
+}

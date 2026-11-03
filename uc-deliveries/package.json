@@ -1,0 +1,8 @@
+{
+  "name": "solverforge-deliveries",
+  "private": true,
+  "description": "Browser-test tooling for solverforge-deliveries; the app itself is a Rust binary.",
+  "devDependencies": {
+    "playwright": "1.60.0"
+  }
+}

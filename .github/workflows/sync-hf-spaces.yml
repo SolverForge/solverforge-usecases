@@ -171,6 +171,7 @@ jobs:
           rsync -a --delete \
             --exclude='.git' \
             --exclude='target' \
+            --exclude='node_modules' \
             --exclude='test-results' \
             --exclude='playwright-report' \
             --exclude='.osm_cache' \

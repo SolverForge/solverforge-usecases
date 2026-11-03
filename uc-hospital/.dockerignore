@@ -1,0 +1,5 @@
+target/
+.git/
+test-results/
+playwright-report/
+node_modules/

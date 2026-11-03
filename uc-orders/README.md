@@ -120,6 +120,20 @@ bucket demand, incidences, and closed distance after each list-owner update.
 
 ## Validation
 
+Browser tests use Node.js and the Playwright version pinned in this app's
+`package.json` and `package-lock.json`. Install them once per checkout:
+
+```sh
+make install-e2e
+```
+
+`make install-e2e` runs `npm ci` in this directory. Browser tests launch the
+Chromium named by `PLAYWRIGHT_CHROMIUM_EXECUTABLE`, then `/usr/bin/chromium`,
+and otherwise Playwright's bundled Chromium, which `make install-e2e` downloads
+when no system Chromium exists. Inside the solverforge-usecases repository the
+root `make install-e2e` works too; the app resolves Playwright from its own
+`node_modules/` first, then from the repository root.
+
 ```sh
 make test
 make test-slow

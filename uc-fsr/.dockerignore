@@ -7,3 +7,4 @@ playwright-report/
 /app-session-*.js
 /comment-preload.js
 /main-*.js
+node_modules/

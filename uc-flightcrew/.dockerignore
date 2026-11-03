@@ -2,3 +2,4 @@ target
 test-results
 playwright-report
 .git
+node_modules/

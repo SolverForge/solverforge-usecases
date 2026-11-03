@@ -3,9 +3,16 @@ SHELL := /bin/sh
 
 APP_NAME := solverforge-orders
 PORT ?= 7860
-PLAYWRIGHT ?= ../node_modules/.bin/playwright
+# Browser-test tooling. Playwright resolves from this app's own node_modules
+# (`make install-e2e`), then from the bundle root's node_modules when the app
+# sits inside the solverforge-usecases repository.
+PLAYWRIGHT ?= $(firstword $(wildcard node_modules/.bin/playwright ../node_modules/.bin/playwright))
+# Chromium: an explicit PLAYWRIGHT_CHROMIUM_EXECUTABLE wins, then the system
+# /usr/bin/chromium; an empty value selects Playwright's bundled Chromium.
+PLAYWRIGHT_CHROMIUM_EXECUTABLE ?= $(wildcard /usr/bin/chromium)
+export PLAYWRIGHT_CHROMIUM_EXECUTABLE
 
-.PHONY: build build-release run run-release test test-rust test-frontend-syntax test-frontend test-e2e test-slow test-one fmt fmt-check clippy lint check ci-local release-ci docker-build docker-run pre-release
+.PHONY: install-e2e require-playwright build build-release run run-release test test-rust test-frontend-syntax test-frontend test-e2e test-slow test-one fmt fmt-check clippy lint check ci-local release-ci docker-build docker-run pre-release
 
 build:
 	cargo build --bin $(APP_NAME)
@@ -31,7 +38,25 @@ test-frontend-syntax:
 test-frontend: test-frontend-syntax
 	node --test tests/frontend/*.test.mjs
 
-test-e2e: build-release
+install-e2e: require-node
+	npm ci --no-audit --no-fund
+	@if [ -n "$(PLAYWRIGHT_CHROMIUM_EXECUTABLE)" ]; then \
+		echo "Browser tests use Chromium at $(PLAYWRIGHT_CHROMIUM_EXECUTABLE)"; \
+	else \
+		echo "No system Chromium found; installing Playwright's bundled Chromium"; \
+		node_modules/.bin/playwright install chromium; \
+	fi
+
+require-node:
+	@command -v node >/dev/null 2>&1 || { echo "node is required for frontend and browser validation"; exit 1; }
+
+require-playwright: require-node
+	@if [ -z "$(PLAYWRIGHT)" ]; then \
+		echo "Playwright is not installed: run make install-e2e first"; \
+		exit 1; \
+	fi
+
+test-e2e: require-playwright build-release
 	$(PLAYWRIGHT) test --config tests/e2e/playwright.config.js
 
 test-slow:

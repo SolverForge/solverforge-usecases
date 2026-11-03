@@ -26,6 +26,8 @@ Keep the solution name `Plan`. Public demo IDs are `BASELINE`,
 - `make help` shows the supported command surface.
 - `make run-release` runs the app on `:7860`.
 - `make test` runs Rust tests, frontend Node syntax/transform tests, and Playwright smoke.
+- `make install-e2e` installs the Playwright version pinned in `package.json`
+  (and Playwright's Chromium when no system Chromium exists).
 - `make test-e2e` runs the browser smoke against the release binary.
 - `make test-slow` runs the ignored full `BASELINE_FULL` acceptance solve.
 - `make ci-local` runs formatting, clippy, release build, standard tests, and Docker build.

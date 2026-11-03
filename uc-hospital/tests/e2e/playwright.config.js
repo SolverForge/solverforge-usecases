@@ -1,4 +1,15 @@
+const fs = require('node:fs');
 const path = require('node:path');
+
+// Browser choice: PLAYWRIGHT_CHROMIUM_EXECUTABLE wins when set (an empty value
+// selects Playwright's bundled Chromium, as in the Makefile), then the system
+// Chromium; `undefined` makes Playwright launch its bundled Chromium (installed
+// by `make install-e2e` when no system Chromium exists).
+function chromiumExecutable() {
+  const configured = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE;
+  if (configured !== undefined) return configured || undefined;
+  return fs.existsSync('/usr/bin/chromium') ? '/usr/bin/chromium' : undefined;
+}
 
 const rootDir = path.resolve(__dirname, '../..');
 const port = Number(process.env.PLAYWRIGHT_PORT || 17961);
@@ -17,7 +28,7 @@ module.exports = {
     trace: 'retain-on-failure',
     viewport: { width: 1440, height: 1000 },
     launchOptions: {
-      executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE || '/usr/bin/chromium',
+      executablePath: chromiumExecutable(),
       args: ['--no-sandbox'],
     },
   },

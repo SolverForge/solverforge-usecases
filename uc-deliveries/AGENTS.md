@@ -40,6 +40,9 @@ under `target/` and `.osm_cache/` is outside this rule.
 - `make help` shows the supported command surface.
 - `make run-release` runs the app locally on `:7860`.
 - `make test` runs Rust, frontend, and Playwright browser tests.
+- `make install-e2e` installs the Playwright version pinned in `package.json`
+  (and Playwright's Chromium when no system Chromium exists); browser targets
+  print that command when Playwright is missing.
 - `make test-e2e` runs the real browser Playwright smoke.
 - `make space-build` builds the Docker image used by Hugging Face Spaces.
 - `make space-run` builds and runs that image locally.

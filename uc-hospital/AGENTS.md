@@ -23,6 +23,8 @@ This project depends on the published `solverforge` and `solverforge-ui` crates.
 - `make help` — show the supported local development and validation commands.
 - `make run-release` — run the app locally on `:7860`.
 - `make test` — run the standard Rust, frontend, and Playwright validation surface.
+- `make install-e2e` — install the Playwright version pinned in `package.json`
+  (and Playwright's Chromium when no system Chromium exists).
 - `make test-e2e` — run the real browser Playwright smoke.
 - `make ci-local` — run the Space-oriented local CI pipeline: fmt, clippy,
   release build, standard tests, and Docker image build.
