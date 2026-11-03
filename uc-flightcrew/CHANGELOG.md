@@ -1,6 +1,14 @@
 # Changelog
 
 All notable changes to this use case are documented in this file.
+## [0.3.1](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-flightcrew@0.3.0...solverforge-flightcrew@0.3.1) (2026-11-03)
+
+
+### Bug Fixes
+
+* **routing:** identify the apps to Overpass with solverforge-maps 2.1.5 ([61d95ec](https://github.com/SolverForge/solverforge-usecases/commit/61d95ecabd67e1faa93dcaf209f0a7b0c01cf160))
+
+
 ## [0.3.0](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-flightcrew@0.2.0...solverforge-flightcrew@0.3.0) (2026-11-03)
 
 
