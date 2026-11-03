@@ -1,6 +1,27 @@
 # Changelog
 
 All notable changes to this use case are documented in this file.
+## [3.0.0](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-fsr@2.0.14...solverforge-fsr@3.0.0) (2026-11-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* **fsr:** /jobs/{id}/analysis reports constraint names as snake_case ids (e.g. "time_windows") instead of display labels.
+* **analysis:** analysis constraints report a numeric `weightMultiplier` instead of the `weight` string, and flightcrew, furnace and orders selector telemetry no longer carries `conflictRepair*` counters.
+
+### Features
+
+* **analysis:** report the constraint weightMultiplier on SolverForge 0.24.0 ([e86f8ce](https://github.com/SolverForge/solverforge-usecases/commit/e86f8ce293997118faf42cc173b757f4b614bc1f))
+
+
+### Bug Fixes
+
+* **build:** make every app's browser tests run from a standalone clone ([2dab038](https://github.com/SolverForge/solverforge-usecases/commit/2dab038c4de559a6e80b0134fd16e86ff170f9dc))
+* **fsr:** name constraints by module id and keep readable labels ([d9302eb](https://github.com/SolverForge/solverforge-usecases/commit/d9302eb95d1b233702cb9c5050015672f3147bf2))
+* **fsr:** return a JSON error body when the Overpass fetch fails ([ed40d12](https://github.com/SolverForge/solverforge-usecases/commit/ed40d121ad95f81ab005be3ce1e45a20a36e58ff))
+* **runtime:** target SolverForge 0.24.0 across the bundle ([32c9e75](https://github.com/SolverForge/solverforge-usecases/commit/32c9e75a3462a07c0d4e87f5e677c76c5dd8adda))
+
+
 ## [2.0.14](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-fsr@2.0.13...solverforge-fsr@2.0.14) (2026-10-27)
 
 
