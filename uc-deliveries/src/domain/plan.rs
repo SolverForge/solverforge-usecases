@@ -120,13 +120,14 @@ impl Plan {
 
 impl solverforge::cvrp::VrpSolution for Plan {
     /// Gives SolverForge's CVRP move selectors access to prepared matrices.
-    fn vehicle_data_ptr(&self, entity_idx: usize) -> *const ProblemData {
+    ///
+    /// Returns `None` for a vehicle whose routing has not been prepared yet.
+    fn vehicle_data(&self, entity_idx: usize) -> Option<&ProblemData> {
         self.vehicles[entity_idx]
             .prepared_routing
             .as_ref()
             .and_then(|prepared| self.prepared_problem_data.get(prepared.problem_data_index))
-            .map(Arc::as_ptr)
-            .unwrap_or(std::ptr::null())
+            .map(Arc::as_ref)
     }
 
     /// Reads the mutable list variable for one vehicle as visit ids.

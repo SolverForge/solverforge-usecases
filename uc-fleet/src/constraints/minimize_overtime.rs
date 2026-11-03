@@ -8,7 +8,6 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardSoftScore> {
     support::FleetConstraint::new(
         "minimize_overtime",
         false,
-        HardSoftScore::one_soft(),
         support::score_minimize_overtime,
         support::count_overtime,
     )

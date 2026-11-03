@@ -195,7 +195,7 @@ pub fn analysis_response(analysis: &solverforge::ScoreAnalysis<HardSoftScore>) -
             .map(|constraint| ConstraintAnalysisDto {
                 name: constraint.name.clone(),
                 constraint_type: constraint_type(&constraint.name).to_string(),
-                weight: constraint.weight.to_string(),
+                weight: constraint.weight_multiplier.to_string(),
                 score: constraint.score.to_string(),
                 match_count: constraint.match_count,
             })

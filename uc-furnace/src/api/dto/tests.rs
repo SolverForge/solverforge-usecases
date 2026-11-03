@@ -187,12 +187,6 @@ fn telemetry_dto_preserves_solver_rejection_and_hard_delta_fields() {
             moves_hard_improving: 19,
             moves_hard_neutral: 20,
             moves_hard_worse: 21,
-            conflict_repair_provider_generated: 22,
-            conflict_repair_duplicate_filtered: 23,
-            conflict_repair_illegal_filtered: 24,
-            conflict_repair_not_doable_filtered: 25,
-            conflict_repair_hard_improving: 26,
-            conflict_repair_exposed: 27,
             ..SelectorTelemetry::default()
         }],
         ..SolverTelemetry::default()
@@ -208,5 +202,5 @@ fn telemetry_dto_preserves_solver_rejection_and_hard_delta_fields() {
     assert_eq!(dto.conflict_repair_exposed, 15);
     assert_eq!(dto.selectors[0].moves_not_doable, 16);
     assert_eq!(dto.selectors[0].moves_hard_worse, 21);
-    assert_eq!(dto.selectors[0].conflict_repair_exposed, 27);
+    assert_eq!(dto.selectors[0].conflict_repair_exposed, 0);
 }

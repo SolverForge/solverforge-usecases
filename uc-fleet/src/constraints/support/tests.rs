@@ -69,13 +69,8 @@ fn dock_capacity_detects_overlapping_assignments() {
 #[test]
 fn fleet_constraint_reports_real_full_recompute_deltas() {
     let mut plan = baseline_solution_plan();
-    let mut constraint = FleetConstraint::new(
-        "minimize_churn",
-        false,
-        solverforge::HardSoftScore::of_soft(1),
-        score_minimize_churn,
-        count_churn,
-    );
+    let mut constraint =
+        FleetConstraint::new("minimize_churn", false, score_minimize_churn, count_churn);
     let mut tracked = constraint.initialize(&plan);
 
     tracked = tracked + constraint.on_retract(&plan, 0, 0);

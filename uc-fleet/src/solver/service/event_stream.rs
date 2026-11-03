@@ -2,9 +2,9 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 use parking_lot::RwLock;
-use tokio::sync::{broadcast, mpsc};
+use tokio::sync::broadcast;
 
-use solverforge::SolverEvent;
+use solverforge::{SolverEvent, SolverEventReceiver};
 
 use crate::domain::Plan;
 
@@ -15,7 +15,7 @@ pub(super) async fn drain_receiver(
     jobs: Arc<RwLock<HashMap<usize, JobState>>>,
     job_id: usize,
     sse_tx: broadcast::Sender<String>,
-    mut receiver: mpsc::UnboundedReceiver<SolverEvent<Plan>>,
+    mut receiver: SolverEventReceiver<Plan>,
 ) {
     while let Some(event) = receiver.recv().await {
         let payload = match &event {

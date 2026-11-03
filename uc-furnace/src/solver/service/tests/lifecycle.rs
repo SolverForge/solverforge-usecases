@@ -1,13 +1,22 @@
-use solverforge::SolverManagerError;
+use solverforge::{SolverEvent, SolverManagerError};
+use std::future::Future;
 use std::time::{Duration, Instant};
 use tokio::sync::mpsc;
 
 use super::super::events::event_to_dto;
-use super::super::{should_publish_best_solution, SolverService};
+use super::super::{should_publish_best_solution, SolverEventSource, SolverService};
 use super::support::{
     sample_completed_event, sample_failed_event, sample_progress_event, sample_terminal_event,
 };
 use crate::data::build_demo_problem;
+use crate::domain::Plan;
+
+/// Lets a test drive the job bridge with hand-built events.
+impl SolverEventSource for mpsc::UnboundedReceiver<SolverEvent<Plan>> {
+    fn recv(&mut self) -> impl Future<Output = Option<SolverEvent<Plan>>> + Send {
+        mpsc::UnboundedReceiver::recv(self)
+    }
+}
 
 #[tokio::test]
 async fn subscriptions_receive_live_events_and_delete_cleanup_works() {

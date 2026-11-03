@@ -8,7 +8,6 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardSoftScore> {
     support::FleetConstraint::new(
         "minimize_deferral",
         false,
-        HardSoftScore::one_soft(),
         support::score_minimize_deferral,
         support::count_deferrals,
     )

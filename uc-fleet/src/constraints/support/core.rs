@@ -3,26 +3,24 @@ use crate::domain::{
     TrainingRequirement, Vessel, WorkPackage,
 };
 use solverforge::prelude::*;
-use solverforge::{IncrementalConstraint, IncrementalConstraintSealed};
+use solverforge::{IncrementalConstraint, SingleConstraint};
 use solverforge_core::ConstraintRef;
 
 pub struct FleetConstraint {
     name: &'static str,
     constraint_ref: ConstraintRef,
     hard: bool,
-    weight: HardSoftScore,
     score: fn(&Plan) -> HardSoftScore,
     matches: fn(&Plan) -> usize,
     current_score: Option<HardSoftScore>,
 }
 
-impl IncrementalConstraintSealed for FleetConstraint {}
+impl SingleConstraint for FleetConstraint {}
 
 impl FleetConstraint {
     pub fn new(
         name: &'static str,
         hard: bool,
-        weight: HardSoftScore,
         score: fn(&Plan) -> HardSoftScore,
         matches: fn(&Plan) -> usize,
     ) -> Self {
@@ -30,7 +28,6 @@ impl FleetConstraint {
             name,
             constraint_ref: ConstraintRef::new("", name),
             hard,
-            weight,
             score,
             matches,
             current_score: None,
@@ -92,10 +89,6 @@ impl IncrementalConstraint<Plan, HardSoftScore> for FleetConstraint {
 
     fn is_hard(&self) -> bool {
         self.hard
-    }
-
-    fn weight(&self) -> HardSoftScore {
-        self.weight
     }
 }
 

@@ -8,7 +8,6 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardSoftScore> {
     support::FleetConstraint::new(
         "inspection_training_precedence",
         true,
-        HardSoftScore::one_hard(),
         support::score_inspection_training_precedence,
         support::count_inspection_training_precedence,
     )

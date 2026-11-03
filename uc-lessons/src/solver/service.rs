@@ -7,11 +7,11 @@
 use parking_lot::RwLock;
 use std::collections::HashMap;
 use std::sync::Arc;
-use tokio::sync::{broadcast, mpsc};
+use tokio::sync::broadcast;
 
 use solverforge::{
-    HardMediumSoftScore, SolverEvent, SolverManager, SolverManagerError, SolverSnapshot,
-    SolverSnapshotAnalysis, SolverStatus,
+    HardMediumSoftScore, SolverEvent, SolverEventReceiver, SolverManager, SolverManagerError,
+    SolverSnapshot, SolverSnapshotAnalysis, SolverStatus,
 };
 
 use super::event_payload::{
@@ -139,7 +139,7 @@ async fn drain_receiver(
     jobs: Arc<RwLock<HashMap<usize, JobState>>>,
     job_id: usize,
     sse_tx: broadcast::Sender<String>,
-    mut receiver: mpsc::UnboundedReceiver<SolverEvent<Plan>>,
+    mut receiver: SolverEventReceiver<Plan>,
 ) {
     while let Some(event) = receiver.recv().await {
         let payload = match &event {

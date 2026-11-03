@@ -211,12 +211,14 @@ impl SelectorTelemetryDto {
             moves_hard_improving: telemetry.moves_hard_improving,
             moves_hard_neutral: telemetry.moves_hard_neutral,
             moves_hard_worse: telemetry.moves_hard_worse,
-            conflict_repair_provider_generated: telemetry.conflict_repair_provider_generated,
-            conflict_repair_duplicate_filtered: telemetry.conflict_repair_duplicate_filtered,
-            conflict_repair_illegal_filtered: telemetry.conflict_repair_illegal_filtered,
-            conflict_repair_not_doable_filtered: telemetry.conflict_repair_not_doable_filtered,
-            conflict_repair_hard_improving: telemetry.conflict_repair_hard_improving,
-            conflict_repair_exposed: telemetry.conflict_repair_exposed,
+            // SolverForge 0.24.0 reports conflict-repair counts per run only; the
+            // per-selector counters it removed were never non-zero.
+            conflict_repair_provider_generated: 0,
+            conflict_repair_duplicate_filtered: 0,
+            conflict_repair_illegal_filtered: 0,
+            conflict_repair_not_doable_filtered: 0,
+            conflict_repair_hard_improving: 0,
+            conflict_repair_exposed: 0,
             generation_ms: duration_to_millis(telemetry.generation_time),
             evaluation_ms: duration_to_millis(telemetry.evaluation_time),
         }

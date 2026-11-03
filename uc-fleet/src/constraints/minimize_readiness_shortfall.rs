@@ -8,7 +8,6 @@ pub fn constraint() -> impl IncrementalConstraint<Plan, HardSoftScore> {
     support::FleetConstraint::new(
         "minimize_readiness_shortfall",
         false,
-        HardSoftScore::one_soft(),
         support::score_minimize_readiness_shortfall,
         support::count_weekly_readiness_floor,
     )

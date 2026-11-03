@@ -77,7 +77,7 @@ pub(super) async fn analyze_job_constraint(
         constraint: ConstraintAnalysisDto {
             name: analysis.name.clone(),
             constraint_type: constraint_type(&analysis.name),
-            weight: analysis.weight.to_string(),
+            weight: analysis.weight_multiplier.to_string(),
             score: analysis.score.to_string(),
             match_count: analysis.match_count,
             matches: Vec::<ConstraintMatchDto>::new(),
@@ -96,7 +96,7 @@ fn constraint_to_dto(analysis: &ConstraintAnalysis<HardSoftScore>) -> Constraint
     ConstraintSummaryDto {
         name: analysis.name.clone(),
         constraint_type: constraint_type(&analysis.name),
-        weight: analysis.weight.to_string(),
+        weight: analysis.weight_multiplier.to_string(),
         score: analysis.score.to_string(),
         match_count: analysis.match_count,
     }

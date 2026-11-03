@@ -1,11 +1,12 @@
 use parking_lot::Mutex;
 use solverforge::{
-    HardSoftScore, SolverEvent, SolverEventMetadata, SolverLifecycleState, SolverManager,
-    SolverManagerError, SolverSnapshot, SolverSnapshotAnalysis, SolverStatus,
+    HardSoftScore, SolverEvent, SolverEventMetadata, SolverEventReceiver, SolverLifecycleState,
+    SolverManager, SolverManagerError, SolverSnapshot, SolverSnapshotAnalysis, SolverStatus,
 };
 use std::collections::HashMap;
+use std::future::Future;
 use std::time::{Duration, Instant};
-use tokio::sync::{broadcast, mpsc};
+use tokio::sync::broadcast;
 
 use crate::api::{
     lifecycle_state_label, telemetry_to_dto, terminal_reason_label, JobLifecycleEventDto, PlanDto,
@@ -105,11 +106,7 @@ impl SolverService {
         Ok(())
     }
 
-    fn attach_job_stream(
-        &self,
-        job_id: usize,
-        receiver: mpsc::UnboundedReceiver<SolverEvent<Plan>>,
-    ) {
+    fn attach_job_stream(&self, job_id: usize, receiver: impl SolverEventSource) {
         let (sender, _) = broadcast::channel(64);
         self.job_streams.lock().insert(job_id, sender.clone());
         tokio::spawn(bridge_solver_events(receiver, sender));
@@ -120,8 +117,25 @@ impl SolverService {
     }
 }
 
+/// Where the bridge reads one job's solver events from, in publication order.
+///
+/// In the running app this is the `SolverEventReceiver` that
+/// `SolverManager::solve` returns. The runtime gives that receiver no public
+/// constructor, so lifecycle tests feed the same bridge from a plain tokio
+/// channel of hand-built events instead.
+trait SolverEventSource: Send + 'static {
+    /// Next event, or `None` once the job will publish no more.
+    fn recv(&mut self) -> impl Future<Output = Option<SolverEvent<Plan>>> + Send;
+}
+
+impl SolverEventSource for SolverEventReceiver<Plan> {
+    fn recv(&mut self) -> impl Future<Output = Option<SolverEvent<Plan>>> + Send {
+        SolverEventReceiver::recv(self)
+    }
+}
+
 async fn bridge_solver_events(
-    mut receiver: mpsc::UnboundedReceiver<SolverEvent<Plan>>,
+    mut receiver: impl SolverEventSource,
     sender: broadcast::Sender<JobLifecycleEventDto>,
 ) {
     let mut last_best_solution_sent_at = None;

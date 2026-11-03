@@ -10,7 +10,7 @@ use crate::domain::{
 };
 use solverforge::prelude::*;
 use solverforge::stream::joiner::equal_bi;
-use solverforge::{ConstraintSet, IncrementalConstraint, IncrementalConstraintSealed};
+use solverforge::{ConstraintSet, IncrementalConstraint, SingleConstraint};
 use solverforge_core::ConstraintRef;
 
 pub(super) fn constraint() -> impl ConstraintSet<FieldServicePlan, HardSoftScore> {
@@ -77,7 +77,7 @@ impl DuplicateAssignmentsConstraint {
     }
 }
 
-impl IncrementalConstraintSealed for DuplicateAssignmentsConstraint {}
+impl SingleConstraint for DuplicateAssignmentsConstraint {}
 
 impl IncrementalConstraint<FieldServicePlan, HardSoftScore> for DuplicateAssignmentsConstraint {
     fn evaluate(&self, solution: &FieldServicePlan) -> HardSoftScore {

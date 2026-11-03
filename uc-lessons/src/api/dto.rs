@@ -205,7 +205,7 @@ pub fn analysis_response(
             .iter()
             .map(|constraint| ConstraintAnalysisDto {
                 name: constraint.name.clone(),
-                weight: constraint.weight.to_string(),
+                weight: constraint.weight_multiplier.to_string(),
                 score: constraint.score.to_string(),
                 match_count: constraint.match_count,
             })
