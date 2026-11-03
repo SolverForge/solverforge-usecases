@@ -73,17 +73,22 @@ async fn road_network_jobs_lifecycle_snapshot_analysis_routes_and_delete_work_wh
         .unwrap();
     assert_eq!(cancel_response.status(), StatusCode::ACCEPTED);
 
-    let terminal = loop {
-        let json = poll_job_state(&app, job_id, "CANCELLED").await;
-        if json["snapshotRevision"].is_number() {
-            break json;
+    // CANCELLED is terminal, so its snapshot revision never changes after this
+    // poll. A cancel that lands before the solver publishes its first snapshot
+    // leaves `snapshotRevision: null`; that job has no snapshot to read.
+    let terminal = poll_job_state(&app, job_id, "CANCELLED").await;
+    match terminal["snapshotRevision"].as_u64() {
+        Some(snapshot_revision) => {
+            assert_snapshot_analysis_and_routes(&app, job_id, snapshot_revision).await;
         }
-    };
-    let snapshot_revision = terminal["snapshotRevision"]
-        .as_u64()
-        .expect("snapshot revision should exist");
-
-    assert_snapshot_analysis_and_routes(&app, job_id, snapshot_revision).await;
+        None => {
+            assert!(
+                terminal["snapshotRevision"].is_null(),
+                "unexpected snapshot revision: {terminal:?}"
+            );
+            assert_no_snapshot(&app, job_id).await;
+        }
+    }
     let delete_response = app
         .clone()
         .oneshot(
@@ -141,4 +146,17 @@ async fn assert_snapshot_analysis_and_routes(app: &axum::Router, job_id: &str, r
         .expect("routes vehicles should be an array")
         .iter()
         .all(|vehicle| vehicle["segments"].is_array()));
+}
+
+async fn assert_no_snapshot(app: &axum::Router, job_id: &str) {
+    let snapshot_response = app
+        .clone()
+        .oneshot(
+            Request::get(format!("/jobs/{job_id}/snapshot"))
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(snapshot_response.status(), StatusCode::CONFLICT);
 }

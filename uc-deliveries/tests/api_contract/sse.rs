@@ -76,6 +76,7 @@ async fn road_network_job_routes_work_when_live_tests_are_enabled() {
     let created = read_json(create_response).await;
     let job_id = created["id"].as_str().unwrap();
 
+    let deadline = std::time::Instant::now() + Duration::from_secs(30);
     let snapshot_response = loop {
         let response = app
             .clone()
@@ -89,6 +90,10 @@ async fn road_network_job_routes_work_when_live_tests_are_enabled() {
         if response.status() == StatusCode::OK {
             break response;
         }
+        assert!(
+            std::time::Instant::now() < deadline,
+            "job {job_id} did not publish a snapshot within 30 s"
+        );
         tokio::time::sleep(Duration::from_millis(150)).await;
     };
     let snapshot = read_json(snapshot_response).await;
