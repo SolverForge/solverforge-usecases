@@ -34,7 +34,7 @@ pub(super) fn missing_visits() -> impl IncrementalConstraint<FieldServicePlan, H
             ),
         ))
         .penalize(hard_weight(|_: &ServiceVisit| HardSoftScore::of(1, 0)))
-        .named("Assigned Visits")
+        .named("assigned_visits")
 }
 
 pub(super) fn duplicate_assignments() -> impl IncrementalConstraint<FieldServicePlan, HardSoftScore>
@@ -49,7 +49,7 @@ pub(super) fn invalid_assignments() -> impl IncrementalConstraint<FieldServicePl
         .penalize(hard_weight(|route: &TechnicianRoute| {
             HardSoftScore::of(route.route_invalid_visits, 0)
         }))
-        .named("Invalid Visit Assignments")
+        .named("invalid_visit_assignments")
 }
 
 struct DuplicateAssignmentsConstraint {
@@ -66,7 +66,7 @@ struct DuplicateAssignmentTotals {
 impl DuplicateAssignmentsConstraint {
     fn new() -> Self {
         Self {
-            constraint_ref: ConstraintRef::new("", "Duplicate Visit Assignments"),
+            constraint_ref: ConstraintRef::new("", "duplicate_visit_assignments"),
             last_score: HardSoftScore::ZERO,
         }
     }

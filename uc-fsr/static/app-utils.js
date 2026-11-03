@@ -9,6 +9,7 @@
     assignedVisitSet: assignedVisitSet,
     buildCurl: buildCurl,
     clonePlan: clonePlan,
+    constraintLabel: constraintLabel,
     fetchDemoCatalog: fetchDemoCatalog,
     fetchDemoPlan: fetchDemoPlan,
     fetchJobRoutes: fetchJobRoutes,
@@ -25,7 +26,49 @@
     timeLabel: timeLabel,
     title: title,
     toneForRoute: toneForRoute,
+    withConstraintLabels: withConstraintLabels,
   };
+
+  // Readable labels for the constraint ids that score analysis reports. Each
+  // id is its module name in src/constraints/, as `solverforge check` requires;
+  // the two extra assignment rules live in the assigned_visits module.
+  var CONSTRAINT_LABELS = {
+    assigned_visits: 'Assigned Visits',
+    duplicate_visit_assignments: 'Duplicate Visit Assignments',
+    invalid_visit_assignments: 'Invalid Visit Assignments',
+    required_skills: 'Required Skills',
+    required_parts: 'Required Parts',
+    reachable_legs: 'Reachable Legs',
+    time_windows: 'Time Windows',
+    shift_capacity: 'Shift Capacity',
+    minimize_travel: 'Minimize Travel',
+    priority_slack: 'Priority Slack',
+    balance_workload: 'Balance Workload',
+    territory_affinity: 'Territory Affinity',
+  };
+
+  function constraintLabel(id) {
+    var key = String(id || '');
+    return Object.prototype.hasOwnProperty.call(CONSTRAINT_LABELS, key) ? CONSTRAINT_LABELS[key] : title(key);
+  }
+
+  function labelConstraint(constraint) {
+    var copy = {};
+    Object.keys(constraint || {}).forEach(function (key) { copy[key] = constraint[key]; });
+    copy.name = constraintLabel(copy.name);
+    return copy;
+  }
+
+  // Makes the stock status bar label the dots it repaints from each analysis
+  // payload, so hover titles read like the analysis table.
+  function withConstraintLabels(statusBar) {
+    var paint = statusBar && statusBar.colorDotsFromAnalysis;
+    if (typeof paint !== 'function') return statusBar;
+    statusBar.colorDotsFromAnalysis = function (constraints) {
+      return paint.call(statusBar, (constraints || []).map(labelConstraint));
+    };
+    return statusBar;
+  }
 
   function buildCurl(method, path, json) {
     var parts = ['curl'];

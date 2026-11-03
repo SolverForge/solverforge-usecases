@@ -181,7 +181,7 @@
         columns: ['Constraint', 'Type', 'Weight', 'Score', 'Matches'],
         rows: analysis.constraints.map(function (constraint) {
           return [
-            constraint.name,
+            utils.constraintLabel(constraint.name),
             constraint.constraintType || constraint.type || '',
             String(constraint.weightMultiplier),
             constraint.score,

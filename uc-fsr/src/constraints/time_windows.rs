@@ -10,5 +10,5 @@ pub fn constraint() -> impl IncrementalConstraint<FieldServicePlan, HardSoftScor
         .penalize(hard_weight(|route: &TechnicianRoute| {
             HardSoftScore::of(route.route_late_minutes, 0)
         }))
-        .named("Time Windows")
+        .named("time_windows")
 }

@@ -10,5 +10,5 @@ pub fn constraint() -> impl IncrementalConstraint<FieldServicePlan, HardSoftScor
         .penalize(hard_weight(|route: &TechnicianRoute| {
             HardSoftScore::of(route.route_unreachable_legs, 0)
         }))
-        .named("Reachable Legs")
+        .named("reachable_legs")
 }

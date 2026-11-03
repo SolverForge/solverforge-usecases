@@ -68,12 +68,12 @@ fn stock_route_constraints_report_matching_routes() {
             .unwrap_or_else(|| panic!("missing constraint result for {name}"))
     };
 
-    assert_eq!(match_count("Balance Workload"), 1);
-    assert_eq!(match_count("Minimize Travel"), 1);
-    assert_eq!(match_count("Priority Slack"), 1);
-    assert_eq!(match_count("Required Parts"), 1);
-    assert_eq!(match_count("Shift Capacity"), 1);
-    assert_eq!(match_count("Territory Affinity"), 1);
+    assert_eq!(match_count("balance_workload"), 1);
+    assert_eq!(match_count("minimize_travel"), 1);
+    assert_eq!(match_count("priority_slack"), 1);
+    assert_eq!(match_count("required_parts"), 1);
+    assert_eq!(match_count("shift_capacity"), 1);
+    assert_eq!(match_count("territory_affinity"), 1);
 }
 
 fn sample_plan(visits: Vec<usize>) -> FieldServicePlan {

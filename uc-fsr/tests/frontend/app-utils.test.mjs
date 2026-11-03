@@ -82,3 +82,14 @@ test('iconForVisit and toneForRoute are stable', () => {
   assert.equal(U.toneForRoute(0), 'blue');
   assert.equal(U.toneForRoute(6), 'blue');
 });
+
+test('constraintLabel turns analysis constraint ids into readable labels', () => {
+  assert.equal(U.constraintLabel('assigned_visits'), 'Assigned Visits');
+  assert.equal(U.constraintLabel('duplicate_visit_assignments'), 'Duplicate Visit Assignments');
+  assert.equal(U.constraintLabel('home_hub_match'), 'Home Hub Match');
+
+  const painted = [];
+  const statusBar = U.withConstraintLabels({ colorDotsFromAnalysis: (constraints) => painted.push(constraints) });
+  statusBar.colorDotsFromAnalysis([{ name: 'minimize_travel', type: 'soft', score: '0hard/-3soft' }]);
+  assert.deepEqual(painted, [[{ name: 'Minimize Travel', type: 'soft', score: '0hard/-3soft' }]]);
+});

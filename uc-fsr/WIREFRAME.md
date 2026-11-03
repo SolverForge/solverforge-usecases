@@ -190,7 +190,8 @@ Supporting modules split the UI by responsibility:
 - `static/app-render*.js`
   Summary cards, route cards, maps, timeline, tables, and API guide.
 - `static/app-utils.js`
-  Plan cloning, labels, formatting, and color helpers.
+  Plan cloning, labels, formatting, color helpers, and readable labels for
+  the constraint ids that score analysis reports.
 
 ## Validation Surfaces
 

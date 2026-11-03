@@ -14,7 +14,9 @@
   app.className = 'sf-app fsr-app';
 
   var backend = SF.createBackend({ baseUrl: '' });
-  var statusBar = SF.createStatusBar({ constraints: uiModel.constraints || [] });
+  var statusBar = utils.withConstraintLabels(SF.createStatusBar({
+    constraints: (uiModel.constraints || []).map(function (id) { return { name: utils.constraintLabel(id) }; }),
+  }));
   var currentPlan = null;
   var currentRoutes = null;
   var demoData = null;

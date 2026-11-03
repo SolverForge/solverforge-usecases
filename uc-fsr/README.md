@@ -97,6 +97,13 @@ Soft constraints:
 - Territory affinity is preferred.
 - Deadline slack is rewarded more strongly for higher-priority visits.
 
+Each constraint is named after its module in `src/constraints/`, for example
+`time_windows`; the `assigned_visits` module also reports
+`duplicate_visit_assignments` and `invalid_visit_assignments`.
+`solverforge check` verifies that contract, and `/jobs/{id}/analysis` reports
+the id as each constraint's `name`. The browser shows the readable labels from
+`static/app-utils.js`.
+
 ## REST API
 
 - `GET /health`

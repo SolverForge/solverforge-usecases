@@ -8,5 +8,5 @@ pub fn constraint() -> impl IncrementalConstraint<FieldServicePlan, HardSoftScor
         .technician_routes()
         .filter(|route: &TechnicianRoute| route.workload_penalty() > 0)
         .penalize(|route: &TechnicianRoute| HardSoftScore::of(0, route.workload_penalty()))
-        .named("Balance Workload")
+        .named("balance_workload")
 }

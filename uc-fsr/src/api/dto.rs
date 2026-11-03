@@ -264,7 +264,7 @@ fn derive_acceptance_rate(moves_accepted: u64, moves_evaluated: u64) -> f64 {
 /// satisfied, so the browser needs the classification alongside the score.
 fn constraint_type(name: &str) -> &'static str {
     match name {
-        "Balance Workload" | "Minimize Travel" | "Priority Slack" | "Territory Affinity" => "soft",
+        "balance_workload" | "minimize_travel" | "priority_slack" | "territory_affinity" => "soft",
         _ => "hard",
     }
 }

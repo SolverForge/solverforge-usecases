@@ -10,5 +10,5 @@ pub fn constraint() -> impl IncrementalConstraint<FieldServicePlan, HardSoftScor
         .penalize(hard_weight(|route: &TechnicianRoute| {
             HardSoftScore::of(route.route_overtime_minutes, 0)
         }))
-        .named("Shift Capacity")
+        .named("shift_capacity")
 }
