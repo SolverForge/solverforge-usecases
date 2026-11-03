@@ -1,6 +1,25 @@
 # Changelog
 
 All notable changes to this use case are documented in this file.
+## [0.3.0](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-flightcrew@0.2.0...solverforge-flightcrew@0.3.0) (2026-11-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* **analysis:** analysis constraints report a numeric `weightMultiplier` instead of the `weight` string, and flightcrew, furnace and orders selector telemetry no longer carries `conflictRepair*` counters.
+
+### Features
+
+* **analysis:** report the constraint weightMultiplier on SolverForge 0.24.0 ([e86f8ce](https://github.com/SolverForge/solverforge-usecases/commit/e86f8ce293997118faf42cc173b757f4b614bc1f))
+
+
+### Bug Fixes
+
+* **build:** make every app's browser tests run from a standalone clone ([2dab038](https://github.com/SolverForge/solverforge-usecases/commit/2dab038c4de559a6e80b0134fd16e86ff170f9dc))
+* **build:** run slow acceptance solves in the release profile ([6c279ef](https://github.com/SolverForge/solverforge-usecases/commit/6c279eff404d49015f1f8dca6349492b54de9ea2))
+* **runtime:** target SolverForge 0.24.0 across the bundle ([32c9e75](https://github.com/SolverForge/solverforge-usecases/commit/32c9e75a3462a07c0d4e87f5e677c76c5dd8adda))
+
+
 ## [0.2.0](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-flightcrew@0.1.5...solverforge-flightcrew@0.2.0) (2026-10-27)
 
 
