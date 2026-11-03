@@ -80,7 +80,7 @@ for dir in "${open_source_dirs[@]}"; do
     exit 1
   fi
   for ignore in .gitignore .dockerignore; do
-    rg -qx 'node_modules/?' "$dir/$ignore" || {
+    grep -qxE 'node_modules/?' "$dir/$ignore" || {
       printf '%s/%s must ignore node_modules/\n' "$dir" "$ignore" >&2
       exit 1
     }
@@ -97,7 +97,7 @@ for index in "${!open_source_dirs[@]}"; do
   }
 done
 
-if rg -n 'solverforge-(deliveries|fleet|flightcrew|fsr|furnace|hospital|lessons|orders)@[0-9]+\.[0-9]+\.[0-9]+' README.md >/tmp/solverforge-usecases-versioned-tags.txt; then
+if grep -nE 'solverforge-(deliveries|fleet|flightcrew|fsr|furnace|hospital|lessons|orders)@[0-9]+\.[0-9]+\.[0-9]+' README.md >/tmp/solverforge-usecases-versioned-tags.txt; then
   cat /tmp/solverforge-usecases-versioned-tags.txt >&2
   rm -f /tmp/solverforge-usecases-versioned-tags.txt
   printf 'root README release-tag examples must use @<version>, not current app versions\n' >&2
@@ -105,7 +105,7 @@ if rg -n 'solverforge-(deliveries|fleet|flightcrew|fsr|furnace|hospital|lessons|
 fi
 rm -f /tmp/solverforge-usecases-versioned-tags.txt
 
-if rg -n 'Package:.*solverforge-(deliveries|fleet|flightcrew|fsr|furnace|hospital|lessons|orders).*`[0-9]+\.[0-9]+\.[0-9]+`' uc-*/README.md >/tmp/solverforge-usecases-package-versions.txt; then
+if grep -nE 'Package:.*solverforge-(deliveries|fleet|flightcrew|fsr|furnace|hospital|lessons|orders).*`[0-9]+\.[0-9]+\.[0-9]+`' uc-*/README.md >/tmp/solverforge-usecases-package-versions.txt; then
   cat /tmp/solverforge-usecases-package-versions.txt >&2
   rm -f /tmp/solverforge-usecases-package-versions.txt
   printf 'app README package lines must point to Cargo.toml instead of duplicating current app versions\n' >&2
@@ -126,7 +126,7 @@ while IFS= read -r -d '' file; do
   repo_files+=("$file")
 done < <(git ls-files -z --cached --others --exclude-standard)
 
-if ((${#repo_files[@]})) && rg -n "$residue_pattern" -- "${repo_files[@]}" >/tmp/solverforge-usecases-residue.txt; then
+if ((${#repo_files[@]})) && grep -nEI "$residue_pattern" -- "${repo_files[@]}" >/tmp/solverforge-usecases-residue.txt; then
   cat /tmp/solverforge-usecases-residue.txt >&2
   rm -f /tmp/solverforge-usecases-residue.txt
   exit 1
