@@ -1,6 +1,28 @@
 # Changelog
 
 All notable changes to this use case are documented in this file.
+## [3.0.0](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-deliveries@2.0.13...solverforge-deliveries@3.0.0) (2026-11-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* **deliveries:** /jobs/{id}/analysis reports constraint names as module ids (e.g. "vehicle_capacity") instead of display labels.
+* **analysis:** analysis constraints report a numeric `weightMultiplier` instead of the `weight` string, and flightcrew, furnace and orders selector telemetry no longer carries `conflictRepair*` counters.
+
+### Features
+
+* **analysis:** report the constraint weightMultiplier on SolverForge 0.24.0 ([e86f8ce](https://github.com/SolverForge/solverforge-usecases/commit/e86f8ce293997118faf42cc173b757f4b614bc1f))
+
+
+### Bug Fixes
+
+* **build:** make every app's browser tests run from a standalone clone ([2dab038](https://github.com/SolverForge/solverforge-usecases/commit/2dab038c4de559a6e80b0134fd16e86ff170f9dc))
+* **deliveries:** bound the live road-network lifecycle polls ([fd3c4e8](https://github.com/SolverForge/solverforge-usecases/commit/fd3c4e81e678e4dd2a37635d030a82f2896b82f7))
+* **deliveries:** name the cause of road-network routing failures ([55bb08d](https://github.com/SolverForge/solverforge-usecases/commit/55bb08d8edff80175058a388c806785c73229db3))
+* **deliveries:** pass solverforge check and keep readable constraint labels ([e372ed7](https://github.com/SolverForge/solverforge-usecases/commit/e372ed75c90136232e6f6d82dd32d26404432230))
+* **runtime:** target SolverForge 0.24.0 across the bundle ([32c9e75](https://github.com/SolverForge/solverforge-usecases/commit/32c9e75a3462a07c0d4e87f5e677c76c5dd8adda))
+
+
 ## [2.0.13](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-deliveries@2.0.12...solverforge-deliveries@2.0.13) (2026-10-27)
 
 
