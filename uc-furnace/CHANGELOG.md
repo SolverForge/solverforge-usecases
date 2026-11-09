@@ -1,6 +1,14 @@
 # Changelog
 
 All notable changes to this use case are documented in this file.
+## [3.0.2](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-furnace@3.0.1...solverforge-furnace@3.0.2) (2026-11-09)
+
+
+### Bug Fixes
+
+* **furnace:** build tests without debug info ([b5152cd](https://github.com/SolverForge/solverforge-usecases/commit/b5152cd4c6461681a185f46ceb039da64ec55bf9))
+
+
 ## [3.0.1](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-furnace@3.0.0...solverforge-furnace@3.0.1) (2026-11-09)
 
 
