@@ -21,6 +21,15 @@ jobs:
     runs-on: ${{ github.server_url == 'https://github.com' && 'ubuntu-latest' || 'rust' }}
 
     steps:
+      # The bundle's eight debug and release builds outgrow the hosted runner's
+      # free disk; drop preinstalled SDKs the bundle never uses.
+      - name: Free runner disk space
+        run: |
+          df -h /
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/.ghcup /opt/hostedtoolcache/CodeQL /usr/local/share/boost
+          sudo docker image prune --all --force > /dev/null
+          df -h /
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
