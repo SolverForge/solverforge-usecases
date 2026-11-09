@@ -28,6 +28,7 @@ group_name = "task_operator_assignment"
 [[phases]]
 type = "local_search"
 local_search_type = "variable_neighborhood_descent"
+score_tie_break = "first"
 
 [[phases.neighborhoods]]
 type = "compound_conflict_repair_move_selector"

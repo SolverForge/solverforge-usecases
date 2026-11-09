@@ -59,7 +59,8 @@ pub fn status_from_solver_error(error: solverforge::SolverManagerError) -> Statu
         solverforge::SolverManagerError::JobNotFound { .. }
         | solverforge::SolverManagerError::NoSnapshotAvailable { .. }
         | solverforge::SolverManagerError::SnapshotNotFound { .. } => StatusCode::NOT_FOUND,
-        solverforge::SolverManagerError::InvalidStateTransition { .. } => StatusCode::CONFLICT,
+        solverforge::SolverManagerError::InvalidStateTransition { .. }
+        | solverforge::SolverManagerError::SnapshotAnalysisDisabled { .. } => StatusCode::CONFLICT,
     }
 }
 

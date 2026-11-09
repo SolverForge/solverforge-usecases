@@ -54,7 +54,7 @@ make help
 - Package: `solverforge-deliveries`; version is declared in `Cargo.toml`
 - Release binary: `solverforge_deliveries`
 - Rust: `1.95`
-- SolverForge runtime: `solverforge` `0.24.0`
+- SolverForge runtime: `solverforge` `0.25.0`
 - Browser UI assets: `solverforge-ui` `0.9.0`
 - Routing engine: `solverforge-maps` `2.1.5`
 - Scaffold metadata: `solverforge-cli` `2.2.2` in `solverforge.app.toml`
