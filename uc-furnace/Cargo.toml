@@ -32,6 +32,12 @@ rand = "0.10.1"
 [dev-dependencies]
 toml = "1.1.2"
 
+# The test binary's full debug info carries over 3.6 GB of type-name strings,
+# close to the 4 GiB a DWARF32 link can address; split debug info keeps it in
+# per-object files so the link never merges it.
+[profile.dev]
+split-debuginfo = "unpacked"
+
 [profile.release]
 opt-level = 3
 lto = true
