@@ -32,11 +32,13 @@ rand = "0.10.1"
 [dev-dependencies]
 toml = "1.1.2"
 
-# The test binary's full debug info carries over 3.6 GB of type-name strings,
-# close to the 4 GiB a DWARF32 link can address; split debug info keeps it in
-# per-object files so the link never merges it.
+# Debug info for this crate's test binary names every generic instantiation
+# over the full constraint-set type; single names reach 7 MB and the strings
+# total over 2.7 GB even with line tables only, which outgrows a hosted CI
+# runner and nears the 4 GiB a DWARF32 link can address. Without debug info
+# the symbol table still names every frame in a backtrace.
 [profile.dev]
-split-debuginfo = "unpacked"
+debug = false
 
 [profile.release]
 opt-level = 3
