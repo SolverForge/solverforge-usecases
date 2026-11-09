@@ -1,6 +1,15 @@
 # Changelog
 
 All notable changes to this use case are documented in this file.
+## [3.0.1](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-furnace@3.0.0...solverforge-furnace@3.0.1) (2026-11-09)
+
+
+### Bug Fixes
+
+* **furnace:** split debug info so the test binary links ([0757032](https://github.com/SolverForge/solverforge-usecases/commit/0757032dd031de2fdf14ca74130c168b1da674f5))
+* **runtime:** target SolverForge 0.25.0 across the bundle ([0ffbf64](https://github.com/SolverForge/solverforge-usecases/commit/0ffbf64b997b7c80279202f5c1690c62b463146d))
+
+
 ## [3.0.0](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-furnace@2.0.7...solverforge-furnace@3.0.0) (2026-11-03)
 
 
