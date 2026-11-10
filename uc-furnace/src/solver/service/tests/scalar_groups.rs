@@ -74,8 +74,8 @@ fn furnace_provider_emits_hard_clean_construction_values() {
     for candidate in candidates {
         let mut candidate_plan = plan.clone();
         apply_candidate(&mut candidate_plan, &candidate);
-        assert_eq!(hard_score(&candidate_plan, "furnaceOverlap"), 0);
-        assert_eq!(hard_score(&candidate_plan, "changeoverGap"), 0);
+        assert_eq!(hard_score(&candidate_plan, "furnace_overlap"), 0);
+        assert_eq!(hard_score(&candidate_plan, "changeover_gap"), 0);
     }
 }
 

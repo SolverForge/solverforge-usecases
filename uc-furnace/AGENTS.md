@@ -8,24 +8,31 @@ name `uc-furnace`; product copy, metadata, and UI labels should use
 `solverforge-furnace` or SolverForge Furnace.
 
 - `src/domain/mod.rs` owns the `solverforge::planning_model!` manifest.
-- `src/domain/plan.rs` owns the `Plan` planning solution and wires the
-  `solver_toml`, `scalar_groups`, and `conflict_repairs` attributes.
-- `src/domain/resources.rs` owns the problem facts: `Furnace`, `WorkOrder`,
-  `Operator`, `Shift`, and `ShiftCoverageDemand`.
-- `src/domain/furnace.rs` owns `FurnaceAssignment` and its five scalar planning
-  variables plus the furnace construction hooks.
-- `src/domain/coverage.rs` owns `OperatorShiftAssignment` and its `shift_type`
-  scalar variable plus the roster construction hooks.
+- `src/domain/plan.rs` owns the `Plan` planning solution, its `Plan::new`
+  constructor, and the CLI-managed `scalar-groups` and `conflict-repairs`
+  blocks that register the solver providers by name. Change those blocks with
+  `solverforge generate|destroy scalar-group|conflict-repair`, not by hand.
+- `src/domain/{furnace,work_order,operator,shift,shift_coverage_demand}.rs` own
+  the problem facts, one type per file.
+- `src/domain/furnace_assignment.rs` owns `FurnaceAssignment`, its
+  `FurnaceAssignmentInit` constructor payload, its five scalar planning
+  variables, and the furnace construction hooks.
+- `src/domain/operator_shift_assignment.rs` owns `OperatorShiftAssignment`, its
+  `OperatorShiftAssignmentInit` payload, its `shift_type` scalar variable, and
+  the roster construction hooks.
 - `src/domain/{enums,constants,time,workforce,changeover,support}.rs` own the
   value vocabularies, time model, changeover math, and shared helpers.
-- `src/constraints/` owns the score rules, grouped by `furnace_hard`,
-  `furnace_soft`, `staffing_hard`, `monitoring_hard`, `roster_hard`, and
-  `roster_soft`, with assembly in `mod.rs`.
+- `src/constraints/` owns the score rules, one constraint per file whose
+  `.named(...)` id equals the module name; `mod.rs` only declares the modules,
+  `assemble.rs` builds the constraint set, and `shared.rs` holds scoring
+  helpers. `solverforge check` validates this layout.
 - `src/data/data_seed/` owns deterministic `STANDARD` demo generation.
 - `src/solver/` owns retained-job runtime orchestration, the grouped scalar
   providers, and the conflict-repair providers.
 - `src/api/` owns REST, DTO, analysis, and SSE surfaces.
-- `static/` owns the browser shell and generated view model.
+- `static/` owns the browser shell. The CLI rewrites
+  `static/generated/ui-model.json`; the app's tabs and hard/soft constraint
+  split live in `static/app/model.js`.
 - `Dockerfile`, `Makefile`, `solver.toml`, and `solverforge.app.toml` define
   the deployment and runtime contract.
 

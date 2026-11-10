@@ -1,8 +1,8 @@
 [app]
 name = "SolverForge Furnace"
 starter = "neutral-shell"
-cli_version = "2.2.2"
 shell = "web"
+cli_version = "2.2.2"
 
 [runtime]
 target = "solverforge 0.25.1"
@@ -11,13 +11,13 @@ ui_source = "crates.io: solverforge-ui 0.9.0"
 
 [demo]
 default_size = "STANDARD"
-available_sizes = [
-    "STANDARD",
-]
+available_sizes = ["STANDARD"]
 
 [solution]
 name = "Plan"
 score = "HardSoftScore"
+scalar_groups_path = "scalar_groups"
+conflict_repairs_path = "conflict_repairs"
 
 [[facts]]
 name = "furnace"
@@ -62,6 +62,8 @@ kind = "scalar"
 range = "compatible_assignments"
 elements = ""
 allows_unassigned = true
+construction_entity_order_key = "furnace_assignment_construction_entity_order_key"
+construction_value_order_key = "furnace_assignment_construction_value_order_key"
 enabled = true
 
 [[variables]]
@@ -72,6 +74,8 @@ kind = "scalar"
 range = "eligible_load_build_operator_ids"
 elements = ""
 allows_unassigned = true
+construction_entity_order_key = "task_operator_construction_entity_order_key"
+construction_value_order_key = "load_build_operator_construction_value_order_key"
 enabled = true
 
 [[variables]]
@@ -82,6 +86,8 @@ kind = "scalar"
 range = "eligible_program_operator_ids"
 elements = ""
 allows_unassigned = true
+construction_entity_order_key = "task_operator_construction_entity_order_key"
+construction_value_order_key = "program_operator_construction_value_order_key"
 enabled = true
 
 [[variables]]
@@ -92,6 +98,8 @@ kind = "scalar"
 range = "eligible_quench_operator_ids"
 elements = ""
 allows_unassigned = true
+construction_entity_order_key = "task_operator_construction_entity_order_key"
+construction_value_order_key = "quench_operator_construction_value_order_key"
 enabled = true
 
 [[variables]]
@@ -102,6 +110,8 @@ kind = "scalar"
 range = "eligible_unload_operator_ids"
 elements = ""
 allows_unassigned = true
+construction_entity_order_key = "task_operator_construction_entity_order_key"
+construction_value_order_key = "unload_operator_construction_value_order_key"
 enabled = true
 
 [[variables]]
@@ -112,154 +122,339 @@ kind = "scalar"
 range = "allowed_shift_types"
 elements = ""
 allows_unassigned = true
-enabled = true
-
-[[constraints]]
-name = "unassigned_orders"
-module = "furnace_hard"
-enabled = true
-
-[[constraints]]
-name = "incompatible_process"
-module = "furnace_hard"
-enabled = true
-
-[[constraints]]
-name = "excessive_temperature"
-module = "furnace_hard"
-enabled = true
-
-[[constraints]]
-name = "excessive_load"
-module = "furnace_hard"
-enabled = true
-
-[[constraints]]
-name = "outside_week"
-module = "furnace_hard"
-enabled = true
-
-[[constraints]]
-name = "furnace_overlap"
-module = "furnace_hard"
-enabled = true
-
-[[constraints]]
-name = "changeover_gap"
-module = "furnace_hard"
-enabled = true
-
-[[constraints]]
-name = "load_build_shift_ownership"
-module = "furnace_hard"
-enabled = true
-
-[[constraints]]
-name = "program_shift_ownership"
-module = "furnace_hard"
-enabled = true
-
-[[constraints]]
-name = "quench_shift_ownership"
-module = "furnace_hard"
-enabled = true
-
-[[constraints]]
-name = "unload_shift_ownership"
-module = "furnace_hard"
+construction_entity_order_key = "operator_shift_construction_entity_order_key"
+construction_value_order_key = "operator_shift_construction_value_order_key"
 enabled = true
 
 [[constraints]]
 name = "assigned_tasks_require_scheduled_furnace"
-module = "staffing_hard"
+module = "assigned_tasks_require_scheduled_furnace"
 enabled = true
 
 [[constraints]]
-name = "required_task_assigned"
-module = "staffing_hard"
-enabled = true
-
-[[constraints]]
-name = "task_operator_skilled"
-module = "staffing_hard"
-enabled = true
-
-[[constraints]]
-name = "task_operator_on_owning_shift"
-module = "staffing_hard"
-enabled = true
-
-[[constraints]]
-name = "operator_double_booked"
-module = "staffing_hard"
-enabled = true
-
-[[constraints]]
-name = "shift_role_coverage"
-module = "staffing_hard"
-enabled = true
-
-[[constraints]]
-name = "monitoring_capacity"
-module = "monitoring_hard"
-enabled = true
-
-[[constraints]]
-name = "day_only_night"
-module = "roster_hard"
-enabled = true
-
-[[constraints]]
-name = "minimum_rest"
-module = "roster_hard"
-enabled = true
-
-[[constraints]]
-name = "visible_shift_limit"
-module = "roster_hard"
+name = "changeover_gap"
+module = "changeover_gap"
 enabled = true
 
 [[constraints]]
 name = "consecutive_nights"
-module = "roster_hard"
+module = "consecutive_nights"
 enabled = true
 
 [[constraints]]
-name = "express_lateness"
-module = "furnace_soft"
-enabled = true
-
-[[constraints]]
-name = "urgent_lateness"
-module = "furnace_soft"
-enabled = true
-
-[[constraints]]
-name = "standard_lateness"
-module = "furnace_soft"
-enabled = true
-
-[[constraints]]
-name = "thermal_changeover"
-module = "furnace_soft"
+name = "day_only_night"
+module = "day_only_night"
 enabled = true
 
 [[constraints]]
 name = "early_start_pressure"
-module = "furnace_soft"
+module = "early_start_pressure"
+enabled = true
+
+[[constraints]]
+name = "excessive_load"
+module = "excessive_load"
+enabled = true
+
+[[constraints]]
+name = "excessive_temperature"
+module = "excessive_temperature"
+enabled = true
+
+[[constraints]]
+name = "express_lateness"
+module = "express_lateness"
+enabled = true
+
+[[constraints]]
+name = "furnace_overlap"
+module = "furnace_overlap"
+enabled = true
+
+[[constraints]]
+name = "incompatible_process"
+module = "incompatible_process"
+enabled = true
+
+[[constraints]]
+name = "load_build_shift_ownership"
+module = "load_build_shift_ownership"
+enabled = true
+
+[[constraints]]
+name = "minimum_rest"
+module = "minimum_rest"
+enabled = true
+
+[[constraints]]
+name = "monitoring_capacity"
+module = "monitoring_capacity"
 enabled = true
 
 [[constraints]]
 name = "night_start_preference"
-module = "furnace_soft"
+module = "night_start_preference"
+enabled = true
+
+[[constraints]]
+name = "operator_double_booked"
+module = "operator_double_booked"
+enabled = true
+
+[[constraints]]
+name = "outside_week"
+module = "outside_week"
 enabled = true
 
 [[constraints]]
 name = "overtime"
-module = "roster_soft"
+module = "overtime"
+enabled = true
+
+[[constraints]]
+name = "program_shift_ownership"
+module = "program_shift_ownership"
+enabled = true
+
+[[constraints]]
+name = "quench_shift_ownership"
+module = "quench_shift_ownership"
+enabled = true
+
+[[constraints]]
+name = "required_task_assigned"
+module = "required_task_assigned"
 enabled = true
 
 [[constraints]]
 name = "shift_load_balance"
-module = "roster_soft"
+module = "shift_load_balance"
+enabled = true
+
+[[constraints]]
+name = "shift_role_coverage"
+module = "shift_role_coverage"
+enabled = true
+
+[[constraints]]
+name = "standard_lateness"
+module = "standard_lateness"
+enabled = true
+
+[[constraints]]
+name = "task_operator_on_owning_shift"
+module = "task_operator_on_owning_shift"
+enabled = true
+
+[[constraints]]
+name = "task_operator_skilled"
+module = "task_operator_skilled"
+enabled = true
+
+[[constraints]]
+name = "thermal_changeover"
+module = "thermal_changeover"
+enabled = true
+
+[[constraints]]
+name = "unassigned_orders"
+module = "unassigned_orders"
+enabled = true
+
+[[constraints]]
+name = "unload_shift_ownership"
+module = "unload_shift_ownership"
+enabled = true
+
+[[constraints]]
+name = "urgent_lateness"
+module = "urgent_lateness"
+enabled = true
+
+[[constraints]]
+name = "visible_shift_limit"
+module = "visible_shift_limit"
+enabled = true
+
+[[scalar_groups]]
+name = "furnace_assignment"
+kind = "candidates"
+candidate_provider = "crate::solver::scalar_groups::furnace_assignment_candidates"
+solver_config = false
+enabled = true
+
+[[scalar_groups.targets]]
+entity = "furnace_assignment"
+entity_plural = "assignments"
+field = "assignment"
+
+[scalar_groups.assignment_hooks]
+required_entity = ""
+capacity_key = ""
+assignment_rule = ""
+position_key = ""
+sequence_key = ""
+entity_order = ""
+value_order = ""
+
+[scalar_groups.limits]
+
+[[scalar_groups]]
+name = "roster_shift_assignment"
+kind = "candidates"
+candidate_provider = "crate::solver::scalar_groups::roster_shift_assignment_candidates"
+solver_config = false
+enabled = true
+
+[[scalar_groups.targets]]
+entity = "operator_shift_assignment"
+entity_plural = "operator_shift_assignments"
+field = "shift_type"
+
+[scalar_groups.assignment_hooks]
+required_entity = ""
+capacity_key = ""
+assignment_rule = ""
+position_key = ""
+sequence_key = ""
+entity_order = ""
+value_order = ""
+
+[scalar_groups.limits]
+
+[[scalar_groups]]
+name = "task_operator_assignment"
+kind = "candidates"
+candidate_provider = "crate::solver::scalar_groups::task_operator_assignment_candidates"
+solver_config = false
+enabled = true
+
+[[scalar_groups.targets]]
+entity = "furnace_assignment"
+entity_plural = "assignments"
+field = "load_build_operator_id"
+
+[[scalar_groups.targets]]
+entity = "furnace_assignment"
+entity_plural = "assignments"
+field = "program_operator_id"
+
+[[scalar_groups.targets]]
+entity = "furnace_assignment"
+entity_plural = "assignments"
+field = "quench_operator_id"
+
+[[scalar_groups.targets]]
+entity = "furnace_assignment"
+entity_plural = "assignments"
+field = "unload_operator_id"
+
+[scalar_groups.assignment_hooks]
+required_entity = ""
+capacity_key = ""
+assignment_rule = ""
+position_key = ""
+sequence_key = ""
+entity_order = ""
+value_order = ""
+
+[scalar_groups.limits]
+
+[[scalar_groups]]
+name = "furnace_schedule_task_assignment"
+kind = "candidates"
+candidate_provider = "crate::solver::scalar_groups::furnace_schedule_task_assignment_candidates"
+solver_config = false
+enabled = true
+
+[[scalar_groups.targets]]
+entity = "furnace_assignment"
+entity_plural = "assignments"
+field = "assignment"
+
+[[scalar_groups.targets]]
+entity = "furnace_assignment"
+entity_plural = "assignments"
+field = "load_build_operator_id"
+
+[[scalar_groups.targets]]
+entity = "furnace_assignment"
+entity_plural = "assignments"
+field = "program_operator_id"
+
+[[scalar_groups.targets]]
+entity = "furnace_assignment"
+entity_plural = "assignments"
+field = "quench_operator_id"
+
+[[scalar_groups.targets]]
+entity = "furnace_assignment"
+entity_plural = "assignments"
+field = "unload_operator_id"
+
+[scalar_groups.assignment_hooks]
+required_entity = ""
+capacity_key = ""
+assignment_rule = ""
+position_key = ""
+sequence_key = ""
+entity_order = ""
+value_order = ""
+
+[scalar_groups.limits]
+
+[[conflict_repairs]]
+constraint = "minimum_rest"
+provider = "crate::solver::conflict_repair::minimum_rest_repairs"
+selector = "compound"
+include_soft_matches = false
+solver_config = false
+enabled = true
+
+[[conflict_repairs]]
+constraint = "visible_shift_limit"
+provider = "crate::solver::conflict_repair::visible_shift_limit_repairs"
+selector = "compound"
+include_soft_matches = false
+solver_config = false
+enabled = true
+
+[[conflict_repairs]]
+constraint = "task_operator_on_owning_shift"
+provider = "crate::solver::conflict_repair::task_owning_shift_repairs"
+selector = "compound"
+include_soft_matches = false
+solver_config = false
+enabled = true
+
+[[conflict_repairs]]
+constraint = "shift_role_coverage"
+provider = "crate::solver::conflict_repair::shift_role_coverage_repairs"
+selector = "compound"
+include_soft_matches = false
+solver_config = false
+enabled = true
+
+[[conflict_repairs]]
+constraint = "monitoring_capacity"
+provider = "crate::solver::conflict_repair::monitoring_capacity_repairs"
+selector = "compound"
+include_soft_matches = false
+solver_config = false
+enabled = true
+
+[[conflict_repairs]]
+constraint = "furnace_overlap"
+provider = "crate::solver::conflict_repair::furnace_overlap_repairs"
+selector = "compound"
+include_soft_matches = false
+solver_config = false
+enabled = true
+
+[[conflict_repairs]]
+constraint = "changeover_gap"
+provider = "crate::solver::conflict_repair::changeover_gap_repairs"
+selector = "compound"
+include_soft_matches = false
+solver_config = false
 enabled = true

@@ -1,6 +1,6 @@
 use crate::domain::{
-    allowed_shift_types_for, Operator, OperatorShiftAssignment, Plan, Shift,
-    STAFFING_ROSTER_DAY_END, STAFFING_ROSTER_DAY_START,
+    allowed_shift_types_for, Operator, OperatorShiftAssignment, OperatorShiftAssignmentInit, Plan,
+    Shift, STAFFING_ROSTER_DAY_END, STAFFING_ROSTER_DAY_START,
 };
 
 use super::base_data::build_demo;
@@ -28,16 +28,15 @@ pub(crate) fn build_demo_problem_for(demo: DemoData) -> Plan {
 fn build_canonical_plan(demo: DemoSeed) -> Plan {
     let operator_shift_assignments =
         build_operator_shift_assignments(&demo.operators, &demo.shifts);
-    Plan {
-        furnaces: demo.furnaces,
-        work_orders: demo.work_orders,
-        operators: demo.operators,
-        shifts: demo.shifts,
-        shift_coverage_demands: demo.shift_coverage_demands,
-        assignments: demo.assignments,
+    Plan::new(
+        demo.furnaces,
+        demo.work_orders,
+        demo.operators,
+        demo.shifts,
+        demo.shift_coverage_demands,
+        demo.assignments,
         operator_shift_assignments,
-        score: None,
-    }
+    )
 }
 
 fn build_operator_shift_assignments(
@@ -49,7 +48,7 @@ fn build_operator_shift_assignments(
 
     for operator in operators {
         for roster_day in STAFFING_ROSTER_DAY_START..=STAFFING_ROSTER_DAY_END {
-            assignments.push(OperatorShiftAssignment {
+            assignments.push(OperatorShiftAssignment::new(OperatorShiftAssignmentInit {
                 id: assignment_id,
                 operator_idx: operator.id,
                 operator_name: operator.name,
@@ -62,8 +61,7 @@ fn build_operator_shift_assignments(
                     operator.day_only,
                     roster_day,
                 ),
-                shift_type: None,
-            });
+            }));
             assignment_id += 1;
         }
     }

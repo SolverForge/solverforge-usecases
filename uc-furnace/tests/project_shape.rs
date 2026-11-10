@@ -103,8 +103,9 @@ fn public_demo_path_has_no_seed_or_repair_backdoors() {
         fs::read_to_string(project_path("src/data/data_seed/problem.rs")).expect("problem exists");
     let furnace_seed = fs::read_to_string(project_path("src/data/data_seed/furnace_seed.rs"))
         .expect("furnace_seed exists");
-    let staffing_hard =
-        fs::read_to_string(project_path("src/constraints/staffing_hard.rs")).expect("staffing");
+    let operator_double_booked =
+        fs::read_to_string(project_path("src/constraints/operator_double_booked.rs"))
+            .expect("operator_double_booked constraint");
     let plan_rs = fs::read_to_string(project_path("src/domain/plan.rs")).expect("plan");
     let lifecycle =
         fs::read_to_string(project_path("static/app/lifecycle.js")).expect("lifecycle exists");
@@ -117,7 +118,7 @@ fn public_demo_path_has_no_seed_or_repair_backdoors() {
     assert!(!furnace_seed.contains("repair_"));
     assert!(!furnace_seed.contains("seed_initial_assignments"));
     assert!(!project_path("src/data/data_seed/workforce_seed.rs").exists());
-    assert!(staffing_hard.contains("ManualTaskBookingEntries"));
+    assert!(operator_double_booked.contains("ManualTaskBookingEntries"));
     assert!(!plan_rs.contains("self.shifts.iter().find"));
     assert!(lifecycle.contains("cleanupTerminalJob"));
     assert!(schedule.contains("buildUnassignedSection(unassignedOrders)"));

@@ -31,17 +31,13 @@ fn visible_shift_repair_keeps_hard_improving_partial_roster_moves() {
     mark_replacement_pool_rest_dirty(&mut plan, role, operator);
 
     let baseline_hard = hard_score(&plan);
-    let repairs = conflict_repair::providers()
-        .into_iter()
-        .find(|entry| entry.constraint_name() == "visibleShiftLimit")
-        .expect("visible shift repair provider")
-        .provider();
+    let repairs = conflict_repair::visible_shift_limit_repairs;
 
     let candidates = repairs(&plan, limits());
 
     assert!(
         candidates.iter().any(|candidate| {
-            candidate.reason() == "visibleShiftLimit"
+            candidate.reason() == "visible_shift_limit"
                 && candidate_hard_score(&plan, candidate) > baseline_hard
         }),
         "visible shift repair should leave hard-improvement filtering to scoring"

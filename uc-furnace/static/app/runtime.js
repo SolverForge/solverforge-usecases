@@ -1,6 +1,7 @@
 import { openAnalysis, openConstraintAnalysis, syncConstraintStatus } from './analysis.js';
 import { buildApiGuideEndpoints } from './api.js';
 import { cleanupTerminalJob, syncLifecycleMarkers } from './lifecycle.js';
+import { constraintEntries, VIEWS } from './model.js';
 import { renderAll } from './render.js';
 import { destroyAllTimelines } from './schedule.js';
 import { clonePlan } from './utils.js';
@@ -21,9 +22,10 @@ export async function startApp() {
     backend: backend,
     config: config,
     uiModel: uiModel,
+    constraints: constraintEntries(uiModel),
     currentPlan: null,
     lastAnalysis: null,
-    activeTab: (uiModel.views && uiModel.views.length) ? uiModel.views[0].id : 'overview',
+    activeTab: VIEWS[0].id,
     viewPanels: {},
     viewTimelines: {},
     statusBar: null,
@@ -37,14 +39,14 @@ export async function startApp() {
   };
 
   var statusBar = SF.createStatusBar({
-    constraints: uiModel.constraints || [],
+    constraints: ctx.constraints,
     onConstraintClick: function (index) {
-      openConstraintAnalysis(ctx, (ctx.uiModel.constraints || [])[index]);
+      openConstraintAnalysis(ctx, ctx.constraints[index]);
     },
   });
   ctx.statusBar = statusBar;
 
-  var tabs = (uiModel.views || []).map(function (view, index) {
+  var tabs = VIEWS.map(function (view, index) {
     return {
       id: view.id,
       label: view.label,
@@ -52,9 +54,6 @@ export async function startApp() {
       active: index === 0,
     };
   });
-  if (!tabs.length) {
-    tabs.push({ id: 'overview', label: 'Overview', icon: 'fa-compass', active: true });
-  }
   tabs.push({ id: 'data', label: 'Data', icon: 'fa-table' });
   tabs.push({ id: 'api', label: 'REST API', icon: 'fa-book' });
 
@@ -89,7 +88,7 @@ export async function startApp() {
   ctx.overviewPanel.appendChild(ctx.overviewContainer);
   app.appendChild(ctx.overviewPanel);
 
-  (uiModel.views || []).forEach(function (view) {
+  VIEWS.forEach(function (view) {
     var panel = SF.el('div', { className: 'sf-content', style: { display: ctx.activeTab === view.id ? '' : 'none' } });
     panel.appendChild(SF.el('div', { id: 'view-' + view.id }));
     ctx.viewPanels[view.id] = panel;

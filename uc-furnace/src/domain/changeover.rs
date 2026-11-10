@@ -1,5 +1,5 @@
 use super::enums::HeatTreatmentProcess;
-use super::furnace::FurnaceAssignment;
+use super::furnace_assignment::FurnaceAssignment;
 
 pub fn changeover_minutes(from_temp: u32, to_temp: u32) -> u32 {
     if from_temp == to_temp {
@@ -55,7 +55,7 @@ fn process_family_penalty(left: HeatTreatmentProcess, right: HeatTreatmentProces
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::domain::{FurnaceAssignment, PriorityBand};
+    use crate::domain::{FurnaceAssignment, FurnaceAssignmentInit, PriorityBand};
 
     #[test]
     fn same_temperature_is_zero() {
@@ -72,44 +72,40 @@ mod tests {
     #[test]
     fn family_penalty_changes_sequence_cost() {
         let left = FurnaceAssignment {
-            work_order_idx: 0,
-            process: HeatTreatmentProcess::Quenching,
-            temperature_celsius: 850,
-            soak_time_minutes: 90,
-            load_weight_kg: 500,
-            due_datetime_minutes: 0,
-            priority: PriorityBand::Standard,
-            requires_quench: true,
-            compatible_assignments: vec![0],
             assignment: Some(0),
-            eligible_load_build_operator_ids: vec![0],
-            eligible_program_operator_ids: vec![0],
-            eligible_quench_operator_ids: vec![0],
-            eligible_unload_operator_ids: vec![0],
-            load_build_operator_id: None,
-            program_operator_id: None,
-            quench_operator_id: None,
-            unload_operator_id: None,
+            ..FurnaceAssignment::new(FurnaceAssignmentInit {
+                work_order_idx: 0,
+                process: HeatTreatmentProcess::Quenching,
+                temperature_celsius: 850,
+                soak_time_minutes: 90,
+                load_weight_kg: 500,
+                due_datetime_minutes: 0,
+                priority: PriorityBand::Standard,
+                requires_quench: true,
+                compatible_assignments: vec![0],
+                eligible_load_build_operator_ids: vec![0],
+                eligible_program_operator_ids: vec![0],
+                eligible_quench_operator_ids: vec![0],
+                eligible_unload_operator_ids: vec![0],
+            })
         };
         let right = FurnaceAssignment {
-            work_order_idx: 1,
-            process: HeatTreatmentProcess::Tempering,
-            temperature_celsius: 210,
-            soak_time_minutes: 60,
-            load_weight_kg: 400,
-            due_datetime_minutes: 0,
-            priority: PriorityBand::Standard,
-            requires_quench: false,
-            compatible_assignments: vec![1],
             assignment: Some(1),
-            eligible_load_build_operator_ids: vec![0],
-            eligible_program_operator_ids: vec![0],
-            eligible_quench_operator_ids: vec![0],
-            eligible_unload_operator_ids: vec![0],
-            load_build_operator_id: None,
-            program_operator_id: None,
-            quench_operator_id: None,
-            unload_operator_id: None,
+            ..FurnaceAssignment::new(FurnaceAssignmentInit {
+                work_order_idx: 1,
+                process: HeatTreatmentProcess::Tempering,
+                temperature_celsius: 210,
+                soak_time_minutes: 60,
+                load_weight_kg: 400,
+                due_datetime_minutes: 0,
+                priority: PriorityBand::Standard,
+                requires_quench: false,
+                compatible_assignments: vec![1],
+                eligible_load_build_operator_ids: vec![0],
+                eligible_program_operator_ids: vec![0],
+                eligible_quench_operator_ids: vec![0],
+                eligible_unload_operator_ids: vec![0],
+            })
         };
 
         assert!(calculate_changeover_cost_for_sequence(&left, &right) > 0);

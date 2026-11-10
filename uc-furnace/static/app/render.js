@@ -1,4 +1,5 @@
 import { syncConstraintStatus } from './analysis.js';
+import { collectionEntries, VIEWS } from './model.js';
 import { buildSchedulePayload, destroyTimeline, ensureTimeline, averageAssignmentLoad } from './schedule.js';
 import { assignmentMap, clonePlan, operatorShifts, valueAsString } from './utils.js';
 
@@ -65,7 +66,7 @@ export function renderOverview(ctx, data) {
 }
 
 export function renderViews(ctx, data) {
-  (ctx.uiModel.views || []).forEach(function (view) {
+  VIEWS.forEach(function (view) {
     var container = document.getElementById('view-' + view.id);
     if (!container) return;
 
@@ -152,8 +153,8 @@ function renderOrdersView(container, data) {
 
 function renderTables(ctx, data) {
   ctx.tablesContainer.innerHTML = '';
-  (ctx.uiModel.entities || []).concat(ctx.uiModel.facts || []).forEach(function (entry) {
-    var rows = data[entry.plural] || [];
+  collectionEntries(ctx.uiModel).forEach(function (entry) {
+    var rows = data[entry.key] || [];
     if (!rows.length) return;
     ctx.tablesContainer.appendChild(buildCollectionSection(entry.label, rows));
   });

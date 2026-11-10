@@ -129,8 +129,8 @@ It shows how to combine:
 │   │   `planning_model!` manifest, facts, both planning entities, `Plan`, and
 │   │   time/changeover/label helpers.
 │   ├── constraints/
-│   │   Seven score-rule modules (furnace, staffing, monitoring, roster hard and
-│   │   soft) plus the assembler in `mod.rs`.
+│   │   Thirty single-constraint modules declared in `mod.rs`, the constraint
+│   │   set in `assemble.rs`, and scoring helpers in `shared.rs`.
 │   ├── data/
 │   │   Deterministic `STANDARD` demo-data generator, process specs, and seed
 │   │   catalog.
@@ -146,6 +146,8 @@ It shows how to combine:
     ├── app.js
     └── app/
         runtime.js      Browser boot, solver lifecycle, tabs, and API guide.
+        model.js        App tabs, hard/soft constraint split, and data-table
+                        collections over the CLI-generated ui-model.json.
         render.js       Overview KPIs, crew table, orders table, data tables.
         schedule.js     Furnace-lane timeline model and unassigned section.
         analysis.js     Score-analysis modal and per-constraint drilldown.
@@ -206,13 +208,16 @@ intentionally uses an inline Playwright smoke in `Makefile` instead of a
   `furnace_assignment`, `roster_shift_assignment`, `task_operator_assignment`,
   and the composite `furnace_schedule_task_assignment`.
 - Conflict-repair providers in `src/solver/conflict_repair.rs`:
-  `minimumRest`, `visibleShiftLimit`, `taskOperatorOnOwningShift`,
-  `shiftRoleCoverage`, `monitoringCapacity`, `furnaceOverlap`, and
-  `changeoverGap`.
+  `minimum_rest`, `visible_shift_limit`, `task_operator_on_owning_shift`,
+  `shift_role_coverage`, `monitoring_capacity`, `furnace_overlap`, and
+  `changeover_gap`.
 
-The `Plan` macro wires both by name through the
-`scalar_groups = "crate::solver::scalar_groups::groups"` and
-`conflict_repairs = "crate::solver::conflict_repair::providers"` attributes.
+`solverforge generate scalar-group` and `solverforge generate conflict-repair`
+register them in the CLI-managed `scalar-groups` and `conflict-repairs` blocks
+of `src/domain/plan.rs`, which the `Plan` macro reads through its
+`scalar_groups = "scalar_groups"` and `conflict_repairs = "conflict_repairs"`
+attributes. `solverforge.app.toml` records the same registrations, and
+`solverforge check` verifies every `solver.toml` reference against them.
 
 ## Validation Surfaces
 

@@ -157,13 +157,13 @@ fn plan_solver_toml_matches_canonical_contract() {
             "phases[3].neighborhoods[0]"
         ),
         [
-            "minimumRest",
-            "visibleShiftLimit",
-            "taskOperatorOnOwningShift",
-            "shiftRoleCoverage",
-            "monitoringCapacity",
-            "furnaceOverlap",
-            "changeoverGap",
+            "minimum_rest",
+            "visible_shift_limit",
+            "task_operator_on_owning_shift",
+            "shift_role_coverage",
+            "monitoring_capacity",
+            "furnace_overlap",
+            "changeover_gap",
         ]
     );
     assert!(bool_field(
@@ -188,10 +188,10 @@ fn plan_solver_toml_matches_canonical_contract() {
             "phases[3].neighborhoods[1].selectors[0]"
         ),
         [
-            "minimumRest",
-            "visibleShiftLimit",
-            "furnaceOverlap",
-            "changeoverGap",
+            "minimum_rest",
+            "visible_shift_limit",
+            "furnace_overlap",
+            "changeover_gap",
         ]
     );
     assert_eq!(

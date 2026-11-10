@@ -1,5 +1,8 @@
 {
   "title": "SolverForge Furnace",
   "subtitle": "Industrial Heat-Treatment Planning",
+  "constraints": [],
+  "entities": [],
+  "facts": [],
   "defaultDemoId": "STANDARD"
 }

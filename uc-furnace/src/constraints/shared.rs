@@ -44,3 +44,44 @@ pub(super) fn early_start_pressure_score(
     (end_minutes < due_datetime_minutes)
         .then(|| HardSoftScore::of_soft(((due_datetime_minutes - end_minutes) as i64) / 40))
 }
+
+pub(super) fn assignment_uses_operator(
+    assignment: &FurnaceAssignment,
+    operator: &Operator,
+) -> bool {
+    [
+        assignment.load_build_operator_id,
+        assignment.program_operator_id,
+        assignment.quench_operator_id,
+        assignment.unload_operator_id,
+    ]
+    .into_iter()
+    .any(|operator_id| operator_id == Some(operator.id))
+}
+
+pub(super) fn invalid_skill_count(assignment: &FurnaceAssignment, operator: &Operator) -> usize {
+    [
+        (ManualTaskKind::LoadBuild, assignment.load_build_operator_id),
+        (ManualTaskKind::Program, assignment.program_operator_id),
+        (ManualTaskKind::Quench, assignment.quench_operator_id),
+        (assignment.unload_task_kind(), assignment.unload_operator_id),
+    ]
+    .into_iter()
+    .filter(|(kind, operator_id)| {
+        *operator_id == Some(operator.id)
+            && assignment.task_interval(*kind).is_some()
+            && !operator
+                .skill_mask
+                .contains_all(assignment.task_required_skills(*kind))
+    })
+    .count()
+}
+
+pub(super) fn booking_overlap_minutes(
+    left: &ManualTaskBooking,
+    right: &ManualTaskBooking,
+) -> usize {
+    left.end_minute
+        .min(right.end_minute)
+        .saturating_sub(left.start_minute.max(right.start_minute))
+}

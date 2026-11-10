@@ -216,13 +216,14 @@ make space-run
 1. `src/domain/mod.rs`
    The `planning_model!` manifest and public domain exports.
 2. `src/domain/plan.rs`
-   The `Plan` solution, fact collections, and entity collections.
-3. `src/domain/resources.rs`
+   The `Plan` solution, fact collections, entity collections, and the
+   registered scalar groups and conflict repairs.
+3. `src/domain/{furnace,work_order,operator,shift,shift_coverage_demand}.rs`
    `Furnace`, `WorkOrder`, `Operator`, `Shift`, and `ShiftCoverageDemand`.
-4. `src/domain/furnace.rs` and `src/domain/coverage.rs`
+4. `src/domain/furnace_assignment.rs` and `src/domain/operator_shift_assignment.rs`
    The two planning entities and their derived task/roster helpers.
-5. `src/constraints/mod.rs` and `src/constraints/*.rs`
-   The score model, one rule group per file.
+5. `src/constraints/assemble.rs` and `src/constraints/*.rs`
+   The score model, one constraint per file.
 6. `src/data/data_seed/`
    The deterministic `STANDARD` demo generator.
 7. `src/solver/service.rs`

@@ -2,9 +2,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::domain::{
     canonical_interval_label, canonical_minute_label, furnace_accepts_work_order, Furnace,
-    FurnaceAssignment, FurnaceType, HeatTreatmentProcess, Operator, OperatorRole,
-    OperatorShiftAssignment, OperatorSkill, Plan, PriorityBand, Shift, ShiftCoverageDemand,
-    ShiftType, SkillMask, WorkOrder,
+    FurnaceAssignment, FurnaceAssignmentInit, FurnaceType, HeatTreatmentProcess, Operator,
+    OperatorRole, OperatorShiftAssignment, OperatorShiftAssignmentInit, OperatorSkill, Plan,
+    PriorityBand, Shift, ShiftCoverageDemand, ShiftType, SkillMask, WorkOrder,
 };
 use std::collections::{HashMap, HashSet};
 
@@ -245,26 +245,34 @@ impl PlanDto {
             .iter()
             .map(|assignment| {
                 Ok(FurnaceAssignment {
-                    work_order_idx: assignment.work_order_idx,
-                    process: parse_process(&assignment.process)?,
-                    temperature_celsius: assignment.temperature_celsius,
-                    soak_time_minutes: assignment.soak_time_minutes,
-                    load_weight_kg: assignment.load_weight_kg,
-                    due_datetime_minutes: assignment.due_datetime_minutes,
-                    priority: parse_priority(&assignment.priority)?,
-                    requires_quench: assignment.requires_quench,
-                    compatible_assignments: assignment.compatible_assignments.clone(),
                     assignment: assignment.assignment,
-                    eligible_load_build_operator_ids: assignment
-                        .eligible_load_build_operator_ids
-                        .clone(),
-                    eligible_program_operator_ids: assignment.eligible_program_operator_ids.clone(),
-                    eligible_quench_operator_ids: assignment.eligible_quench_operator_ids.clone(),
-                    eligible_unload_operator_ids: assignment.eligible_unload_operator_ids.clone(),
                     load_build_operator_id: assignment.load_build_operator_id,
                     program_operator_id: assignment.program_operator_id,
                     quench_operator_id: assignment.quench_operator_id,
                     unload_operator_id: assignment.unload_operator_id,
+                    ..FurnaceAssignment::new(FurnaceAssignmentInit {
+                        work_order_idx: assignment.work_order_idx,
+                        process: parse_process(&assignment.process)?,
+                        temperature_celsius: assignment.temperature_celsius,
+                        soak_time_minutes: assignment.soak_time_minutes,
+                        load_weight_kg: assignment.load_weight_kg,
+                        due_datetime_minutes: assignment.due_datetime_minutes,
+                        priority: parse_priority(&assignment.priority)?,
+                        requires_quench: assignment.requires_quench,
+                        compatible_assignments: assignment.compatible_assignments.clone(),
+                        eligible_load_build_operator_ids: assignment
+                            .eligible_load_build_operator_ids
+                            .clone(),
+                        eligible_program_operator_ids: assignment
+                            .eligible_program_operator_ids
+                            .clone(),
+                        eligible_quench_operator_ids: assignment
+                            .eligible_quench_operator_ids
+                            .clone(),
+                        eligible_unload_operator_ids: assignment
+                            .eligible_unload_operator_ids
+                            .clone(),
+                    })
                 })
             })
             .collect::<Result<Vec<_>, String>>()?;
@@ -294,22 +302,24 @@ impl PlanDto {
             .iter()
             .map(|assignment| {
                 Ok(OperatorShiftAssignment {
-                    id: assignment.id,
-                    operator_idx: assignment.operator_id,
-                    operator_name: leak_string(&assignment.operator_name),
-                    role: parse_operator_role(&assignment.role)?,
-                    day_only: assignment.day_only,
-                    roster_day: assignment.roster_day,
-                    skill_mask: *operator_skill_by_id
-                        .get(&assignment.operator_id)
-                        .ok_or_else(|| {
-                            format!(
-                                "operatorShiftAssignments[{}] references unknown operator {}",
-                                assignment.id, assignment.operator_id
-                            )
-                        })?,
-                    allowed_shift_types: assignment.allowed_shift_types.clone(),
                     shift_type: assignment.shift_type_value,
+                    ..OperatorShiftAssignment::new(OperatorShiftAssignmentInit {
+                        id: assignment.id,
+                        operator_idx: assignment.operator_id,
+                        operator_name: leak_string(&assignment.operator_name),
+                        role: parse_operator_role(&assignment.role)?,
+                        day_only: assignment.day_only,
+                        roster_day: assignment.roster_day,
+                        skill_mask: *operator_skill_by_id
+                            .get(&assignment.operator_id)
+                            .ok_or_else(|| {
+                                format!(
+                                    "operatorShiftAssignments[{}] references unknown operator {}",
+                                    assignment.id, assignment.operator_id
+                                )
+                            })?,
+                        allowed_shift_types: assignment.allowed_shift_types.clone(),
+                    })
                 })
             })
             .collect::<Result<Vec<_>, String>>()?;
@@ -318,7 +328,7 @@ impl PlanDto {
         validate_shift_coverage_demands(&shift_coverage_demands, &shifts)?;
         validate_operator_shift_assignments(&operator_shift_assignments)?;
 
-        Ok(Plan {
+        Ok(Plan::new(
             furnaces,
             work_orders,
             operators,
@@ -326,8 +336,7 @@ impl PlanDto {
             shift_coverage_demands,
             assignments,
             operator_shift_assignments,
-            score: None,
-        })
+        ))
     }
 
     pub fn from_plan(plan: &Plan) -> Self {

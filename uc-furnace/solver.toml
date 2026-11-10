@@ -33,13 +33,13 @@ score_tie_break = "first"
 [[phases.neighborhoods]]
 type = "compound_conflict_repair_move_selector"
 constraints = [
-  "minimumRest",
-  "visibleShiftLimit",
-  "taskOperatorOnOwningShift",
-  "shiftRoleCoverage",
-  "monitoringCapacity",
-  "furnaceOverlap",
-  "changeoverGap",
+  "minimum_rest",
+  "visible_shift_limit",
+  "task_operator_on_owning_shift",
+  "shift_role_coverage",
+  "monitoring_capacity",
+  "furnace_overlap",
+  "changeover_gap",
 ]
 max_matches_per_step = 16
 max_repairs_per_match = 32
@@ -53,10 +53,10 @@ require_hard_improvement = true
 [[phases.neighborhoods.selectors]]
 type = "compound_conflict_repair_move_selector"
 constraints = [
-  "minimumRest",
-  "visibleShiftLimit",
-  "furnaceOverlap",
-  "changeoverGap",
+  "minimum_rest",
+  "visible_shift_limit",
+  "furnace_overlap",
+  "changeover_gap",
 ]
 max_matches_per_step = 16
 max_repairs_per_match = 8
@@ -107,13 +107,13 @@ selection_order = "round_robin"
 [[phases.move_selector.selectors]]
 type = "compound_conflict_repair_move_selector"
 constraints = [
-  "minimumRest",
-  "visibleShiftLimit",
-  "taskOperatorOnOwningShift",
-  "shiftRoleCoverage",
-  "monitoringCapacity",
-  "furnaceOverlap",
-  "changeoverGap",
+  "minimum_rest",
+  "visible_shift_limit",
+  "task_operator_on_owning_shift",
+  "shift_role_coverage",
+  "monitoring_capacity",
+  "furnace_overlap",
+  "changeover_gap",
 ]
 max_matches_per_step = 16
 max_repairs_per_match = 32
@@ -127,10 +127,10 @@ require_hard_improvement = true
 [[phases.move_selector.selectors.selectors]]
 type = "compound_conflict_repair_move_selector"
 constraints = [
-  "minimumRest",
-  "visibleShiftLimit",
-  "furnaceOverlap",
-  "changeoverGap",
+  "minimum_rest",
+  "visible_shift_limit",
+  "furnace_overlap",
+  "changeover_gap",
 ]
 max_matches_per_step = 16
 max_repairs_per_match = 8

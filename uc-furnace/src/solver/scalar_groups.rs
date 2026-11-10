@@ -19,44 +19,6 @@ pub(crate) use schedule_task::furnace_schedule_task_assignment_candidates;
 #[cfg(test)]
 pub(crate) use schedule_task::schedule_task_values_for_assignment;
 
-pub(crate) fn groups() -> Vec<ScalarGroup<Plan>> {
-    let assignments = Plan::assignments();
-    let roster_assignments = Plan::operator_shift_assignments();
-    vec![
-        ScalarGroup::candidates(
-            "furnace_assignment",
-            vec![assignments.scalar("assignment")],
-            furnace_assignment_candidates,
-        ),
-        ScalarGroup::candidates(
-            "roster_shift_assignment",
-            vec![roster_assignments.scalar("shift_type")],
-            roster_shift_assignment_candidates,
-        ),
-        ScalarGroup::candidates(
-            "task_operator_assignment",
-            vec![
-                assignments.scalar("load_build_operator_id"),
-                assignments.scalar("program_operator_id"),
-                assignments.scalar("quench_operator_id"),
-                assignments.scalar("unload_operator_id"),
-            ],
-            task_operator_assignment_candidates,
-        ),
-        ScalarGroup::candidates(
-            "furnace_schedule_task_assignment",
-            vec![
-                assignments.scalar("assignment"),
-                assignments.scalar("load_build_operator_id"),
-                assignments.scalar("program_operator_id"),
-                assignments.scalar("quench_operator_id"),
-                assignments.scalar("unload_operator_id"),
-            ],
-            furnace_schedule_task_assignment_candidates,
-        ),
-    ]
-}
-
 pub(crate) fn furnace_assignment_candidates(
     plan: &Plan,
     limits: ScalarGroupLimits,

@@ -24,6 +24,7 @@ pub struct OperatorShiftAssignment {
     pub roster_day: RosterDay,
     pub skill_mask: SkillMask,
     pub allowed_shift_types: Vec<usize>,
+    // @solverforge:begin entity-variables
     #[planning_variable(
         allows_unassigned = true,
         value_range_provider = "allowed_shift_types",
@@ -31,6 +32,40 @@ pub struct OperatorShiftAssignment {
         construction_value_order_key = "operator_shift_construction_value_order_key"
     )]
     pub shift_type: Option<usize>,
+    // @solverforge:end entity-variables
+}
+
+/// Constructor payload for `OperatorShiftAssignment`: one operator's roster day
+/// and the shift types they may work on it.
+#[derive(Debug, Clone)]
+pub struct OperatorShiftAssignmentInit {
+    pub id: usize,
+    pub operator_idx: usize,
+    pub operator_name: &'static str,
+    pub role: OperatorRole,
+    pub day_only: bool,
+    pub roster_day: RosterDay,
+    pub skill_mask: SkillMask,
+    pub allowed_shift_types: Vec<usize>,
+}
+
+impl OperatorShiftAssignment {
+    /// Builds an unrostered operator day; the shift type starts empty.
+    pub fn new(init: OperatorShiftAssignmentInit) -> Self {
+        Self {
+            id: init.id,
+            operator_idx: init.operator_idx,
+            operator_name: init.operator_name,
+            role: init.role,
+            day_only: init.day_only,
+            roster_day: init.roster_day,
+            skill_mask: init.skill_mask,
+            allowed_shift_types: init.allowed_shift_types,
+            // @solverforge:begin entity-variable-init
+            shift_type: None,
+            // @solverforge:end entity-variable-init
+        }
+    }
 }
 
 impl OperatorShiftAssignment {

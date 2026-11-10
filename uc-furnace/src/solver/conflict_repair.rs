@@ -9,19 +9,10 @@ use crate::domain::{
     NUM_TIME_SLOTS, OFF_SHIFT_VALUE, TIME_STEP,
 };
 
-pub(crate) fn providers() -> Vec<ConflictRepair<Plan>> {
-    vec![
-        ConflictRepair::new("minimumRest", minimum_rest_repairs),
-        ConflictRepair::new("visibleShiftLimit", visible_shift_limit_repairs),
-        ConflictRepair::new("taskOperatorOnOwningShift", task_owning_shift_repairs),
-        ConflictRepair::new("shiftRoleCoverage", shift_role_coverage_repairs),
-        ConflictRepair::new("monitoringCapacity", monitoring_capacity_repairs),
-        ConflictRepair::new("furnaceOverlap", furnace_overlap_repairs),
-        ConflictRepair::new("changeoverGap", changeover_gap_repairs),
-    ]
-}
-
-fn minimum_rest_repairs(plan: &Plan, limits: RepairLimits) -> Vec<RepairCandidate<Plan>> {
+pub(crate) fn minimum_rest_repairs(
+    plan: &Plan,
+    limits: RepairLimits,
+) -> Vec<RepairCandidate<Plan>> {
     let mut specs = Vec::new();
 
     for previous_index in 0..plan.operator_shift_assignments.len() {
@@ -37,15 +28,18 @@ fn minimum_rest_repairs(plan: &Plan, limits: RepairLimits) -> Vec<RepairCandidat
                 continue;
             }
 
-            push_roster_relief_repairs(plan, &mut specs, limits, current_index, "minimumRest");
-            push_roster_relief_repairs(plan, &mut specs, limits, previous_index, "minimumRest");
+            push_roster_relief_repairs(plan, &mut specs, limits, current_index, "minimum_rest");
+            push_roster_relief_repairs(plan, &mut specs, limits, previous_index, "minimum_rest");
         }
     }
 
     specs
 }
 
-fn visible_shift_limit_repairs(plan: &Plan, limits: RepairLimits) -> Vec<RepairCandidate<Plan>> {
+pub(crate) fn visible_shift_limit_repairs(
+    plan: &Plan,
+    limits: RepairLimits,
+) -> Vec<RepairCandidate<Plan>> {
     let mut by_operator: HashMap<usize, Vec<usize>> = HashMap::new();
     for (index, assignment) in plan.operator_shift_assignments.iter().enumerate() {
         if assignment.roster_day >= 0 && assignment.is_working() {
@@ -74,14 +68,17 @@ fn visible_shift_limit_repairs(plan: &Plan, limits: RepairLimits) -> Vec<RepairC
             .rev()
             .take(indices.len() - crate::domain::MAX_VISIBLE_SHIFTS_PER_WEEK)
         {
-            push_roster_removal_repairs(plan, &mut specs, limits, *index, "visibleShiftLimit");
+            push_roster_removal_repairs(plan, &mut specs, limits, *index, "visible_shift_limit");
         }
     }
 
     specs
 }
 
-fn task_owning_shift_repairs(plan: &Plan, limits: RepairLimits) -> Vec<RepairCandidate<Plan>> {
+pub(crate) fn task_owning_shift_repairs(
+    plan: &Plan,
+    limits: RepairLimits,
+) -> Vec<RepairCandidate<Plan>> {
     let mut specs = Vec::new();
 
     for (assignment_index, assignment) in plan.assignments.iter().enumerate() {
@@ -109,7 +106,7 @@ fn task_owning_shift_repairs(plan: &Plan, limits: RepairLimits) -> Vec<RepairCan
                     && roster_value_is_legal(plan, roster_index, Some(shift.shift_type.index()))
                 {
                     specs.push(RepairCandidate::new(
-                        "taskOperatorOnOwningShift",
+                        "task_operator_on_owning_shift",
                         vec![Plan::operator_shift_assignments()
                             .scalar("shift_type")
                             .set(roster_index, Some(shift.shift_type.index()))],
@@ -127,7 +124,7 @@ fn task_owning_shift_repairs(plan: &Plan, limits: RepairLimits) -> Vec<RepairCan
                 }
                 if operator_covers_shift(plan, *candidate_operator, shift) {
                     specs.push(RepairCandidate::new(
-                        "taskOperatorOnOwningShift",
+                        "task_operator_on_owning_shift",
                         vec![Plan::assignments()
                             .scalar(variable_name)
                             .set(assignment_index, Some(*candidate_operator))],
@@ -141,7 +138,10 @@ fn task_owning_shift_repairs(plan: &Plan, limits: RepairLimits) -> Vec<RepairCan
     specs
 }
 
-fn shift_role_coverage_repairs(plan: &Plan, limits: RepairLimits) -> Vec<RepairCandidate<Plan>> {
+pub(crate) fn shift_role_coverage_repairs(
+    plan: &Plan,
+    limits: RepairLimits,
+) -> Vec<RepairCandidate<Plan>> {
     let mut specs = Vec::new();
 
     for demand in &plan.shift_coverage_demands {
@@ -183,7 +183,7 @@ fn shift_role_coverage_repairs(plan: &Plan, limits: RepairLimits) -> Vec<RepairC
             }
 
             specs.push(RepairCandidate::new(
-                "shiftRoleCoverage",
+                "shift_role_coverage",
                 vec![Plan::operator_shift_assignments()
                     .scalar("shift_type")
                     .set(roster_index, Some(shift.shift_type.index()))],
@@ -195,7 +195,10 @@ fn shift_role_coverage_repairs(plan: &Plan, limits: RepairLimits) -> Vec<RepairC
     specs
 }
 
-fn monitoring_capacity_repairs(plan: &Plan, limits: RepairLimits) -> Vec<RepairCandidate<Plan>> {
+pub(crate) fn monitoring_capacity_repairs(
+    plan: &Plan,
+    limits: RepairLimits,
+) -> Vec<RepairCandidate<Plan>> {
     let mut specs = Vec::new();
     let mut loads = monitoring_loads(plan);
     let mut repaired_shifts = HashSet::new();
@@ -231,7 +234,7 @@ fn monitoring_capacity_repairs(plan: &Plan, limits: RepairLimits) -> Vec<RepairC
             }
 
             specs.push(RepairCandidate::new(
-                "monitoringCapacity",
+                "monitoring_capacity",
                 vec![Plan::operator_shift_assignments()
                     .scalar("shift_type")
                     .set(roster_index, Some(shift.shift_type.index()))],
@@ -243,7 +246,10 @@ fn monitoring_capacity_repairs(plan: &Plan, limits: RepairLimits) -> Vec<RepairC
     specs
 }
 
-fn furnace_overlap_repairs(plan: &Plan, limits: RepairLimits) -> Vec<RepairCandidate<Plan>> {
+pub(crate) fn furnace_overlap_repairs(
+    plan: &Plan,
+    limits: RepairLimits,
+) -> Vec<RepairCandidate<Plan>> {
     let mut specs = Vec::new();
 
     for left_index in 0..plan.assignments.len() {
@@ -262,7 +268,7 @@ fn furnace_overlap_repairs(plan: &Plan, limits: RepairLimits) -> Vec<RepairCandi
 
             if let Some(value) = first_non_conflicting_assignment_value(plan, right_index) {
                 specs.push(RepairCandidate::new(
-                    "furnaceOverlap",
+                    "furnace_overlap",
                     vec![Plan::assignments()
                         .scalar("assignment")
                         .set(right_index, Some(value))],
@@ -273,7 +279,7 @@ fn furnace_overlap_repairs(plan: &Plan, limits: RepairLimits) -> Vec<RepairCandi
             }
             if let Some(value) = first_non_conflicting_assignment_value(plan, left_index) {
                 specs.push(RepairCandidate::new(
-                    "furnaceOverlap",
+                    "furnace_overlap",
                     vec![Plan::assignments()
                         .scalar("assignment")
                         .set(left_index, Some(value))],
@@ -285,7 +291,10 @@ fn furnace_overlap_repairs(plan: &Plan, limits: RepairLimits) -> Vec<RepairCandi
     specs
 }
 
-fn changeover_gap_repairs(plan: &Plan, limits: RepairLimits) -> Vec<RepairCandidate<Plan>> {
+pub(crate) fn changeover_gap_repairs(
+    plan: &Plan,
+    limits: RepairLimits,
+) -> Vec<RepairCandidate<Plan>> {
     let mut specs = Vec::new();
     let mut matches_seen = 0usize;
 
@@ -306,11 +315,11 @@ fn changeover_gap_repairs(plan: &Plan, limits: RepairLimits) -> Vec<RepairCandid
             }
             matches_seen += 1;
 
-            push_first_assignment_value_repair(plan, &mut specs, right_index, "changeoverGap");
+            push_first_assignment_value_repair(plan, &mut specs, right_index, "changeover_gap");
             if specs.len() >= limits.max_moves_per_step {
                 return specs;
             }
-            push_first_assignment_value_repair(plan, &mut specs, left_index, "changeoverGap");
+            push_first_assignment_value_repair(plan, &mut specs, left_index, "changeover_gap");
         }
     }
 

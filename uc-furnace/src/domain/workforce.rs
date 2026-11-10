@@ -2,8 +2,8 @@ use super::constants::{
     RosterDay, CARRY_OUT_END_MINUTE, MINUTES_PER_DAY, OFF_SHIFT_VALUE, STAFFING_ROSTER_DAY_END,
     STAFFING_ROSTER_DAY_START,
 };
-use super::coverage::OperatorShiftAssignment;
 use super::enums::{HeatTreatmentProcess, OperatorRole, OperatorSkill, ShiftType};
+use super::operator_shift_assignment::OperatorShiftAssignment;
 use super::support::SkillMask;
 use super::time::{shift_display_start_minute, shift_id_for_roster_day_and_type};
 

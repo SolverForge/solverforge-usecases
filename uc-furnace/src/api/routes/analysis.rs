@@ -104,14 +104,14 @@ fn constraint_to_dto(analysis: &ConstraintAnalysis<HardSoftScore>) -> Constraint
 
 fn constraint_type(name: &str) -> &'static str {
     match name {
-        "expressLateness"
-        | "urgentLateness"
-        | "standardLateness"
-        | "thermalChangeover"
-        | "earlyStartPressure"
-        | "nightStartPreference"
+        "express_lateness"
+        | "urgent_lateness"
+        | "standard_lateness"
+        | "thermal_changeover"
+        | "early_start_pressure"
+        | "night_start_preference"
         | "overtime"
-        | "shiftLoadBalance" => "soft",
+        | "shift_load_balance" => "soft",
         _ => "hard",
     }
 }

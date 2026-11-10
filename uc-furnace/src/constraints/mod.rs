@@ -1,45 +1,41 @@
-mod furnace_hard;
-mod furnace_soft;
-mod monitoring_hard;
-mod roster_hard;
-mod roster_soft;
+//! Furnace planning constraints, one module per constraint.
+
+// @solverforge:begin constraint-modules
+mod assigned_tasks_require_scheduled_furnace;
+mod changeover_gap;
+mod consecutive_nights;
+mod day_only_night;
+mod early_start_pressure;
+mod excessive_load;
+mod excessive_temperature;
+mod express_lateness;
+mod furnace_overlap;
+mod incompatible_process;
+mod load_build_shift_ownership;
+mod minimum_rest;
+mod monitoring_capacity;
+mod night_start_preference;
+mod operator_double_booked;
+mod outside_week;
+mod overtime;
+mod program_shift_ownership;
+mod quench_shift_ownership;
+mod required_task_assigned;
+mod shift_load_balance;
+mod shift_role_coverage;
+mod standard_lateness;
+mod task_operator_on_owning_shift;
+mod task_operator_skilled;
+mod thermal_changeover;
+mod unassigned_orders;
+mod unload_shift_ownership;
+mod urgent_lateness;
+mod visible_shift_limit;
+// @solverforge:end constraint-modules
+
+mod assemble;
 mod shared;
-mod staffing_hard;
+#[cfg(test)]
+mod tests;
 
-use solverforge::prelude::*;
-
-/// Builds the complete furnace planning constraint set.
-pub fn create_constraints() -> impl ConstraintSet<crate::domain::Plan, HardSoftScore> {
-    (
-        furnace_hard::unassigned_orders(),
-        furnace_hard::incompatible_process(),
-        furnace_hard::excessive_temperature(),
-        furnace_hard::excessive_load(),
-        furnace_hard::outside_week(),
-        furnace_hard::furnace_overlap(),
-        furnace_hard::changeover_gap(),
-        furnace_hard::load_build_shift_ownership(),
-        furnace_hard::program_shift_ownership(),
-        furnace_hard::quench_shift_ownership(),
-        furnace_hard::unload_shift_ownership(),
-        staffing_hard::assigned_tasks_require_scheduled_furnace(),
-        staffing_hard::required_task_assigned(),
-        staffing_hard::task_operator_skilled(),
-        staffing_hard::task_operator_on_owning_shift(),
-        staffing_hard::operator_double_booked(),
-        staffing_hard::shift_role_coverage(),
-        monitoring_hard::monitoring_capacity(),
-        roster_hard::day_only_night(),
-        roster_hard::minimum_rest(),
-        roster_hard::visible_shift_limit(),
-        roster_hard::consecutive_nights(),
-        furnace_soft::express_lateness(),
-        furnace_soft::urgent_lateness(),
-        furnace_soft::standard_lateness(),
-        furnace_soft::thermal_changeover(),
-        furnace_soft::early_start_pressure(),
-        furnace_soft::night_start_preference(),
-        roster_soft::overtime(),
-        roster_soft::shift_load_balance(),
-    )
-}
+pub use assemble::create_constraints;

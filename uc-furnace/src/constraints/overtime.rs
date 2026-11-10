@@ -1,7 +1,7 @@
 use super::shared::*;
 
 /// Penalizes operators who exceed the target number of visible weekly shifts.
-pub(super) fn overtime() -> impl IncrementalConstraint<Plan, HardSoftScore> {
+pub fn constraint() -> impl IncrementalConstraint<Plan, HardSoftScore> {
     ConstraintFactory::<Plan, HardSoftScore>::new()
         .operator_shift_assignments()
         .filter(|assignment: &OperatorShiftAssignment| {
@@ -17,16 +17,4 @@ pub(super) fn overtime() -> impl IncrementalConstraint<Plan, HardSoftScore> {
             )
         })
         .named("overtime")
-}
-
-/// Penalizes uneven distribution of working shifts across operators.
-pub(super) fn shift_load_balance() -> impl IncrementalConstraint<Plan, HardSoftScore> {
-    ConstraintFactory::<Plan, HardSoftScore>::new()
-        .operator_shift_assignments()
-        .filter(|assignment: &OperatorShiftAssignment| {
-            assignment.roster_day >= 0 && assignment.is_working()
-        })
-        .balance(|assignment: &OperatorShiftAssignment| Some(assignment.operator_idx))
-        .penalize(HardSoftScore::of_soft(120))
-        .named("shiftLoadBalance")
 }

@@ -42,7 +42,7 @@ export function openConstraintAnalysis(ctx, constraint) {
 
 export function syncConstraintStatus(ctx) {
   if (!ctx.lastAnalysis || !ctx.lastAnalysis.analysis || !ctx.lastAnalysis.analysis.constraints) {
-    ctx.statusBar.updateConstraintDots(ctx.uiModel.constraints || []);
+    ctx.statusBar.updateConstraintDots(ctx.constraints);
     return;
   }
   ctx.statusBar.colorDotsFromAnalysis(normalizeConstraintSummaries(ctx.lastAnalysis.analysis.constraints));

@@ -3,8 +3,9 @@ use super::constants::{
     STAFFING_ROSTER_DAY_END, STAFFING_ROSTER_DAY_START, TIME_STEP,
 };
 use super::enums::ShiftType;
-use super::resources::{Furnace, WorkOrder};
+use super::furnace::Furnace;
 use super::support::ShiftIdentity;
+use super::work_order::WorkOrder;
 
 pub fn shift_id_for_roster_day_and_type(
     roster_day: RosterDay,

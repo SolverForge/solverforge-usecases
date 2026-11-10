@@ -2,10 +2,10 @@ use rand::rngs::SmallRng;
 use rand::SeedableRng;
 
 use crate::domain::{
-    furnace_accepts_work_order, Furnace, FurnaceAssignment, FurnaceType, HeatTreatmentProcess,
-    Operator, OperatorRole, OperatorSkill, Shift, ShiftCoverageDemand, ShiftType, SkillMask,
-    WorkOrder, CARRY_OUT_END_MINUTE, MINUTES_PER_DAY, NUM_DAYS, NUM_TIME_SLOTS,
-    STAFFING_ROSTER_DAY_END, STAFFING_ROSTER_DAY_START, TIME_STEP,
+    furnace_accepts_work_order, Furnace, FurnaceAssignment, FurnaceAssignmentInit, FurnaceType,
+    HeatTreatmentProcess, Operator, OperatorRole, OperatorSkill, Shift, ShiftCoverageDemand,
+    ShiftType, SkillMask, WorkOrder, CARRY_OUT_END_MINUTE, MINUTES_PER_DAY, NUM_DAYS,
+    NUM_TIME_SLOTS, STAFFING_ROSTER_DAY_END, STAFFING_ROSTER_DAY_START, TIME_STEP,
 };
 use HeatTreatmentProcess::*;
 
@@ -282,7 +282,7 @@ fn build_assignments(
                 SkillMask::empty().insert(OperatorSkill::LoadBuild)
             };
 
-            FurnaceAssignment {
+            FurnaceAssignment::new(FurnaceAssignmentInit {
                 compatible_assignments: furnaces
                     .iter()
                     .enumerate()
@@ -313,7 +313,6 @@ fn build_assignments(
                 due_datetime_minutes: work_order.due_datetime_minutes,
                 priority: work_order.priority,
                 requires_quench: work_order.requires_quench,
-                assignment: None,
                 eligible_load_build_operator_ids: eligible_operator_ids(
                     operators,
                     load_build_skills,
@@ -325,11 +324,7 @@ fn build_assignments(
                     Vec::new()
                 },
                 eligible_unload_operator_ids: eligible_operator_ids(operators, unload_skills),
-                load_build_operator_id: None,
-                program_operator_id: None,
-                quench_operator_id: None,
-                unload_operator_id: None,
-            }
+            })
         })
         .collect()
 }

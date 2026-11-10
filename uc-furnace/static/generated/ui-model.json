@@ -1,50 +1,300 @@
 {
-  "entities": [
-    { "id": "assignments", "label": "Assignments", "plural": "assignments" },
-    { "id": "operatorShiftAssignments", "label": "Operator Shift Assignments", "plural": "operatorShiftAssignments" }
-  ],
-  "facts": [
-    { "id": "furnaces", "label": "Furnaces", "plural": "furnaces" },
-    { "id": "workOrders", "label": "Work Orders", "plural": "workOrders" },
-    { "id": "operators", "label": "Operators", "plural": "operators" },
-    { "id": "shifts", "label": "Shifts", "plural": "shifts" },
-    { "id": "shiftCoverageDemands", "label": "Shift Coverage Demands", "plural": "shiftCoverageDemands" }
+  "conflictRepairs": [
+    {
+      "constraint": "minimum_rest",
+      "provider": "crate::solver::conflict_repair::minimum_rest_repairs",
+      "selector": "compound",
+      "solverConfig": false
+    },
+    {
+      "constraint": "visible_shift_limit",
+      "provider": "crate::solver::conflict_repair::visible_shift_limit_repairs",
+      "selector": "compound",
+      "solverConfig": false
+    },
+    {
+      "constraint": "task_operator_on_owning_shift",
+      "provider": "crate::solver::conflict_repair::task_owning_shift_repairs",
+      "selector": "compound",
+      "solverConfig": false
+    },
+    {
+      "constraint": "shift_role_coverage",
+      "provider": "crate::solver::conflict_repair::shift_role_coverage_repairs",
+      "selector": "compound",
+      "solverConfig": false
+    },
+    {
+      "constraint": "monitoring_capacity",
+      "provider": "crate::solver::conflict_repair::monitoring_capacity_repairs",
+      "selector": "compound",
+      "solverConfig": false
+    },
+    {
+      "constraint": "furnace_overlap",
+      "provider": "crate::solver::conflict_repair::furnace_overlap_repairs",
+      "selector": "compound",
+      "solverConfig": false
+    },
+    {
+      "constraint": "changeover_gap",
+      "provider": "crate::solver::conflict_repair::changeover_gap_repairs",
+      "selector": "compound",
+      "solverConfig": false
+    }
   ],
   "constraints": [
-    { "name": "unassignedOrders", "type": "hard" },
-    { "name": "incompatibleProcess", "type": "hard" },
-    { "name": "excessiveTemperature", "type": "hard" },
-    { "name": "excessiveLoad", "type": "hard" },
-    { "name": "outsideWeek", "type": "hard" },
-    { "name": "furnaceOverlap", "type": "hard" },
-    { "name": "changeoverGap", "type": "hard" },
-    { "name": "loadBuildShiftOwnership", "type": "hard" },
-    { "name": "programShiftOwnership", "type": "hard" },
-    { "name": "quenchShiftOwnership", "type": "hard" },
-    { "name": "unloadShiftOwnership", "type": "hard" },
-    { "name": "assignedTasksRequireScheduledFurnace", "type": "hard" },
-    { "name": "requiredTaskAssigned", "type": "hard" },
-    { "name": "taskOperatorSkilled", "type": "hard" },
-    { "name": "taskOperatorOnOwningShift", "type": "hard" },
-    { "name": "operatorDoubleBooked", "type": "hard" },
-    { "name": "shiftRoleCoverage", "type": "hard" },
-    { "name": "monitoringCapacity", "type": "hard" },
-    { "name": "dayOnlyNight", "type": "hard" },
-    { "name": "minimumRest", "type": "hard" },
-    { "name": "visibleShiftLimit", "type": "hard" },
-    { "name": "consecutiveNights", "type": "hard" },
-    { "name": "expressLateness", "type": "soft" },
-    { "name": "urgentLateness", "type": "soft" },
-    { "name": "standardLateness", "type": "soft" },
-    { "name": "thermalChangeover", "type": "soft" },
-    { "name": "earlyStartPressure", "type": "soft" },
-    { "name": "nightStartPreference", "type": "soft" },
-    { "name": "overtime", "type": "soft" },
-    { "name": "shiftLoadBalance", "type": "soft" }
+    "assigned_tasks_require_scheduled_furnace",
+    "changeover_gap",
+    "consecutive_nights",
+    "day_only_night",
+    "early_start_pressure",
+    "excessive_load",
+    "excessive_temperature",
+    "express_lateness",
+    "furnace_overlap",
+    "incompatible_process",
+    "load_build_shift_ownership",
+    "minimum_rest",
+    "monitoring_capacity",
+    "night_start_preference",
+    "operator_double_booked",
+    "outside_week",
+    "overtime",
+    "program_shift_ownership",
+    "quench_shift_ownership",
+    "required_task_assigned",
+    "shift_load_balance",
+    "shift_role_coverage",
+    "standard_lateness",
+    "task_operator_on_owning_shift",
+    "task_operator_skilled",
+    "thermal_changeover",
+    "unassigned_orders",
+    "unload_shift_ownership",
+    "urgent_lateness",
+    "visible_shift_limit"
+  ],
+  "entities": [
+    {
+      "label": "Furnace Assignment",
+      "name": "furnace_assignment",
+      "plural": "assignments"
+    },
+    {
+      "label": "Operator Shift Assignment",
+      "name": "operator_shift_assignment",
+      "plural": "operator_shift_assignments"
+    }
+  ],
+  "facts": [
+    {
+      "label": "Furnace",
+      "name": "furnace",
+      "plural": "furnaces"
+    },
+    {
+      "label": "Work Order",
+      "name": "work_order",
+      "plural": "work_orders"
+    },
+    {
+      "label": "Operator",
+      "name": "operator",
+      "plural": "operators"
+    },
+    {
+      "label": "Shift",
+      "name": "shift",
+      "plural": "shifts"
+    },
+    {
+      "label": "Shift Coverage Demand",
+      "name": "shift_coverage_demand",
+      "plural": "shift_coverage_demands"
+    }
+  ],
+  "scalarGroups": [
+    {
+      "kind": "candidates",
+      "name": "furnace_assignment",
+      "solverConfig": false,
+      "targets": [
+        {
+          "entity": "furnace_assignment",
+          "entity_plural": "assignments",
+          "field": "assignment"
+        }
+      ]
+    },
+    {
+      "kind": "candidates",
+      "name": "roster_shift_assignment",
+      "solverConfig": false,
+      "targets": [
+        {
+          "entity": "operator_shift_assignment",
+          "entity_plural": "operator_shift_assignments",
+          "field": "shift_type"
+        }
+      ]
+    },
+    {
+      "kind": "candidates",
+      "name": "task_operator_assignment",
+      "solverConfig": false,
+      "targets": [
+        {
+          "entity": "furnace_assignment",
+          "entity_plural": "assignments",
+          "field": "load_build_operator_id"
+        },
+        {
+          "entity": "furnace_assignment",
+          "entity_plural": "assignments",
+          "field": "program_operator_id"
+        },
+        {
+          "entity": "furnace_assignment",
+          "entity_plural": "assignments",
+          "field": "quench_operator_id"
+        },
+        {
+          "entity": "furnace_assignment",
+          "entity_plural": "assignments",
+          "field": "unload_operator_id"
+        }
+      ]
+    },
+    {
+      "kind": "candidates",
+      "name": "furnace_schedule_task_assignment",
+      "solverConfig": false,
+      "targets": [
+        {
+          "entity": "furnace_assignment",
+          "entity_plural": "assignments",
+          "field": "assignment"
+        },
+        {
+          "entity": "furnace_assignment",
+          "entity_plural": "assignments",
+          "field": "load_build_operator_id"
+        },
+        {
+          "entity": "furnace_assignment",
+          "entity_plural": "assignments",
+          "field": "program_operator_id"
+        },
+        {
+          "entity": "furnace_assignment",
+          "entity_plural": "assignments",
+          "field": "quench_operator_id"
+        },
+        {
+          "entity": "furnace_assignment",
+          "entity_plural": "assignments",
+          "field": "unload_operator_id"
+        }
+      ]
+    }
   ],
   "views": [
-    { "id": "schedule", "label": "Schedule", "kind": "timeline", "icon": "fa-fire" },
-    { "id": "crew", "label": "Crew", "kind": "table", "icon": "fa-users" },
-    { "id": "orders", "label": "Orders", "kind": "table", "icon": "fa-industry" }
+    {
+      "allowsUnassigned": true,
+      "countableRange": null,
+      "entity": "furnace_assignment",
+      "entityPlural": "assignments",
+      "id": "furnace_assignment-assignment",
+      "kind": "scalar",
+      "label": "Furnace Assignment · assignment",
+      "listMetadata": {},
+      "scalarHooks": {
+        "constructionEntityOrderKey": "furnace_assignment_construction_entity_order_key",
+        "constructionValueOrderKey": "furnace_assignment_construction_value_order_key"
+      },
+      "sourcePlural": "compatible_assignments",
+      "variableField": "assignment"
+    },
+    {
+      "allowsUnassigned": true,
+      "countableRange": null,
+      "entity": "furnace_assignment",
+      "entityPlural": "assignments",
+      "id": "furnace_assignment-load_build_operator_id",
+      "kind": "scalar",
+      "label": "Furnace Assignment · load_build_operator_id",
+      "listMetadata": {},
+      "scalarHooks": {
+        "constructionEntityOrderKey": "task_operator_construction_entity_order_key",
+        "constructionValueOrderKey": "load_build_operator_construction_value_order_key"
+      },
+      "sourcePlural": "eligible_load_build_operator_ids",
+      "variableField": "load_build_operator_id"
+    },
+    {
+      "allowsUnassigned": true,
+      "countableRange": null,
+      "entity": "furnace_assignment",
+      "entityPlural": "assignments",
+      "id": "furnace_assignment-program_operator_id",
+      "kind": "scalar",
+      "label": "Furnace Assignment · program_operator_id",
+      "listMetadata": {},
+      "scalarHooks": {
+        "constructionEntityOrderKey": "task_operator_construction_entity_order_key",
+        "constructionValueOrderKey": "program_operator_construction_value_order_key"
+      },
+      "sourcePlural": "eligible_program_operator_ids",
+      "variableField": "program_operator_id"
+    },
+    {
+      "allowsUnassigned": true,
+      "countableRange": null,
+      "entity": "furnace_assignment",
+      "entityPlural": "assignments",
+      "id": "furnace_assignment-quench_operator_id",
+      "kind": "scalar",
+      "label": "Furnace Assignment · quench_operator_id",
+      "listMetadata": {},
+      "scalarHooks": {
+        "constructionEntityOrderKey": "task_operator_construction_entity_order_key",
+        "constructionValueOrderKey": "quench_operator_construction_value_order_key"
+      },
+      "sourcePlural": "eligible_quench_operator_ids",
+      "variableField": "quench_operator_id"
+    },
+    {
+      "allowsUnassigned": true,
+      "countableRange": null,
+      "entity": "furnace_assignment",
+      "entityPlural": "assignments",
+      "id": "furnace_assignment-unload_operator_id",
+      "kind": "scalar",
+      "label": "Furnace Assignment · unload_operator_id",
+      "listMetadata": {},
+      "scalarHooks": {
+        "constructionEntityOrderKey": "task_operator_construction_entity_order_key",
+        "constructionValueOrderKey": "unload_operator_construction_value_order_key"
+      },
+      "sourcePlural": "eligible_unload_operator_ids",
+      "variableField": "unload_operator_id"
+    },
+    {
+      "allowsUnassigned": true,
+      "countableRange": null,
+      "entity": "operator_shift_assignment",
+      "entityPlural": "operator_shift_assignments",
+      "id": "operator_shift_assignment-shift_type",
+      "kind": "scalar",
+      "label": "Operator Shift Assignment · shift_type",
+      "listMetadata": {},
+      "scalarHooks": {
+        "constructionEntityOrderKey": "operator_shift_construction_entity_order_key",
+        "constructionValueOrderKey": "operator_shift_construction_value_order_key"
+      },
+      "sourcePlural": "allowed_shift_types",
+      "variableField": "shift_type"
+    }
   ]
 }

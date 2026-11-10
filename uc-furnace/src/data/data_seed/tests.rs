@@ -314,17 +314,17 @@ fn first_compatible_assignment_values_rotate_across_furnaces() {
 #[test]
 fn demo_profiles_have_furnace_capacity_certificate() {
     const FURNACE_HARD_CONSTRAINTS: &[&str] = &[
-        "unassignedOrders",
-        "incompatibleProcess",
-        "excessiveTemperature",
-        "excessiveLoad",
-        "outsideWeek",
-        "furnaceOverlap",
-        "changeoverGap",
-        "loadBuildShiftOwnership",
-        "programShiftOwnership",
-        "quenchShiftOwnership",
-        "unloadShiftOwnership",
+        "unassigned_orders",
+        "incompatible_process",
+        "excessive_temperature",
+        "excessive_load",
+        "outside_week",
+        "furnace_overlap",
+        "changeover_gap",
+        "load_build_shift_ownership",
+        "program_shift_ownership",
+        "quench_shift_ownership",
+        "unload_shift_ownership",
     ];
 
     for demo in DemoData::ALL {
