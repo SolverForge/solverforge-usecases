@@ -1,6 +1,14 @@
 # Changelog
 
 All notable changes to this use case are documented in this file.
+## [0.3.2](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-orders@0.3.1...solverforge-orders@0.3.2) (2026-11-10)
+
+
+### Bug Fixes
+
+* **runtime:** target SolverForge 0.25.1 across the bundle ([093fc61](https://github.com/SolverForge/solverforge-usecases/commit/093fc61c49983df6d6f0c0b3ba68408439a77869))
+
+
 ## [0.3.1](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-orders@0.3.0...solverforge-orders@0.3.1) (2026-11-09)
 
 
