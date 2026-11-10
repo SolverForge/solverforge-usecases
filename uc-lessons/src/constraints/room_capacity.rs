@@ -62,10 +62,7 @@ mod tests {
 
     #[test]
     fn ignores_sufficient_or_unassigned_room_capacity() {
-        assert_eq!(
-            score_for_room_capacity(30, true),
-            HardMediumSoftScore::ZERO
-        );
+        assert_eq!(score_for_room_capacity(30, true), HardMediumSoftScore::ZERO);
         assert_eq!(
             score_for_room_capacity(24, false),
             HardMediumSoftScore::ZERO

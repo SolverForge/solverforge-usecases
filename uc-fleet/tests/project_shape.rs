@@ -118,7 +118,7 @@ fn public_dataset_and_daily_readiness_contract_are_explicit() {
     let builders = read("src/data/data_seed/builders.rs");
     let data_seed = read("src/data/data_seed.rs");
     let readiness = read("src/constraints/support/readiness.rs");
-    let constraints = read("src/constraints/mod.rs");
+    let constraints = read("src/constraints/assemble.rs");
 
     assert_eq!(catalog.matches("VesselSpec { id:").count(), 24);
     assert_eq!(catalog.matches("wp!(").count(), 24);
