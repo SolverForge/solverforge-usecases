@@ -1,6 +1,14 @@
 # Changelog
 
 All notable changes to this use case are documented in this file.
+## [3.0.4](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-fsr@3.0.3...solverforge-fsr@3.0.4) (2026-11-10)
+
+
+### Bug Fixes
+
+* **runtime:** target SolverForge 0.26.0 across the bundle ([75f505b](https://github.com/SolverForge/solverforge-usecases/commit/75f505b31645023a6e22278534ec6d867ea17803))
+
+
 ## [3.0.3](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-fsr@3.0.2...solverforge-fsr@3.0.3) (2026-11-10)
 
 
