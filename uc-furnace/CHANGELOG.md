@@ -1,6 +1,21 @@
 # Changelog
 
 All notable changes to this use case are documented in this file.
+## [4.0.0](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-furnace@3.0.2...solverforge-furnace@4.0.0) (2026-11-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* **furnace:** Furnace constraint ids are snake_case module names (for example `changeover_gap` instead of `changeoverGap`) in score analysis and in `GET /jobs/{id}/analysis/{constraint_name}`.
+
+* **furnace:** adopt the solverforge-cli 4.0 project layout ([f4bb6b2](https://github.com/SolverForge/solverforge-usecases/commit/f4bb6b2217e4a66fd5020f32fb6f43190202d0e1)), closes #4
+
+
+### Bug Fixes
+
+* **runtime:** target SolverForge 0.25.1 across the bundle ([093fc61](https://github.com/SolverForge/solverforge-usecases/commit/093fc61c49983df6d6f0c0b3ba68408439a77869))
+
+
 ## [3.0.2](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-furnace@3.0.1...solverforge-furnace@3.0.2) (2026-11-09)
 
 
