@@ -1,6 +1,14 @@
 # Changelog
 
 All notable changes to this use case are documented in this file.
+## [3.0.5](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-deliveries@3.0.4...solverforge-deliveries@3.0.5) (2026-11-11)
+
+
+### Bug Fixes
+
+* **runtime:** target SolverForge 0.26.1 across the bundle ([e88bc0e](https://github.com/SolverForge/solverforge-usecases/commit/e88bc0e2f9cee2d24d18be223dc38b740570061a)), closes #8
+
+
 ## [3.0.4](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-deliveries@3.0.3...solverforge-deliveries@3.0.4) (2026-11-10)
 
 
