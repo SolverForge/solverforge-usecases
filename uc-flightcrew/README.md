@@ -14,7 +14,7 @@ short_description: Assign qualified flight crews while enforcing duty and recove
 
 SolverForge Flight Crew assigns every required pilot and flight-attendant seat
 across a global flight network. It preserves the executable scheduling concepts
-from the source Java/Timefold application while using SolverForge's retained-job
+of the original Java application while using SolverForge's retained-job
 runtime, exact snapshot analysis, and shared UI components.
 
 ![SolverForge Flight Crew browser workspace](docs/screenshot.png)
