@@ -934,7 +934,7 @@ dependencies = [
 
 [[package]]
 name = "solverforge-hospital"
-version = "3.0.3"
+version = "3.0.4"
 dependencies = [
  "axum",
  "chrono",
