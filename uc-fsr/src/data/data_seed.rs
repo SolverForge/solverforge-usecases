@@ -11,7 +11,8 @@ use std::str::FromStr;
 use std::time::Duration;
 
 use solverforge_maps::{
-    BoundingBox, Coord, NetworkConfig, NetworkRef, RoadNetwork, RoutingError, UNREACHABLE,
+    BoundingBox, Coord, NetworkConfig, NetworkRef, RoadNetwork, RoutingError, SnapAccess,
+    UNREACHABLE,
 };
 
 use super::bergamo_locations::{DEPOTS, SERVICE_LOCATIONS};
@@ -133,7 +134,13 @@ pub async fn prepare_routing(plan: &mut FieldServicePlan) -> Result<(), DemoData
         .map(|location| Coord::new(location.lat(), location.lng()))
         .collect::<Vec<_>>();
     let network = load_network().await?;
-    let matrix = network.compute_matrix(&coords, None).await;
+    // Technicians arrive at and leave every location, so each one snaps to the
+    // nearest road node a car can enter *and* leave; plain nearest-node
+    // snapping can land on a one-way fragment and strand the location.
+    let access = vec![SnapAccess::Both; coords.len()];
+    let matrix = network
+        .compute_matrix_with_access(&coords, &access, None)
+        .await;
     plan.travel_legs = build_travel_legs(&matrix, coords.len());
     plan.normalize();
     Ok(())
