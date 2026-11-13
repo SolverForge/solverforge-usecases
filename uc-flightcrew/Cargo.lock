@@ -1602,9 +1602,9 @@ dependencies = [
 
 [[package]]
 name = "solverforge-maps"
-version = "2.1.5"
+version = "2.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "98da90be84f5ddc6790211f995096ab77e3ec9ad409819191433d9d510dc0210"
+checksum = "b5704465a4b319a11bc16f2565b9bf20d3d15f339c598e2ba1574cd76d7697f4"
 dependencies = [
  "rayon",
  "reqwest",
@@ -1643,9 +1643,9 @@ dependencies = [
 
 [[package]]
 name = "solverforge-ui"
-version = "0.9.0"
+version = "0.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "87dc89ca92af46ff7c55eb29d4072d98b2414047fd84cd8c77458e60468d53f6"
+checksum = "4ac56d6fcfc1854033505eb94dde42c7af6f82030d7e710449a4be900abf4b37"
 dependencies = [
  "axum",
  "include_dir",
