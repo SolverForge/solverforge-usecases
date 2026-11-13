@@ -13,7 +13,7 @@ solverforge = { version = "0.26.1", features = [
   "console",
   "verbose-logging",
 ] }
-solverforge-ui = "0.9.0"
+solverforge-ui = "0.9.1"
 rand = "0.10.1"
 
 axum = "0.8.9"
