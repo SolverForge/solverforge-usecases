@@ -55,8 +55,8 @@ make help
 - Release binary: `solverforge_deliveries`
 - Rust: `1.95`
 - SolverForge runtime: `solverforge` `0.26.1`
-- Browser UI assets: `solverforge-ui` `0.9.0`
-- Routing engine: `solverforge-maps` `2.1.5`
+- Browser UI assets: `solverforge-ui` `0.9.1`
+- Routing engine: `solverforge-maps` `2.3.3`
 - Scaffold metadata: `solverforge-cli` `2.2.2` in `solverforge.app.toml`
 
 The app serves registry-backed Rust dependencies, local static browser modules,

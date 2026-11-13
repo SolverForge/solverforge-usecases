@@ -1,7 +1,9 @@
 use std::sync::Arc;
 
 use solverforge::cvrp::ProblemData;
-use solverforge_maps::{BoundingBox, Coord, NetworkConfig, RoadNetwork, RoutingError, UNREACHABLE};
+use solverforge_maps::{
+    BoundingBox, Coord, NetworkConfig, RoadNetwork, RoutingError, SnapAccess, UNREACHABLE,
+};
 
 use crate::domain::Plan;
 
@@ -122,7 +124,14 @@ impl DepotRoutingData {
 
         let bbox = BoundingBox::from_coords(&all_coords).expand_for_routing(&all_coords);
         let network = RoadNetwork::load_or_fetch(&bbox, &NetworkConfig::default(), None).await?;
-        let matrix = network.compute_matrix(&all_coords, None).await;
+        // Every delivery and depot is both arrived at and left, so each one
+        // snaps to the nearest road node a car can enter *and* leave. Plain
+        // nearest-node snapping can land on a one-way fragment or a closed
+        // stub and make the stop unreachable from everywhere else.
+        let access = vec![SnapAccess::Both; all_coords.len()];
+        let matrix = network
+            .compute_matrix_with_access(&all_coords, &access, None)
+            .await;
 
         let delivery_count = delivery_coords.len();
         let mut delivery_travel_times = vec![vec![0_i64; delivery_count]; delivery_count];

@@ -1,6 +1,6 @@
 use super::*;
 use crate::data::data_seed::types::LocationData;
-use solverforge_maps::{BoundingBox, Coord, NetworkConfig, RoadNetwork};
+use solverforge_maps::{BoundingBox, Coord, NetworkConfig, RoadNetwork, SnapAccess};
 
 #[test]
 fn parses_demo_data_ids_case_insensitively() {
@@ -104,7 +104,11 @@ async fn live_demo_locations_are_mutually_reachable_when_enabled() {
         let network = RoadNetwork::load_or_fetch(&bbox, &NetworkConfig::default(), None)
             .await
             .unwrap();
-        let matrix = network.compute_matrix(&coords, None).await;
+        // Same snapping as `prepare_plan`: round-trip stops need both directions.
+        let access = vec![SnapAccess::Both; coords.len()];
+        let matrix = network
+            .compute_matrix_with_access(&coords, &access, None)
+            .await;
         let unreachable = matrix
             .unreachable_pairs()
             .into_iter()
