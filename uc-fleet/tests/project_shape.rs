@@ -60,7 +60,7 @@ fn package_metadata_and_repository_only_packaging_stay_aligned() {
     // tooling; here assert only the shape so a runtime bump needs no test edit.
     assert!(cargo.contains("solverforge = { version = \""));
     assert!(cargo.contains("solverforge-core = \""));
-    assert!(cargo.contains("solverforge-ui = \"0.9.0\""));
+    assert!(cargo.contains("solverforge-ui = \"0.9.1\""));
     assert!(!cargo.contains("[patch"));
 
     assert!(app.contains("name = \"solverforge-fleet\""));
