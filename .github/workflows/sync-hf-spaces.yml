@@ -19,9 +19,9 @@ on:
       - "solverforge-fsr@*"
       - "solverforge-hospital@*"
       - "solverforge-lessons@*"
-      # solverforge-fleet, solverforge-flightcrew, solverforge-furnace, and
-      # solverforge-orders are repository-only. Keep them out unless Hugging
-      # Face targets are created.
+      # solverforge-ev, solverforge-fleet, solverforge-flightcrew,
+      # solverforge-furnace, and solverforge-orders are repository-only. Keep
+      # them out unless Hugging Face targets are created.
 
   workflow_dispatch:
     inputs:
@@ -68,8 +68,8 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Published folders only. uc-fleet, uc-flightcrew, uc-furnace, and
-          # uc-orders are repository-only unless Hugging Face targets are
+          # Published folders only. uc-ev, uc-fleet, uc-flightcrew, uc-furnace,
+          # and uc-orders are repository-only unless Hugging Face targets are
           # created for them.
           OPEN_SOURCE_FOLDERS=$(cat <<'FOLDERS'
           uc-deliveries

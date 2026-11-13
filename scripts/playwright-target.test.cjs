@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const { test } = require('node:test');
 const path = require('node:path');
 
-for (const app of ['deliveries', 'flightcrew', 'fsr', 'hospital', 'orders']) {
+for (const app of ['deliveries', 'ev', 'flightcrew', 'fsr', 'hospital', 'orders']) {
   test(`${app} browser server follows Cargo's target directory`, () => {
     const configPath = path.resolve(__dirname, `../uc-${app}/tests/e2e/playwright.config.js`);
     const root = path.resolve(__dirname, `../uc-${app}`);
@@ -25,7 +25,7 @@ for (const app of ['deliveries', 'flightcrew', 'fsr', 'hospital', 'orders']) {
   });
 }
 
-for (const app of ['deliveries', 'flightcrew', 'fsr', 'hospital', 'orders']) {
+for (const app of ['deliveries', 'ev', 'flightcrew', 'fsr', 'hospital', 'orders']) {
   test(`${app} browser tests honor PLAYWRIGHT_CHROMIUM_EXECUTABLE`, () => {
     const configPath = path.resolve(__dirname, `../uc-${app}/tests/e2e/playwright.config.js`);
     const previous = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE;

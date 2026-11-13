@@ -1,0 +1,6 @@
+target
+.osm_cache
+test-results
+playwright-report
+.git
+node_modules/

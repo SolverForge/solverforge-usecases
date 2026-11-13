@@ -1,0 +1,81 @@
+scalar_groups = []
+conflict_repairs = []
+
+[app]
+name = "solverforge-ev"
+starter = "neutral-shell"
+shell = "web"
+cli_version = "4.0.4"
+
+[runtime]
+target = "solverforge 0.26.1"
+runtime_source = "crates.io: solverforge 0.26.1"
+ui_source = "crates.io: solverforge-ui 0.9.1"
+
+[demo]
+default_size = "STANDARD"
+available_sizes = [
+    "STANDARD",
+]
+
+[solution]
+name = "Plan"
+score = "HardSoftScore"
+scalar_groups_path = ""
+conflict_repairs_path = ""
+
+[[facts]]
+name = "customer"
+plural = "customers"
+kind = "problem_fact"
+
+[[facts]]
+name = "charger"
+plural = "chargers"
+kind = "problem_fact"
+
+[[entities]]
+name = "vehicle"
+plural = "vehicles"
+kind = "planning_entity"
+
+[[variables]]
+entity = "vehicle"
+entity_plural = "vehicles"
+field = "visit_order"
+kind = "list"
+range = ""
+elements = "customers"
+allows_unassigned = false
+distance_meter = "solverforge::cvrp::MatrixDistanceMeter"
+intra_distance_meter = "solverforge::cvrp::MatrixIntraDistanceMeter"
+route_hooks = "crate::domain::ev_route_hooks"
+savings_hooks = "crate::domain::ev_savings_hooks"
+savings_metric_class_fn = "crate::domain::ev_savings_hooks::metric_class"
+solution_trait = "crate::domain::EvRouteSolution"
+enabled = true
+
+[[constraints]]
+name = "battery_shortfall"
+module = "battery_shortfall"
+enabled = true
+
+[[constraints]]
+name = "customer_time_windows"
+module = "customer_time_windows"
+enabled = true
+
+[[constraints]]
+name = "total_travel_time"
+module = "total_travel_time"
+enabled = true
+
+[[constraints]]
+name = "unreachable_legs"
+module = "unreachable_legs"
+enabled = true
+
+[[constraints]]
+name = "vehicle_capacity"
+module = "vehicle_capacity"
+enabled = true

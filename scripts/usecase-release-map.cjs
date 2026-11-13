@@ -4,6 +4,11 @@ const APPS = {
     spaceName: "solverforge-deliveries",
     displayName: "SolverForge Deliveries",
   },
+  "uc-ev": {
+    packageName: "solverforge-ev",
+    spaceName: "solverforge-ev",
+    displayName: "SolverForge EV",
+  },
   "uc-fleet": {
     packageName: "solverforge-fleet",
     spaceName: "solverforge-fleet",

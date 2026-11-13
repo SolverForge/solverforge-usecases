@@ -6,10 +6,10 @@ This repo is the SolverForge use-case publication bundle. Keep each `uc-*`
 directory as a deployable SolverForge app that can be split and pushed to the
 matching Hugging Face Space named `solverforge-*`.
 
-`uc-fleet`, `uc-flightcrew`, `uc-furnace`, and `uc-orders` are repository-only.
-They are first-class, fully runnable open-source use cases, but they have no
-hosted Spaces. Keep all four out of the Hugging Face sync allowlist unless
-matching targets are created.
+`uc-ev`, `uc-fleet`, `uc-flightcrew`, `uc-furnace`, and `uc-orders` are
+repository-only. They are first-class, fully runnable open-source use cases,
+but they have no hosted Spaces. Keep all five out of the Hugging Face sync
+allowlist unless matching targets are created.
 
 The `uc-*` prefix is intentional repository plumbing. Product-facing names,
 Space names, docs, app metadata, and UI labels should use `SolverForge` and the
@@ -18,6 +18,8 @@ Space names, docs, app metadata, and UI labels should use `SolverForge` and the
 ## Included Use Cases
 
 - `uc-deliveries` is the source for the open-source `solverforge-deliveries` app.
+- `uc-ev` is the source for the open-source `solverforge-ev` app
+  (repository-only; no hosted Space).
 - `uc-fleet` is the source for the open-source `solverforge-fleet` app
   (repository-only; no hosted Space).
 - `uc-flightcrew` is the source for the open-source `solverforge-flightcrew` app
@@ -30,9 +32,9 @@ Space names, docs, app metadata, and UI labels should use `SolverForge` and the
 - `uc-orders` is the source for the open-source `solverforge-orders` app
   (repository-only; no hosted Space).
 
-These eight directories are the open-source root allowlist. Four of them are also
-published to Hugging Face Spaces; `uc-fleet`, `uc-flightcrew`, `uc-furnace`, and
-`uc-orders` are not. Do not add another `uc-*` directory without updating the
+These nine directories are the open-source root allowlist. Four of them are also
+published to Hugging Face Spaces; `uc-ev`, `uc-fleet`, `uc-flightcrew`,
+`uc-furnace`, and `uc-orders` are not. Do not add another `uc-*` directory without updating the
 README, sync workflow, release map, pre-commit path filter, and metadata
 verification script in the same change.
 
@@ -94,7 +96,7 @@ when present:
   one release, then `make publish-usecase TAG=...` to push `main` and that tag.
 - `make publish-usecases-dry-run` before publishing the current releases for
   all allowlisted apps; `make publish-usecases` pushes the tags separately so
-  GitHub emits one Hugging Face sync event per hosted app. The four
+  GitHub emits one Hugging Face sync event per hosted app. The five
   repository-only app tags are still pushed but trigger no Space sync.
 
 For root workflow or README-only edits, validate the YAML syntax and inspect the

@@ -1,0 +1,12 @@
+/target
+**/*.rs.bk
+
+# OpenStreetMap road networks downloaded on first solve
+.osm_cache/
+
+# Browser-test output
+test-results/
+playwright-report/
+
+# Browser-test dependencies installed by `make install-e2e`
+node_modules/

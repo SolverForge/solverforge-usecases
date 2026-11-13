@@ -1,0 +1,52 @@
+{
+  "conflictRepairs": [],
+  "constraints": [
+    "battery_shortfall",
+    "customer_time_windows",
+    "total_travel_time",
+    "unreachable_legs",
+    "vehicle_capacity"
+  ],
+  "entities": [
+    {
+      "label": "Vehicle",
+      "name": "vehicle",
+      "plural": "vehicles"
+    }
+  ],
+  "facts": [
+    {
+      "label": "Customer",
+      "name": "customer",
+      "plural": "customers"
+    },
+    {
+      "label": "Charger",
+      "name": "charger",
+      "plural": "chargers"
+    }
+  ],
+  "scalarGroups": [],
+  "views": [
+    {
+      "allowsUnassigned": false,
+      "countableRange": null,
+      "entity": "vehicle",
+      "entityPlural": "vehicles",
+      "id": "vehicle-visit_order",
+      "kind": "list",
+      "label": "Vehicle · visit_order",
+      "listMetadata": {
+        "distanceMeter": "solverforge::cvrp::MatrixDistanceMeter",
+        "intraDistanceMeter": "solverforge::cvrp::MatrixIntraDistanceMeter",
+        "routeHooks": "crate::domain::ev_route_hooks",
+        "savingsHooks": "crate::domain::ev_savings_hooks",
+        "savingsMetricClassFn": "crate::domain::ev_savings_hooks::metric_class",
+        "solutionTrait": "crate::domain::EvRouteSolution"
+      },
+      "scalarHooks": {},
+      "sourcePlural": "customers",
+      "variableField": "visit_order"
+    }
+  ]
+}

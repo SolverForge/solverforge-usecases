@@ -43,6 +43,7 @@ jobs:
         with:
           workspaces: |
             uc-deliveries
+            uc-ev
             uc-fleet
             uc-flightcrew
             uc-fsr

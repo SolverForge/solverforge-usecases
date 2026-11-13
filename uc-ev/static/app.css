@@ -1,0 +1,162 @@
+/* Layout for SolverForge EV. Components keep their stock styling; these
+   rules only arrange cards, the map, and the route list. */
+
+.solverforge-ev-app .ev-shell {
+  display: grid;
+  gap: 1rem;
+}
+
+.solverforge-ev-app .ev-bootstrap-error {
+  background: #fef2f2;
+  border: 1px solid #dc2626;
+  border-radius: 12px;
+  color: #991b1b;
+  margin-bottom: 1rem;
+  padding: 1rem;
+}
+
+.solverforge-ev-app .ev-card {
+  background: #fff;
+  border: 1px solid var(--sf-gray-200);
+  border-radius: 12px;
+  box-shadow: var(--sf-shadow-sm);
+  padding: 1rem;
+}
+
+.solverforge-ev-app .ev-card h3,
+.solverforge-ev-app .ev-card h4 {
+  margin: 0 0 0.5rem;
+}
+
+.solverforge-ev-app .ev-panel {
+  display: none;
+}
+
+.solverforge-ev-app .ev-panel.is-active {
+  display: block;
+}
+
+.solverforge-ev-app .ev-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(300px, 380px) minmax(0, 1fr);
+  min-height: max(640px, calc(100vh - 280px));
+}
+
+.solverforge-ev-app .ev-stack {
+  align-content: start;
+  display: grid;
+  gap: 1rem;
+}
+
+.solverforge-ev-app .ev-subtle {
+  color: var(--sf-gray-600);
+  font-size: 0.875rem;
+  margin: 0 0 0.75rem;
+}
+
+.solverforge-ev-app .ev-kpis {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.solverforge-ev-app .ev-kpi {
+  background: var(--sf-gray-50);
+  border-radius: 8px;
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.6rem 0.75rem;
+}
+
+.solverforge-ev-app .ev-kpi span {
+  color: var(--sf-gray-600);
+  font-size: 0.78rem;
+}
+
+.solverforge-ev-app .ev-kpi strong {
+  font-size: 1.15rem;
+}
+
+.solverforge-ev-app .ev-route-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.solverforge-ev-app .ev-route {
+  border: 1px solid var(--sf-gray-200);
+  border-left: 4px solid var(--ev-route-color, var(--sf-gray-400));
+  border-radius: 8px;
+  cursor: pointer;
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.6rem 0.75rem;
+}
+
+.solverforge-ev-app .ev-route.is-focused {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ev-route-color) 25%, transparent);
+}
+
+.solverforge-ev-app .ev-route.has-violation {
+  background: #fef2f2;
+}
+
+.solverforge-ev-app .ev-route:focus-visible {
+  outline: 3px solid var(--sf-emerald-300);
+  outline-offset: 2px;
+}
+
+.solverforge-ev-app .ev-route__top,
+.solverforge-ev-app .ev-route__meta {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: space-between;
+}
+
+.solverforge-ev-app .ev-route__meta {
+  color: var(--sf-gray-600);
+  font-size: 0.82rem;
+  justify-content: flex-start;
+}
+
+.solverforge-ev-app .ev-tag {
+  background: var(--sf-gray-100);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+}
+
+.solverforge-ev-app .ev-map-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.solverforge-ev-app .ev-map {
+  border-radius: 8px;
+  flex: 1;
+  min-height: 560px;
+  overflow: hidden;
+}
+
+.solverforge-ev-app .ev-legend {
+  color: var(--sf-gray-600);
+  font-size: 0.8rem;
+  margin: 0.5rem 0 0;
+}
+
+.solverforge-ev-app .ev-data h4 {
+  margin-top: 1rem;
+}
+
+@media (max-width: 980px) {
+  .solverforge-ev-app .ev-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .solverforge-ev-app .ev-map {
+    min-height: 420px;
+  }
+}

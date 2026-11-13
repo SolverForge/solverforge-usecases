@@ -1,0 +1,30 @@
+{
+  "title": "SolverForge EV",
+  "subtitle": "Electric-van delivery routing with charging stops",
+  "constraints": [
+    "battery_shortfall",
+    "vehicle_capacity",
+    "customer_time_windows",
+    "unreachable_legs",
+    "total_travel_time"
+  ],
+  "entities": [
+    {
+      "name": "vehicle",
+      "label": "Vehicle",
+      "plural": "vehicles"
+    }
+  ],
+  "facts": [
+    {
+      "name": "customer",
+      "label": "Customer",
+      "plural": "customers"
+    },
+    {
+      "name": "charger",
+      "label": "Charger",
+      "plural": "chargers"
+    }
+  ]
+}
