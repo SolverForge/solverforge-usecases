@@ -85,7 +85,7 @@ fn source_tree_keeps_the_canonical_cli_entry_files() {
     // Dependency-line shape only: the runtime version is owned by the release
     // tooling, and a bump must not require editing this shape test.
     assert!(cargo_toml.contains("solverforge = { version = \""));
-    assert!(cargo_toml.contains("solverforge-ui = \"0.9.0\""));
+    assert!(cargo_toml.contains("solverforge-ui = \"0.9.1\""));
     assert!(!cargo_toml.contains("[patch"));
 
     let source_root = fs::read_to_string(project_path("src/domain/mod.rs")).expect("domain mod");
