@@ -5,8 +5,8 @@ shell = "web"
 cli_version = "2.2.2"
 
 [runtime]
-target = "solverforge 0.26.1"
-runtime_source = "crates.io: solverforge 0.26.1"
+target = "solverforge 0.31.2"
+runtime_source = "crates.io: solverforge 0.31.2"
 ui_source = "crates.io: solverforge-ui 0.9.1"
 
 [demo]
