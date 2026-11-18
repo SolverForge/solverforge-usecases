@@ -1,6 +1,15 @@
 # Changelog
 
 All notable changes to this use case are documented in this file.
+## [3.0.6](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-deliveries@3.0.5...solverforge-deliveries@3.0.6) (2026-11-18)
+
+
+### Bug Fixes
+
+* **deliveries:** fetch road geometry for the newest snapshot only ([e90a002](https://github.com/SolverForge/solverforge-usecases/commit/e90a002a1f24a4dad0e3eb9ad78ea7920e8ec774))
+* **deliveries:** target SolverForge 0.31.2 ([f854270](https://github.com/SolverForge/solverforge-usecases/commit/f854270aefdb77fad26cb1eae66f10002f6e556d))
+
+
 ## [3.0.5](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-deliveries@3.0.4...solverforge-deliveries@3.0.5) (2026-11-11)
 
 
