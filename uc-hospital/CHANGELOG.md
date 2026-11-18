@@ -1,6 +1,14 @@
 # Changelog
 
 All notable changes to this use case are documented in this file.
+## [3.0.5](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-hospital@3.0.4...solverforge-hospital@3.0.5) (2026-11-18)
+
+
+### Bug Fixes
+
+* **hospital:** target SolverForge 0.31.2 ([7b19da4](https://github.com/SolverForge/solverforge-usecases/commit/7b19da4f084964f9f2dfd3ea65e8f33f5c1a0786))
+
+
 ## [3.0.4](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-hospital@3.0.3...solverforge-hospital@3.0.4) (2026-11-11)
 
 
