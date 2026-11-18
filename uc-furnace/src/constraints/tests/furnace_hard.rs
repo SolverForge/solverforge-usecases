@@ -33,10 +33,10 @@ fn furnace_and_start(value: usize) -> (usize, usize) {
 
 fn adjacent_pair(plan: &Plan) -> (usize, usize, usize, usize) {
     let by_furnace_start = assignment_values_by_furnace_start(plan);
-    for left_index in 0..plan.assignments.len() {
-        for left_value in &plan.assignments[left_index].compatible_assignments {
+    for (left_index, left) in plan.assignments.iter().enumerate() {
+        for left_value in &left.compatible_assignments {
             let (furnace_id, left_start) = furnace_and_start(*left_value);
-            let right_start = left_start + plan.assignments[left_index].duration_minutes();
+            let right_start = left_start + left.duration_minutes();
             if let Some(candidates) = by_furnace_start.get(&(furnace_id, right_start)) {
                 if let Some((right_index, right_value)) = candidates
                     .iter()
