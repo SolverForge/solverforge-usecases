@@ -21,18 +21,15 @@ import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import releaseMap from "./usecase-release-map.cjs";
+
 const CSEMVER = "csemver";
 
-const apps = {
-  "uc-deliveries": "solverforge-deliveries",
-  "uc-fleet": "solverforge-fleet",
-  "uc-flightcrew": "solverforge-flightcrew",
-  "uc-fsr": "solverforge-fsr",
-  "uc-furnace": "solverforge-furnace",
-  "uc-hospital": "solverforge-hospital",
-  "uc-lessons": "solverforge-lessons",
-  "uc-orders": "solverforge-orders",
-};
+// App folder -> package name, read from the one release map the publisher and
+// tag verifier also use, so an app added there is releasable here too.
+const apps = Object.fromEntries(
+  Object.entries(releaseMap.APPS).map(([folder, metadata]) => [folder, metadata.packageName]),
+);
 
 function usage() {
   console.error(

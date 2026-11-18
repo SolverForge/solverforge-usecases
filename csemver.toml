@@ -1,6 +1,6 @@
 # csemver.toml — native release configuration for the use-case bundle.
 #
-# This bundle releases eight uc-* apps independently, so the release wrapper
+# This bundle releases nine uc-* apps independently, so the release wrapper
 # (scripts/release-usecase.mjs) renders this template per app and runs csemver
 # with the app directory as cwd: `path = "."` scopes commit collection to that
 # app's tree, tagPrefix matches the app-scoped tag contract
