@@ -27,7 +27,6 @@ serde_json = "1.0.150"
 schemars = { version = "1.0", optional = true }
 
 # Utilities
-uuid = { version = "1.23.5", features = ["v4", "serde"] }
 parking_lot = "0.12.5"
 
 [features]
