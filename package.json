@@ -8,6 +8,6 @@
     "verify:release-tag": "node scripts/verify-usecase-release-tag.cjs"
   },
   "devDependencies": {
-    "playwright": "^1.60.0"
+    "playwright": "^1.65.1"
   }
 }

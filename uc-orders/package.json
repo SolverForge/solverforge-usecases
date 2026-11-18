@@ -3,6 +3,6 @@
   "private": true,
   "description": "Browser-test tooling for solverforge-orders; the app itself is a Rust binary.",
   "devDependencies": {
-    "playwright": "1.60.0"
+    "playwright": "1.65.1"
   }
 }
