@@ -1,6 +1,6 @@
 use super::*;
 use crate::domain::{DeliveryKind, UNASSIGNED_DELIVERY_HARD_PENALTY};
-use solverforge::cvrp::ProblemData;
+use solverforge::cvrp::{DenseMatrix, ProblemData};
 use solverforge::{ScoreDirector, SolverConfig, SolverEvent, SolverManager};
 use std::sync::Arc;
 
@@ -87,10 +87,9 @@ fn attach_test_routing(plan: &mut Plan) {
             capacity: vehicle.capacity as i64,
             depot: delivery_count,
             demands: demands.clone(),
-            distance_matrix: problem_matrix.clone(),
+            metric: DenseMatrix::new(problem_matrix.clone(), problem_matrix),
             time_windows: time_windows.clone(),
             service_durations: service_durations.clone(),
-            travel_times: problem_matrix,
             vehicle_departure_time: vehicle.departure_time,
         }));
         vehicle.prepared_routing = Some(PreparedVehicleRouting {

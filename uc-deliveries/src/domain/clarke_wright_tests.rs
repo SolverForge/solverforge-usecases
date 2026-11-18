@@ -1,6 +1,6 @@
 use super::*;
 use crate::data::{generate, DemoData};
-use solverforge::cvrp::ProblemData;
+use solverforge::cvrp::{DenseMatrix, ProblemData};
 use solverforge::SolverConfig;
 use std::collections::BTreeSet;
 use std::sync::Arc;
@@ -42,10 +42,9 @@ fn attach_synthetic_routing(plan: &mut Plan) {
             capacity: vehicle.capacity as i64,
             depot: delivery_count,
             demands: demands.clone(),
-            distance_matrix: problem_matrix.clone(),
+            metric: DenseMatrix::new(problem_matrix.clone(), problem_matrix),
             time_windows: time_windows.clone(),
             service_durations: service_durations.clone(),
-            travel_times: problem_matrix,
             vehicle_departure_time: vehicle.departure_time,
         }));
         vehicle.prepared_routing = Some(PreparedVehicleRouting {

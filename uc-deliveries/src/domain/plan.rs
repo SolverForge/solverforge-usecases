@@ -130,6 +130,9 @@ impl Plan {
 }
 
 impl solverforge::cvrp::VrpSolution for Plan {
+    /// Every vehicle reads its legs from dense road tables built in preparation.
+    type Metric = solverforge::cvrp::DenseMatrix;
+
     /// Gives SolverForge's CVRP move selectors access to prepared matrices.
     ///
     /// Returns `None` for a vehicle whose routing has not been prepared yet.

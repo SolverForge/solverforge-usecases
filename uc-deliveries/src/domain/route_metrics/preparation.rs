@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use solverforge::cvrp::ProblemData;
+use solverforge::cvrp::{DenseMatrix, ProblemData};
 use solverforge_maps::{
     BoundingBox, Coord, NetworkConfig, RoadNetwork, RoutingError, SnapAccess, UNREACHABLE,
 };
@@ -44,10 +44,9 @@ pub async fn prepare_plan(plan: &mut Plan) -> Result<(), RoutingError> {
             capacity: vehicle.capacity as i64,
             depot: delivery_coords.len(),
             demands: delivery_demands.clone(),
-            distance_matrix: route_distance_matrix.clone(),
+            metric: DenseMatrix::new(route_distance_matrix.clone(), route_distance_matrix),
             time_windows: delivery_time_windows.clone(),
             service_durations: delivery_service_durations.clone(),
-            travel_times: route_distance_matrix,
             vehicle_departure_time: vehicle.departure_time,
         }));
         vehicle.prepared_routing = Some(PreparedVehicleRouting {

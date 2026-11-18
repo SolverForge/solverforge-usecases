@@ -1,6 +1,6 @@
 use super::*;
 use crate::domain::{Delivery, DeliveryKind, Plan, Vehicle};
-use solverforge::cvrp::ProblemData;
+use solverforge::cvrp::{DenseMatrix, ProblemData};
 use std::sync::Arc;
 
 fn sample_plan() -> Plan {
@@ -231,10 +231,9 @@ fn attach_sample_routing(plan: &mut Plan) {
             capacity: vehicle.capacity as i64,
             depot: delivery_count,
             demands: demands.clone(),
-            distance_matrix: problem_matrix.clone(),
+            metric: DenseMatrix::new(problem_matrix.clone(), problem_matrix),
             time_windows: time_windows.clone(),
             service_durations: service_durations.clone(),
-            travel_times: problem_matrix,
             vehicle_departure_time: vehicle.departure_time,
         }));
         vehicle.prepared_routing = Some(PreparedVehicleRouting {
