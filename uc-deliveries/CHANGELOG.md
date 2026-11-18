@@ -1,6 +1,14 @@
 # Changelog
 
 All notable changes to this use case are documented in this file.
+## [3.0.7](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-deliveries@3.0.6...solverforge-deliveries@3.0.7) (2026-11-18)
+
+
+### Bug Fixes
+
+* **e2e:** install Playwright 1.65.1 so browser checks run on Ubuntu 26.04 ([3e0e5f7](https://github.com/SolverForge/solverforge-usecases/commit/3e0e5f7f71d4cb4d2cf3d76d029fd99d690cafb9))
+
+
 ## [3.0.6](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-deliveries@3.0.5...solverforge-deliveries@3.0.6) (2026-11-18)
 
 
