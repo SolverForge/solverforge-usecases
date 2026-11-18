@@ -59,7 +59,7 @@ make help
 - Package: `solverforge-lessons`; version is declared in `Cargo.toml`
 - Release binary: `solverforge-lessons`
 - Rust: `1.95`
-- SolverForge runtime: `solverforge` `0.26.1`
+- SolverForge runtime: `solverforge` `0.31.2`
 - Browser UI assets: `solverforge-ui` `0.9.1`
 - Scaffold metadata: `solverforge-cli` `2.2.2` in `solverforge.app.toml`
 
