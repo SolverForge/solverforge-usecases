@@ -7,7 +7,7 @@
 
 use std::sync::Arc;
 
-use solverforge::cvrp::ProblemData;
+use solverforge::cvrp::{DenseMatrix, ProblemData};
 use solverforge_maps::{
     BoundingBox, Coord, NetworkConfig, RoadNetwork, RoutingError, SnapAccess, UNREACHABLE,
 };
@@ -139,10 +139,9 @@ fn problem_data(
         capacity,
         depot,
         demands,
-        distance_matrix: network.seconds.clone(),
+        metric: DenseMatrix::new(network.seconds.clone(), network.seconds.clone()),
         time_windows,
         service_durations,
-        travel_times: network.seconds.clone(),
         vehicle_departure_time: departure_time,
     }
 }

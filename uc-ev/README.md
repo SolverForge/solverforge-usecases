@@ -36,7 +36,7 @@ solves start in seconds.
 ![SolverForge EV solved overview](docs/screenshot.png)
 
 Package metadata lives in `Cargo.toml`. The app requires Rust 1.95 and uses
-`solverforge` 0.26.1, `solverforge-ui` 0.9.1, and `solverforge-maps` 2.3.3 under
+`solverforge` 0.31.2, `solverforge-ui` 0.9.1, and `solverforge-maps` 2.3.3 under
 Apache-2.0. It was scaffolded with `solverforge-cli` 4.0.4 and grown through its
 `generate` commands.
 

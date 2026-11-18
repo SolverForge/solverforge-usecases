@@ -76,6 +76,9 @@ impl Plan {
 }
 
 impl solverforge::cvrp::VrpSolution for Plan {
+    /// Every van reads its legs from a dense road-seconds table.
+    type Metric = solverforge::cvrp::DenseMatrix;
+
     /// Matrices for the stock Clarke-Wright construction and distance meters.
     fn vehicle_data(&self, entity_idx: usize) -> Option<&ProblemData> {
         self.problem_data.get(entity_idx).map(Arc::as_ref)
