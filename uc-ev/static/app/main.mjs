@@ -24,6 +24,13 @@ export async function boot() {
   let currentPlan = null;
   let currentRoutes = null;
   let routeToken = 0;
+  // Geometry takes the server a moment per snapshot, and early in a solve
+  // snapshots arrive faster than that. One request is in flight at a time and
+  // only the newest snapshot waits behind it: a request per snapshot queued
+  // dozens of reads ahead of Pause and Cancel, which browsers send over the
+  // same six connections per host.
+  let routesInFlight = false;
+  let routesWanted = null;
   let focusedIndex = null;
   let mapCtrl = null;
   let locationKey = null;
@@ -126,18 +133,30 @@ export async function boot() {
     renderAll();
     const jobId = meta?.jobId != null ? String(meta.jobId) : solver.getJobId();
     const revision = meta?.snapshotRevision ?? solver.getSnapshotRevision();
-    if (meta && jobId && revision != null) loadRoutes(jobId, revision, routeToken);
+    if (meta && jobId && revision != null) requestRoutes(jobId, revision, routeToken);
   }
 
-  async function loadRoutes(jobId, revision, token) {
-    try {
-      const response = await requestJson(`/jobs/${jobId}/routes?snapshot_revision=${revision}`, 'route geometry');
-      if (token !== routeToken || String(response.snapshotRevision) !== String(revision)) return;
-      currentRoutes = response.routes;
-      drawMap(false);
-    } catch (_error) {
-      // Geometry is decoration over the scored plan; keep markers without lines.
+  function requestRoutes(jobId, revision, token) {
+    routesWanted = { jobId, revision, token };
+    if (!routesInFlight) loadLatestRoutes();
+  }
+
+  async function loadLatestRoutes() {
+    routesInFlight = true;
+    while (routesWanted) {
+      const { jobId, revision, token } = routesWanted;
+      routesWanted = null;
+      if (token !== routeToken) continue;
+      try {
+        const response = await requestJson(`/jobs/${jobId}/routes?snapshot_revision=${revision}`, 'route geometry');
+        if (token !== routeToken || String(response.snapshotRevision) !== String(revision)) continue;
+        currentRoutes = response.routes;
+        drawMap(false);
+      } catch (_error) {
+        // Geometry is decoration over the scored plan; keep markers without lines.
+      }
     }
+    routesInFlight = false;
   }
 
   function renderAll() {
