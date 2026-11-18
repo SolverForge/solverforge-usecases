@@ -1,6 +1,14 @@
 # Changelog
 
 All notable changes to this use case are documented in this file.
+## [0.3.6](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-flightcrew@0.3.5...solverforge-flightcrew@0.3.6) (2026-11-18)
+
+
+### Bug Fixes
+
+* **flightcrew:** target SolverForge 0.31.2 ([61b8823](https://github.com/SolverForge/solverforge-usecases/commit/61b88236f0e9728e8c260d5d2cc9046807150dab))
+
+
 ## [0.3.5](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-flightcrew@0.3.4...solverforge-flightcrew@0.3.5) (2026-11-11)
 
 
