@@ -1,6 +1,14 @@
 # Changelog
 
 All notable changes to this use case are documented in this file.
+## [3.0.5](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-lessons@3.0.4...solverforge-lessons@3.0.5) (2026-11-18)
+
+
+### Bug Fixes
+
+* **lessons:** target SolverForge 0.31.2 ([d988a52](https://github.com/SolverForge/solverforge-usecases/commit/d988a52661956e47af30dbcfddd1070a8913708f))
+
+
 ## [3.0.4](https://github.com/SolverForge/solverforge-usecases/compare/solverforge-lessons@3.0.3...solverforge-lessons@3.0.4) (2026-11-11)
 
 
