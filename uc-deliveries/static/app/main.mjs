@@ -30,6 +30,11 @@ export async function boot() {
   // revision. This identity prevents stale map lines from surviving dataset
   // switches or newer solver snapshots.
   let activeRouteIdentity = null;
+  // Snapshots arrive faster than the server draws road geometry, so one
+  // `/routes` read runs at a time and only the newest snapshot waits behind
+  // it; a read per snapshot queued dozens ahead of Pause and Stop.
+  let routesInFlight = false;
+  let routesWanted = null;
   let activeTab = 'overview';
   let mapLocationSignature = null;
 
@@ -122,13 +127,24 @@ export async function boot() {
     if (snapshot?.solution) {
       renderServerPlan(snapshot.solution, meta);
     }
-    await loadRoutes(meta);
     syncLifecycle(meta);
+    await loadRoutes(meta);
   }
 
   async function loadRoutes(meta) {
-    const requested = routeIdentityFrom(meta);
-    if (!requested || !activeRouteIdentity || !sameRouteIdentity(requested, activeRouteIdentity)) return;
+    routesWanted = routeIdentityFrom(meta);
+    if (routesInFlight) return;
+    routesInFlight = true;
+    while (routesWanted) {
+      const requested = routesWanted;
+      routesWanted = null;
+      await fetchRoutes(requested);
+    }
+    routesInFlight = false;
+  }
+
+  async function fetchRoutes(requested) {
+    if (!activeRouteIdentity || !sameRouteIdentity(requested, activeRouteIdentity)) return;
     const token = ++routeRequestToken;
     try {
       const routes = await fetchJson(`/jobs/${requested.jobId}/routes?snapshot_revision=${requested.snapshotRevision}`);
